@@ -8,12 +8,7 @@ our @STATUS_CODES = qw(OK WARNING CRITICAL UNKNOWN DEPENDENT);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = (@STATUS_CODES, qw(nagios_exit nagios_die check_messages));
-our @EXPORT_OK = qw(%ERRORS %STATUS_TEXT @STATUS_CODES get_shortname max_state 
-our %EXPORT_TAGS = (
-    all => [ @EXPORT, @EXPORT_OK ],
-    codes => [ @STATUS_CODES ],
-    functions => [ qw(nagios_exit nagios_die check_messages max_state max_state
-);
+our @EXPORT_OK = qw(%ERRORS);
 
 use constant OK         => 0;
 use constant WARNING    => 1;
