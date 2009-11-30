@@ -2,11 +2,12 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
-4.******
+4.0 2009-11-29
 - added support for the new g6-models
 - complete rewrite of the code
 - autodetection for proliant, bladecenter and storage
 - detailed dump of the hardware with -vvv
+- new format for blacklist
 
 3.5.1 2009-04-22
 - fixed a bug where the server didn't reveal serial no. and rom rev. (thanks Daniel Rich)

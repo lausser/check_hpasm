@@ -1,12 +1,7 @@
 #! /usr/bin/perl
 
 use strict;
-#use Nagios::Plugin;
-
-undef *Nagios::Plugin::Functions::get_shortname;
-*Nagios::Plugin::Functions::get_shortname = sub {
-    return undef; # suppress output of shortname
-};
+use Nagios::MiniPlugin;
 
 my $CELSIUS = 1;
 my $PERFDATA = 1;
@@ -17,7 +12,7 @@ my $NOINSTLEVEL = 'unknown';
 
 use lib '/home/koarlmoik/git/check_hpasm/plugins-scripts';
 
-my $plugin = Nagios::Plugin->new(
+my $plugin = Nagios::MiniPlugin->new(
     shortname => '',
     usage => 'Usage: %s [ -v|--verbose ] [ -t <timeout> ] '.
         '--warning <seconds> --critical <seconds> '.

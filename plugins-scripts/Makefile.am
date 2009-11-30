@@ -14,6 +14,7 @@ libexec_SCRIPTS=check_hpasm
 #  HP/Proliant/Component/DiskSubsystem.pm \
 MY_MODULES=
 EXTRA_MODULES=\
+  Nagios/MiniPlugin.pm \
   HP/SNMP/Utils.pm \
   HP/Proliant/Component/PowersupplySubsystem.pm \
   HP/Proliant/Component/PowersupplySubsystem/CLI.pm \
