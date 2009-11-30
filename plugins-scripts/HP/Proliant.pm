@@ -282,7 +282,7 @@ EOEO
               } else {
                 $self->add_message(
                     uc $self->{runtime}->{options}->{noinstlevel},
-                    'hpasm is not installed.');
+                    'hpacucli is not installed.');
               }
             }
           }

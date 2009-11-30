@@ -91,7 +91,7 @@ sub check_messages {
   my %args = @_;
 
   # Add object messages to any passed in as args
-  for my $code (qw(critical warning ok)) {
+  for my $code (qw(critical warning unknown ok)) {
     my $messages = $self->{messages}->{$code} || [];
     if ($args{$code}) {
       unless (ref $args{$code} eq 'ARRAY') {
@@ -111,6 +111,7 @@ sub check_messages {
   my $code = OK;
   $code ||= CRITICAL  if @{$arg{critical}};
   $code ||= WARNING   if @{$arg{warning}};
+  $code ||= UNKNOWN   if @{$arg{unknown}};
   return $code unless wantarray;
 
   # Compose message
@@ -120,6 +121,7 @@ sub check_messages {
           map { @$_ ? join( $arg{'join'}, @$_) : () }
               $arg{critical},
               $arg{warning},
+              $arg{unknown},
               $arg{ok} ? (ref $arg{ok} ? $arg{ok} : [ $arg{ok} ]) : []
       );
   }
@@ -129,6 +131,8 @@ sub check_messages {
           if $code == CRITICAL;
       $message ||= join( $arg{'join'}, @{$arg{warning}} )
           if $code == WARNING;
+      $message ||= join( $arg{'join'}, @{$arg{unknown}} )
+          if $code == UNKNOWN;
       $message ||= ref $arg{ok} ? join( $arg{'join'}, @{$arg{ok}} ) : $arg{ok}
           if $arg{ok};
   }
