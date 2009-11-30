@@ -2,7 +2,7 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
-4.0 2009-11-29
+4.0 2009-11-30
 - added support for the new g6-models
 - complete rewrite of the code
 - autodetection for proliant, bladecenter and storage
