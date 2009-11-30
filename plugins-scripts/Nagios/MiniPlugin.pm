@@ -185,14 +185,14 @@ my @ARGS = ({
     help => "-V, --version\n   Print version information",
   }, {
     spec => 'extra-opts:s@',
-    help => "--extra-opts=[<section>[@<config_file>]]\n   Section and/or config
+    help => "--extra-opts=[<section>[@<config_file>]]\n   Section and/or config_file from which to load extra options (may repeat)",
   }, {
     spec => 'timeout|t=i',
-    help => "-t, --timeout=INTEGER\n   Seconds before plugin times out (default
+    help => "-t, --timeout=INTEGER\n   Seconds before plugin times out (default: %s)",
     default => $DEFAULT{timeout},
   }, {
     spec => 'verbose|v+',
-    help => "-v, --verbose\n   Show details for command-line debugging (can rep
+    help => "-v, --verbose\n   Show details for command-line debugging (can repeat up to 3 times)",
     default => $DEFAULT{verbose},
   },
 );

@@ -1,7 +1,6 @@
 #! /usr/bin/perl
 
 use strict;
-use Nagios::MiniPlugin;
 
 my $CELSIUS = 1;
 my $PERFDATA = 1;
@@ -10,7 +9,11 @@ my $HWINFO = 1;
 my $HPACUCLI = 1;
 my $NOINSTLEVEL = 'unknown';
 
-use lib '/home/koarlmoik/git/check_hpasm/plugins-scripts';
+use constant OK         => 0;
+use constant WARNING    => 1;
+use constant CRITICAL   => 2;
+use constant UNKNOWN    => 3;
+use constant DEPENDENT  => 4;
 
 my $plugin = Nagios::MiniPlugin->new(
     shortname => '',

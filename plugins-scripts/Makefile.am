@@ -10,8 +10,6 @@ SUFFIXES = .pl .pm .sh
 VPATH=$(top_srcdir) $(top_srcdir)/plugins-scripts $(top_srcdir)/plugins-scripts/t
 
 libexec_SCRIPTS=check_hpasm
-#  HP/Proliant/Component/MemorySubsystem.pm \
-#  HP/Proliant/Component/DiskSubsystem.pm \
 MY_MODULES=
 EXTRA_MODULES=\
   Nagios/MiniPlugin.pm \
@@ -80,5 +78,8 @@ $(libexec_SCRIPTS) : $(EXTRA_DIST)
 	for m in ${EXTRA_MODULES}; do \
 		$(SED) -e 's/^1;//g' < $$m | $(AWK) -f ./subst | $(GREP) -v "my %ERROR" >> $@; \
 	done
+	$(ECHO) "package main;" >> $@
 	$(CAT) check_hpasm.pl | $(AWK) -f ./subst >> $@
 	chmod +x $@
+#| $(GREP) -v "use Nagios" >> $@;
+

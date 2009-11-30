@@ -20,7 +20,8 @@ sub init {
   $self->{product} = 'unknown';
   $self->{romversion} = 'unknown';
   $self->collect();
-  if (! $self->{runtime}->{plugin}->check_messages()) {
+  if (! $self->{runtime}->{plugin}->check_messages() && 
+      ! exists $self->{noinst_hint}) {
     $self->set_serial();
     $self->check_for_buggy_firmware();
     $self->analyze_cpus();
@@ -277,7 +278,7 @@ EOEO
             } else {
               if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
                 $self->add_message(OK,
-                    'hpasm is not installed. let\'s hope the best...');
+                    'hpacucli is not installed. let\'s hope the best...');
               } else {
                 $self->add_message(
                     uc $self->{runtime}->{options}->{noinstlevel},
@@ -291,6 +292,7 @@ EOEO
       if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
         $self->add_message(OK,
             'hpasm is not installed. let\'s hope the best...');
+        $self->{noinst_hint} = 1;
       } else {
         $self->add_message(uc $self->{runtime}->{options}->{noinstlevel},
             'hpasm is not installed.');
