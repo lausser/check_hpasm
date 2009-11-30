@@ -52,7 +52,7 @@ BEGIN {
 /#PERL#/ {sub(/#PERL#/,"/usr/bin/perl");}
 /my \$NOINSTLEVEL = 'unknown'/ {sub(/unknown/,"unknown");}
 /my \$CELSIUS = 1;/ {sub(/1/,"1");}
-/my \$PERFDATA = 1;/ {sub(/1/,"0");}
+/my \$PERFDATA = 1;/ {sub(/1/,"1");}
 /my \$EXTENDEDINFO = 1;/ {sub(/1/,"0");}
 /my \$HWINFO = 1;/ {sub(/1/,"1");}
 /my \$HPACUCLI = 1;/ {sub(/1/,"0");}
