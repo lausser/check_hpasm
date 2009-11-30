@@ -2,7 +2,7 @@ package HP::Proliant::Component::DiskSubsystem::Sas;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -47,7 +47,7 @@ package HP::Proliant::Component::DiskSubsystem::Sas::Controller;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Sas);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -126,7 +126,7 @@ package HP::Proliant::Component::DiskSubsystem::Sas::LogicalDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Sas);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -187,7 +187,7 @@ package HP::Proliant::Component::DiskSubsystem::Sas::PhysicalDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Sas);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -236,7 +236,7 @@ package HP::Proliant::Component::DiskSubsystem::Sas::SpareDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Sas);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub dump {
   my $self = shift;

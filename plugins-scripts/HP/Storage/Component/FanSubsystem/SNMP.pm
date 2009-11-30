@@ -2,7 +2,7 @@ package HP::Storage::Component::FanSubsystem::SNMP;
 our @ISA = qw(HP::Storage::Component::FanSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

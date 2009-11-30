@@ -2,7 +2,7 @@ package HP::Storage::Component::TemperatureSubsystem::SNMP;
 our @ISA = qw(HP::Storage::Component::TemperatureSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

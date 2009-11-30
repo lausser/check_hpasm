@@ -2,7 +2,7 @@ package HP::Proliant::Component::DiskSubsystem::Sas::CLI;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Sas);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

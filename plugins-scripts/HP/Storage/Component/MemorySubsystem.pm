@@ -2,7 +2,7 @@ package HP::Storage::Component::MemorySubsystem;
 our @ISA = qw(HP::Storage::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -82,7 +82,7 @@ package HP::Storage::Component::MemorySubsystem::Dimm;
 our @ISA = qw(HP::Storage::Component::MemorySubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -154,7 +154,7 @@ package HP::Storage::Component::MemorySubsystem::Cartridge;
 our @ISA = qw(HP::Storage::Component::MemorySubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

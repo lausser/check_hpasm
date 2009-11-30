@@ -2,7 +2,7 @@ package HP::Proliant::Component::FanSubsystem::CLI;
 our @ISA = qw(HP::Proliant::Component::FanSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

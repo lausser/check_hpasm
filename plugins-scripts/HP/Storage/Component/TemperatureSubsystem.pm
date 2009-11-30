@@ -2,7 +2,7 @@ package HP::Storage::Component::TemperatureSubsystem;
 our @ISA = qw(HP::Storage::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -70,7 +70,7 @@ package HP::Storage::Component::TemperatureSubsystem::Temperature;
 our @ISA = qw(HP::Storage::Component::TemperatureSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

@@ -1,7 +1,7 @@
 package HP::BladeSystem;
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 use Data::Dumper;
 
 our @ISA = qw(HP::Server);

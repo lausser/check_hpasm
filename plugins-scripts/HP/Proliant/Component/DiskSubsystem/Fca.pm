@@ -2,7 +2,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -95,7 +95,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::GlobalStatus;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -132,7 +132,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::HostController;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -204,7 +204,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::Controller;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -269,7 +269,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::Accelerator;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -335,7 +335,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::LogicalDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -398,7 +398,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::PhysicalDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -454,7 +454,7 @@ package HP::Proliant::Component::DiskSubsystem::Fca::SpareDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Fca);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub dump {
   my $self = shift;

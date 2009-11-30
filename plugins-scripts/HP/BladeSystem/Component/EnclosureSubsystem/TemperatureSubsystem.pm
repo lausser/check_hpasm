@@ -3,7 +3,7 @@ our @ISA = qw(HP::BladeSystem::Component::EnclosureSubsystem
     HP::Proliant::Component::SNMP);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -101,7 +101,7 @@ package HP::BladeSystem::Component::TemperatureSubsystem::Temperature;
 our @ISA = qw(HP::BladeSystem::Component::TemperatureSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

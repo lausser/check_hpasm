@@ -2,7 +2,7 @@ package HP::Proliant::Component::PowersupplySubsystem;
 our @ISA = qw(HP::Proliant::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -54,7 +54,7 @@ package HP::Proliant::Component::PowersupplySubsystem::Powersupply;
 our @ISA = qw(HP::Proliant::Component::PowersupplySubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

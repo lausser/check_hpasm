@@ -2,7 +2,7 @@ package HP::Storage::Component::DiskSubsystem::Da;
 our @ISA = qw(HP::Storage::Component::DiskSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -85,7 +85,7 @@ package HP::Storage::Component::DiskSubsystem::Da::Controller;
 our @ISA = qw(HP::Storage::Component::DiskSubsystem::Da);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -165,7 +165,7 @@ package HP::Storage::Component::DiskSubsystem::Da::Accelerator;
 our @ISA = qw(HP::Storage::Component::DiskSubsystem::Da);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -211,7 +211,7 @@ package HP::Storage::Component::DiskSubsystem::Da::LogicalDrive;
 our @ISA = qw(HP::Storage::Component::DiskSubsystem::Da);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -265,7 +265,7 @@ package HP::Storage::Component::DiskSubsystem::Da::PhysicalDrive;
 our @ISA = qw(HP::Storage::Component::DiskSubsystem::Da);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -310,7 +310,7 @@ package HP::Storage::Component::DiskSubsystem::Da::SpareDrive;
 our @ISA = qw(HP::Storage::Component::DiskSubsystem::Da);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub dump {
   my $self = shift;

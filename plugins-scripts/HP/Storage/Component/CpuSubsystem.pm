@@ -2,7 +2,7 @@ package HP::Storage::Component::CpuSubsystem;
 our @ISA = qw(HP::Storage::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -55,7 +55,7 @@ package HP::Storage::Component::CpuSubsystem::Cpu;
 our @ISA = qw(HP::Storage::Component::CpuSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

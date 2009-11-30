@@ -2,7 +2,7 @@ package HP::Storage::Component::Powersupply;
 our @ISA = qw(HP::Storage::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 {
   our @powersupplies = ();

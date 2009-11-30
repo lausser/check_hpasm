@@ -1,7 +1,7 @@
 package HP::Proliant;
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 use Data::Dumper;
 
 our @ISA = qw(HP::Server);
@@ -176,7 +176,7 @@ sub check_disk_subsystem {
 package HP::Proliant::CLI;
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 our @ISA = qw(HP::Proliant);
 
@@ -410,7 +410,7 @@ sub set_serial {
 package HP::Proliant::SNMP;
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 our @ISA = qw(HP::Proliant);
 

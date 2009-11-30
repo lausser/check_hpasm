@@ -2,7 +2,7 @@ package HP::BladeSystem::Component::EnclosureSubsystem;
 our @ISA = qw(HP::BladeSystem::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -256,7 +256,7 @@ package HP::BladeSystem::Component::EnclosureSubsystem::CommonEnclosure;
 our @ISA = qw(HP::BladeSystem::Component::EnclosureSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -315,7 +315,7 @@ package HP::BladeSystem::Component::EnclosureSubsystem::ServerEnclosure;
 our @ISA = qw(HP::BladeSystem::Component::EnclosureSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -355,7 +355,7 @@ package HP::BladeSystem::Component::EnclosureSubsystem::PowerEnclosure;
 our @ISA = qw(HP::BladeSystem::Component::EnclosureSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

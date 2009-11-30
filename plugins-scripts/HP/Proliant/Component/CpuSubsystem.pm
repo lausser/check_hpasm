@@ -2,7 +2,7 @@ package HP::Proliant::Component::CpuSubsystem;
 our @ISA = qw(HP::Proliant::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -56,7 +56,7 @@ package HP::Proliant::Component::CpuSubsystem::Cpu;
 our @ISA = qw(HP::Proliant::Component::CpuSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;

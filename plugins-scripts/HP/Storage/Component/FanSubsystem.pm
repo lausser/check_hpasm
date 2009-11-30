@@ -2,7 +2,7 @@ package HP::Storage::Component::FanSubsystem;
 our @ISA = qw(HP::Storage::Component);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -55,7 +55,7 @@ package HP::Storage::Component::FanSubsystem::Fan;
 our @ISA = qw(HP::Storage::Component::FanSubsystem);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -73,7 +73,7 @@ our @ISA = qw(HP::Storage::Component::FanSubsystem::Fan);
 
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
@@ -181,7 +181,7 @@ package HP::Storage::Component::FanSubsystem::Fan::Thermal;
 our @ISA = qw(HP::Storage::Component::FanSubsystem::Fan);
 
 use strict;
-use Nagios::Plugin;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 
 sub new {
   my $class = shift;
