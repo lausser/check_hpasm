@@ -64,11 +64,9 @@ sub init {
   # INDEX { cpqRackCommonEnclosureTempRack cpqRackCommonEnclosureTempChassis
   #         cpqRackCommonEnclosureTempSensorIndex }
   foreach ($self->get_entries($oids, 'cpqRackCommonEnclosureTempEntry')) {
-printf "-";
     push(@{$self->{temperatures}},
-        HP::BladeSystem::Component::EnclosureSubsystem::TemperatureSubsystem::Temperature->new(%{$_}));
+       HP::BladeSystem::Component::EnclosureSubsystem::TemperatureSubsystem::Temperature->new(%{$_}));
   }
-printf "%s\n", Data::Dumper::Dumper($self->{temperatures});
 
 #    my $degrees = SNMP::Utils::get_object(
 #        $snmpwalk, $cpqRackCommonEnclosureTempCurrent, $idx1, $idx2, $idx3);

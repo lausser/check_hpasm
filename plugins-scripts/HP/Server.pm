@@ -40,7 +40,7 @@ sub new {
   }
   if ($self->{runtime}->{options}->{blacklist} &&
       -f $self->{runtime}->{options}->{blacklist}) {
-    $self->{runtime}->{blacklist} = do {
+    $self->{runtime}->{options}->{blacklist} = do {
         local (@ARGV, $/) = $self->{runtime}->{options}->{blacklist}; <> };
   }
   return $self;
@@ -265,6 +265,7 @@ sub add_extendedinfo {
   my $self = shift;
   my $info = shift;
   $self->{extendedinfo} = $info;
+  return if ! $self->{runtime}->{options}->{extendedinfo};
   if (! exists $self->{runtime}->{plugin}->{extendedinfo}) {
     $self->{runtime}->{plugin}->{extendedinfo} = [];
   }

@@ -229,7 +229,7 @@ sub new {
 
 sub check {
   my $self = shift;
-  $self->blacklist('fcac', $self->{name});
+  $self->blacklist('fcaco', $self->{name});
   if ($self->{cpqFcaCntlrCondition} eq 'other') {
     if (1) { # was ist mit phys. drives?
       $self->add_message(CRITICAL,
@@ -296,6 +296,7 @@ sub new {
 sub check {
   my $self = shift;
   # !!! cpqFcaAccelStatus
+  $self->blacklist('fcaac', $self->{name});
   if ($self->{cpqFcaAccelStatus} eq 'invalid') {
     $self->add_info(sprintf 'fcal accelerator %s is not installed',
         $self->{ident});

@@ -103,8 +103,6 @@ sub new {
         $params{runtime}->{options}->{thresholds}->{$index};
         
   }
-  $self->{blacklisted} = $self->is_blacklisted('t', 
-      $self->{cpqHeTemperatureIndex});
   return $self;
 }
 

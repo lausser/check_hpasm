@@ -46,8 +46,8 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
-    spec => 'customthresh|c=s',
-    help => '--customthresh
+    spec => 'customthresholds|c=s',
+    help => '--customthresholds
    Use custom thresholds for certain temperatures',
     required => 0,
 );
@@ -136,6 +136,9 @@ $plugin->add_arg(
 );
 
 $plugin->getopts();
+if (! $PERFDATA && $plugin->opts->get('perfdata')) {
+  $PERFDATA = 1;
+}
 if ($PERFDATA && $plugin->opts->get('perfdata') &&
     ($plugin->opts->get('perfdata') eq 'short')) {
   $PERFDATA = 2;
@@ -150,7 +153,7 @@ my $server = HP::Server->new( runtime => {
         scrapiron => 0,
         ignore_fan_redundancy => $plugin->opts->get('ignore-fan-redundancy'),
         ignore_dimms => $plugin->opts->get('ignore-dimms'),
-        customthresholds => $plugin->opts->get('customthresh'),
+        customthresholds => $plugin->opts->get('customthresholds'),
         blacklist => $plugin->opts->get('blacklist'),
         celsius => $CELSIUS,
         perfdata => $PERFDATA,

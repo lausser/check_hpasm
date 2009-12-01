@@ -41,7 +41,7 @@ sub check {
   } @{$self->{dimms}})) != 0) {
     foreach (@{$self->{dimms}}) {
       if (($_->is_present()) && ($_->{condition} ne 'ok')) {
-        $self->add_message(CRITICAL, $_->{info});
+        $_->add_message(CRITICAL, $_->{info});
         $errorfound++;
       }
     }
