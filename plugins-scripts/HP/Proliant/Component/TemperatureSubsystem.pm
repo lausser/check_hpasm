@@ -53,7 +53,8 @@ sub check {
     #$self->overall_check(); 
     $self->add_info('no temperatures found');
   } else {
-    foreach (@{$self->{temperatures}}) {
+    foreach (sort { $a->{cpqHeTemperatureIndex} <=> $b->{cpqHeTemperatureIndex}}
+        @{$self->{temperatures}}) {
       $_->check();
     }
   }

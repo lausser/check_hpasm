@@ -18,8 +18,8 @@ use constant DEPENDENT  => 4;
 my $plugin = Nagios::MiniPlugin->new(
     shortname => '',
     usage => 'Usage: %s [ -v|--verbose ] [ -t <timeout> ] '.
-        '--warning <seconds> --critical <seconds> '.
-        '--path <path to check> [--path <path to check> ...]',
+        '--hostname <proliant> --community <snmp-community>'.
+        '  ...]',
     version => '4.0',
     blurb => 'This plugin checks the hardware of hp/compaq proliant servers',
     url => 'http://labs.consol.de/nagios/check_hpasm',
@@ -149,6 +149,7 @@ $plugin->{info} = []; # gefrickel
 my $server = HP::Server->new( runtime => {
     plugin => $plugin,
     options => {
+        servertype => $plugin->opts->get('servertype'),
         verbose => $plugin->opts->get('verbose'),
         scrapiron => 0,
         ignore_fan_redundancy => $plugin->opts->get('ignore-fan-redundancy'),

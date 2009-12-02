@@ -96,5 +96,6 @@ sub init {
 sub overall_check {
   my $self = shift;
   # nix. nur wegen der gleichheit mit snmp
+  return 0;
 }
 1;

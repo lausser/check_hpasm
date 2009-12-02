@@ -2,6 +2,11 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.0.1 2009-12-02
+- added the missing output for --help
+- non-redundant fans are now tolerated if the global fan status says "ok"
+- added detection for servers with a hidden model description
+
 4.0 2009-11-30
 - added support for the new g6-models
 - complete rewrite of the code

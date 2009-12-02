@@ -184,20 +184,25 @@ sub unite {
 
 sub overall_check {
   my $self = shift;
+  my $result = 0;
   if ($self->{sysstatus} && $self->{cpustatus}) {
     if ($self->{sysstatus} ne 'ok') {
+      $result = 2;
       $self->add_message(CRITICAL,
           sprintf 'system fan overall status is %s', $self->{sysstatus});
     } 
     if ($self->{cpustatus} ne 'ok') {
+      $result = 2;
       $self->add_message(CRITICAL,
           sprintf 'cpu fan overall status is %s', $self->{cpustatus});
     } 
-    $self->add_info(sprintf 'overall fan status: fan=%s, cpu=%s',
+    $self->add_info(sprintf 'overall fan status: system=%s, cpu=%s',
         $self->{sysstatus}, $self->{cpustatus});
   } else {
+    $result = 0;
     $self->add_info('this system seems to be water-cooled. no fans found');
   }
+  return $result;
 }
 
 1;

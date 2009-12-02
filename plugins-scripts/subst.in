@@ -56,6 +56,7 @@ BEGIN {
 /my \$EXTENDEDINFO = 1;/ {sub(/1/,"@EXTENDEDINFO@");}
 /my \$HWINFO = 1;/ {sub(/1/,"@HWINFO@");}
 /my \$HPACUCLI = 1;/ {sub(/1/,"@HPACUCLI@");}
+/version => '.*',/ {sub(/'.*'/,"'@PACKAGE_VERSION@'");}
 
 {
 	print;

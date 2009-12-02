@@ -188,8 +188,8 @@ my @ARGS = ({
     spec => 'version|V',
     help => "-V, --version\n   Print version information",
   }, {
-    spec => 'extra-opts:s@',
-    help => "--extra-opts=[<section>[@<config_file>]]\n   Section and/or config_file from which to load extra options (may repeat)",
+    #spec => 'extra-opts:s@',
+    #help => "--extra-opts=[<section>[@<config_file>]]\n   Section and/or config_file from which to load extra options (may repeat)",
   }, {
     spec => 'timeout|t=i',
     help => "-t, --timeout=INTEGER\n   Seconds before plugin times out (default: %s)",
@@ -225,11 +225,20 @@ sub _init
   # Add attr to private _attr hash (except timeout)
   $self->{timeout} = delete $attr{timeout};
   $self->{_attr} = { %attr };
+  foreach (keys %{$self->{_attr}}) {
+    if (exists $params{$_}) {
+      $self->{_attr}->{$_} = $params{$_};
+    } else {
+      $self->{_attr}->{$_} = $self->{_attr}->{$_}->{default} 
+          if ref ($self->{_attr}->{$_}) eq 'HASH' &&
+              exists $self->{_attr}->{$_}->{default};
+    }
+  }
   # Chomp _attr values
   chomp foreach values %{$self->{_attr}};
 
   # Setup initial args list
-  $self->{_args} = [ @ARGS ];
+  $self->{_args} = [ grep { exists $_->{spec} } @ARGS ];
 
   $self
 }
@@ -252,10 +261,13 @@ sub getopts {
   my %commandline = ();
   my @params = map { $_->{spec} } @{$self->{_args}};
   if (! GetOptions(\%commandline, @params)) {
-    print_help();
-    die "kaas!";
+    $self->print_help();
+    exit 0;
   } else {
     no strict 'refs';
+    do { $self->print_help(); exit 0; } if $commandline{help};
+    do { $self->print_version(); exit 0 } if $commandline{version};
+    do { $self->print_usage(); exit 0 } if $commandline{usage};
     foreach (map { $_->{spec} =~ /^([\w\-]+)/; $1; } @{$self->{_args}}) {
       my $field = $_;
       *{"$field"} = sub {
@@ -281,11 +293,33 @@ sub get {
 
 sub print_help {
   my $self = shift;
-use Data::Dumper;
+  $self->print_version();
+  printf "\n%s\n", $self->{_attr}->{license};
+  printf "\n%s\n\n", $self->{_attr}->{blurb};
+  $self->print_usage();
   foreach (@{$self->{_args}}) {
-printf "%s\n", $_->{help};
+    printf " %s\n", $_->{help};
   }
+  exit 0;
+}
+
+sub print_usage {
+  my $self = shift;
+  printf $self->{_attr}->{usage}, $self->{_attr}->{plugin};
+  print "\n";
+}
+
+sub print_version {
+  my $self = shift;
+  printf "%s %s", $self->{_attr}->{plugin}, $self->{_attr}->{version};
+  printf " [%s]", $self->{_attr}->{url} if $self->{_attr}->{url};
+  print "\n";
+}
+
+sub print_license {
+  my $self = shift;
+  printf "%s\n", $self->{_attr}->{license};
+  print "\n";
 }
 
 1;
-

@@ -17,6 +17,14 @@ sub new {
     $self->{method} = 'cli';
   } else {
     $self->check_snmp_and_model();
+    if ($self->{runtime}->{options}->{servertype}) {
+      $self->{productname} = 'ProLiant' if 
+          $self->{runtime}->{options}->{servertype} eq 'proliant';
+      $self->{productname} = 'BladeSystem' if 
+          $self->{runtime}->{options}->{servertype} eq 'bladesystem';
+      $self->{productname} = 'Storage' if 
+          $self->{runtime}->{options}->{servertype} eq 'storage';
+    }
     if (! $self->{runtime}->{plugin}->check_messages()) {
       if ($self->{productname} =~ /ProLiant/) {
         bless $self, 'HP::Proliant::SNMP';
@@ -28,6 +36,9 @@ sub new {
         bless $self, 'HP::BladeSystem';
         $self->trace(3, 'using HP::BladeSystem');
       } elsif ($self->{productname} =~ /PROLIANT 4LEE/) {
+        bless $self, 'HP::Storage';
+        $self->trace(3, 'using HP::Storage');
+      } elsif ($self->{productname} =~ /Storage/) { # fake
         bless $self, 'HP::Storage';
         $self->trace(3, 'using HP::Storage');
       } else {
@@ -155,23 +166,39 @@ sub whoami {
   my $productname = undef;
   if ($self->{runtime}->{plugin}->opts->snmpwalk) {
     my $cpqSiProductName = '1.3.6.1.4.1.232.2.2.4.2.0';
+    my $cpqSsMibRevMajor = '1.3.6.1.4.1.232.8.1.1.0';
     my $cpqSsBackplaneModel = '1.3.6.1.4.1.232.8.2.2.6.1.9'.'.1.1';
     if (exists $self->{rawdata}->{$cpqSiProductName}) {
-      $self->{productname} = $self->{rawdata}->{$cpqSiProductName};
+      if (! $productname) {
+        $self->{productname} = 'ProLiant';
+      } else {
+        $self->{productname} = $self->{rawdata}->{$cpqSiProductName};
+      }
     } elsif (exists $self->{rawdata}->{$cpqSsBackplaneModel}) {
       $self->{productname} = $self->{rawdata}->{$cpqSsBackplaneModel};
+    } elsif (exists $self->{rawdata}->{$cpqSsMibRevMajor}) {
+      # at least there is a CPQSTSYS-MIB
+      $self->{productname} = 'Storage'
     } else {
       $self->add_message(CRITICAL,
           'snmpwalk returns no product name (cpqsinfo-mib)');
     }
   } else {
     my $cpqSiProductName = '1.3.6.1.4.1.232.2.2.4.2.0';
+    my $cpqSsMibRevMajor = '1.3.6.1.4.1.232.8.1.1.0';
     my $cpqSsBackplaneModel = '1.3.6.1.4.1.232.8.2.2.6.1.9'.'.1.1';
     my $dummy = '1.3.6.1.2.1.1.5.0';
     if ($productname = $self->valid_response($cpqSiProductName)) {
-      $self->{productname} = $productname;
+      if ($productname eq '') {
+        $self->{productname} = 'ProLiant';
+      } else {
+        $self->{productname} = $productname;
+      }
     } elsif ($productname = $self->valid_response($cpqSsBackplaneModel)) {
       $self->{productname} = $productname;
+    } elsif ($self->valid_response($cpqSsMibRevMajor)) {
+      # at least there is a CPQSTSYS-MIB
+      $self->{productname} = 'Storage'
     } else {
       $self->add_message(CRITICAL,
           'snmpwalk returns no product name (cpqsinfo-mib)');
@@ -228,6 +255,11 @@ sub is_blacklisted {
         if ($bl_type eq $type && $bl_name eq $name) {
           $blacklisted = 1;
         }
+      }
+    } elsif ($bl_items =~ /^(\w+)$/) {
+      my $bl_type = $1;
+      if ($bl_type eq $type) {
+        $blacklisted = 1;
       }
     }
   }

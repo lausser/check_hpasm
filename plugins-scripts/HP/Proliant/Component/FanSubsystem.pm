@@ -34,13 +34,16 @@ sub check {
   my $self = shift;
   my $errorfound = 0;
   $self->add_info('checking fans');
+  $self->blacklist('ff', '');
   if (scalar (@{$self->{fans}}) == 0) {
     $self->overall_check(); # sowas ist mir nur einmal untergekommen
     # die maschine hatte alles in allem nur 2 oids (cpqHeFltTolFanChassis)
     # SNMPv2-SMI::enterprises.232.6.2.6.7.1.1.0.1 = INTEGER: 0
     # SNMPv2-SMI::enterprises.232.6.2.6.7.1.1.0.2 = INTEGER: 0
   } else {
+    my $overallhealth = $self->overall_check(); 
     foreach (@{$self->{fans}}) {
+      $_->{overallhealth} = $overallhealth;
       $_->check();
     }
   }
@@ -143,15 +146,24 @@ sub check {
       $self->add_message(WARNING, $self->{info});
     }
     if ($self->{cpqHeFltTolFanRedundant} eq 'notRedundant') {
-      if (! $self->{runtime}->{options}->{ignore_fan_redundancy}) {
-        # sieht so aus, als waere notRedundant und partner=0 normal z.b. dl360
-        # "This specifies if the fan is in a redundant configuration"
-        # notRedundant heisst also sowohl nicht redundant wegen ausfall
-        # des partners als auch von haus aus nicht redundant ausgelegt
-        if ($self->{cpqHeFltTolFanRedundantPartner}) {
-          $self->add_info(sprintf 'fan %d (%s) is not redundant',
-              $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
-          $self->add_message(WARNING, $self->{info});
+      # sieht so aus, als waere notRedundant und partner=0 normal z.b. dl360
+      # "This specifies if the fan is in a redundant configuration"
+      # notRedundant heisst also sowohl nicht redundant wegen ausfall
+      # des partners als auch von haus aus nicht redundant ausgelegt
+      if ($self->{cpqHeFltTolFanRedundantPartner}) {
+        # nicht redundant, hat aber einen partner. da muss man genauer
+        # hinschauen
+        if ($self->{overallhealth}) {
+          # da ist sogar das system der meinung, dass etwas faul ist
+          if (! $self->{runtime}->{options}->{ignore_fan_redundancy}) {
+            $self->add_info(sprintf 'fan %d (%s) is not redundant',
+                $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+            $self->add_message(WARNING, $self->{info});
+          }
+        } else {
+          # das ist wohl so gewollt, dass einzelne fans eingebaut werden,
+          # obwohl redundante paerchen vorgesehen sind.
+          # scheint davon abzuhaengen, wieviele cpus geordert wurden.
         }
       }
     } elsif ($self->{cpqHeFltTolFanRedundant} eq 'other') {
@@ -168,7 +180,7 @@ sub check {
     # weiss nicht, ob absent auch kaputt bedeuten kann
     # wenn nicht, dann wuerde man sich hier dumm und daemlich blacklisten
     #$self->add_message(CRITICAL, $self->{info});
-    $self->add_message(WARNING, $self->{info});
+    $self->add_message(WARNING, $self->{info}) if $self->{overallhealth};
   }
   if ($self->{runtime}->{options}->{perfdata}) {
     $self->{runtime}->{plugin}->add_perfdata(
