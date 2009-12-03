@@ -257,15 +257,15 @@ EOEO
         if ($self->{runtime}->{options}->{hpacucli}) { 
           #1 oder 0. pfad selber finden
           my $hpacucli = undef;
-          if (-x '/usr/sbin/hpacucli') {
+          if (-e '/usr/sbin/hpacucli') {
             $hpacucli = '/usr/sbin/hpacucli';
-          } elsif (-x '/usr/local/sbin/hpacucli') {
+          } elsif (-e '/usr/local/sbin/hpacucli') {
             $hpacucli = '/usr/local/sbin/hpacucli';
           } else {
             $hpacucli = $hpasmcli;
             $hpacucli =~ s/^sudo\s*//;
             $hpacucli =~ s/hpasmcli/hpacucli/;
-            $hpacucli = -x $hpacucli ? $hpacucli : undef;
+            $hpacucli = -e $hpacucli ? $hpacucli : undef;
           }
           if ($hpacucli) {
             if ($< != 0) {
