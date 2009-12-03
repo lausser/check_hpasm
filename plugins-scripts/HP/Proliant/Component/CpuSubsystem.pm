@@ -44,6 +44,11 @@ sub check {
   }
 }
 
+sub num_cpus {
+  my $self = shift;
+  return scalar @{$self->{cpus}};
+}
+
 sub dump {
   my $self = shift;
   foreach (@{$self->{cpus}}) {

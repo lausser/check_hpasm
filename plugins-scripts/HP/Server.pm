@@ -241,6 +241,13 @@ sub blacklist {
   $self->{blacklisted} = $self->is_blacklisted($type, $name);
 }
 
+sub add_blacklist {
+  my $self = shift;
+  my $list = shift;
+  $self->{runtime}->{options}->{blacklist} = join('/',
+      (split('/', $self->{runtime}->{options}->{blacklist}), $list));
+}
+
 sub is_blacklisted {
   my $self = shift;
   my $type = shift;
