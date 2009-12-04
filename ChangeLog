@@ -6,6 +6,7 @@
 - added the missing output for --help
 - non-redundant fans are now tolerated if the global fan status says "ok"
 - added detection for servers with a hidden model description
+- fixed a bug in celsius-fahrenheit-conversion
 
 4.0 2009-11-30
 - added support for the new g6-models

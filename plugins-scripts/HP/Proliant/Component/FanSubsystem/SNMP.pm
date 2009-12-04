@@ -180,7 +180,6 @@ sub he_init {
 sub unite {
   my $self = shift;
   my $tmpfans = {};
-  @{$self->{fans}} = @{$self->{he_fans}};
   foreach (@{$self->{he_fans}}) {
     $tmpfans->{$_->{cpqHeFltTolFanIndex}} = $_;
   }
@@ -191,6 +190,7 @@ sub unite {
       $_->{partner} = undef;
     }
   }
+  @{$self->{fans}} = @{$self->{he_fans}};
 }
 
 sub overall_check {
