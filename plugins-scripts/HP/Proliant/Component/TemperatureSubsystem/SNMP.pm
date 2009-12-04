@@ -31,7 +31,7 @@ sub init {
       cpqHeTemperatureIndex => "1.3.6.1.4.1.232.6.2.6.8.1.2",
       cpqHeTemperatureLocale => "1.3.6.1.4.1.232.6.2.6.8.1.3",
       cpqHeTemperatureCelsius => "1.3.6.1.4.1.232.6.2.6.8.1.4",
-      cpqHeTemperatureThreshold => "1.3.6.1.4.1.232.6.2.6.8.1.5",
+      cpqHeTemperatureThresholdCelsius => "1.3.6.1.4.1.232.6.2.6.8.1.5",
       cpqHeTemperatureCondition => "1.3.6.1.4.1.232.6.2.6.8.1.6",
       cpqHeTemperatureLocaleValue => {
           1 => "other",

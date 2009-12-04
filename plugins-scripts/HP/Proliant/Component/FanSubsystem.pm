@@ -56,6 +56,17 @@ sub dump {
   }
 }
 
+sub get_fan_by_index {
+  my $self = shift;
+  my $index;
+  foreach (@{$self->{fans}}) {
+    return $_ if exists $_->{cpqHeFltTolFanIndex} && 
+        $_->{cpqHeFltTolFanIndex} == $index;
+  }
+  return undef;
+}
+
+
 package HP::Proliant::Component::FanSubsystem::Fan;
 our @ISA = qw(HP::Proliant::Component::FanSubsystem);
 
@@ -147,12 +158,16 @@ sub check {
     }
     if ($self->{cpqHeFltTolFanRedundant} eq 'notRedundant') {
       # sieht so aus, als waere notRedundant und partner=0 normal z.b. dl360
+      # das duerfte der fall sein, wenn nur eine cpu verbaut wurde und
+      # statt einem redundanten paar nur dummies drinstecken.
       # "This specifies if the fan is in a redundant configuration"
       # notRedundant heisst also sowohl nicht redundant wegen ausfall
       # des partners als auch von haus aus nicht redundant ausgelegt
       if ($self->{cpqHeFltTolFanRedundantPartner}) {
         # nicht redundant, hat aber einen partner. da muss man genauer
         # hinschauen
+        #if (my $partner = $self->{partner}) {
+        #}
         if ($self->{overallhealth}) {
           # da ist sogar das system der meinung, dass etwas faul ist
           if (! $self->{runtime}->{options}->{ignore_fan_redundancy}) {

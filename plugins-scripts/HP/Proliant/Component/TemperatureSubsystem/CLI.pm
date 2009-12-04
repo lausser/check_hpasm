@@ -33,7 +33,7 @@ sub init {
       $params{cpqHeTemperatureIndex} = $1;
       $params{cpqHeTemperatureLocale} = lc $2;
       $params{cpqHeTemperatureCelsius} = $3;
-      $params{cpqHeTemperatureThreshold} = $5;
+      $params{cpqHeTemperatureThresholdCelsius} = $5;
       $params{cpqHeTemperatureCondition} = 'unknown';
       push(@{$self->{temperatures}},
           HP::Proliant::Component::TemperatureSubsystem::Temperature->new(

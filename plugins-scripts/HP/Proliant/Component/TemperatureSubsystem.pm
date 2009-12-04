@@ -83,7 +83,7 @@ sub new {
     cpqHeTemperatureIndex => $params{cpqHeTemperatureIndex},
     cpqHeTemperatureLocale => $params{cpqHeTemperatureLocale},
     cpqHeTemperatureCelsius => $params{cpqHeTemperatureCelsius},
-    cpqHeTemperatureThreshold => $params{cpqHeTemperatureThreshold},
+    cpqHeTemperatureThresholdCelsius => $params{cpqHeTemperatureThresholdCelsius},
     cpqHeTemperatureCondition => $params{cpqHeTemperatureCondition},
     blacklisted => 0,
     info => undef,
@@ -93,10 +93,14 @@ sub new {
   if ($params{runtime}->{options}->{celsius}) {
     $self->{cpqHeTemperatureUnits} = 'C';
     $self->{cpqHeTemperature} = $self->{cpqHeTemperatureCelsius};
+    $self->{cpqHeTemperatureThreshold} = 
+        $self->{cpqHeTemperatureThresholdCelsius};
   } else {
     $self->{cpqHeTemperatureUnits} = 'F';
     $self->{cpqHeTemperature} = 
         (($self->{cpqHeTemperatureCelsius} * 9) / 5) + 32;
+    $self->{cpqHeTemperatureThreshold} = 
+        (($self->{cpqHeTemperatureThresholdCelsius} * 9) / 5) + 32;
   }
   my $index = $self->{cpqHeTemperatureIndex};
   if (exists $params{runtime}->{options}->{thresholds}->{$index}) {

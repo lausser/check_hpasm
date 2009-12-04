@@ -179,19 +179,38 @@ sub he_init {
 
 sub unite {
   my $self = shift;
+  my $tmpfans = {};
   @{$self->{fans}} = @{$self->{he_fans}};
+  foreach (@{$self->{he_fans}}) {
+    $tmpfans->{$_->{cpqHeFltTolFanIndex}} = $_;
+  }
+  foreach (@{$self->{he_fans}}) {
+    if (exists $tmpfans->{$_->{cpqHeFltTolFanRedundantPartner}}) {
+      $_->{partner} = $tmpfans->{$_->{cpqHeFltTolFanRedundantPartner}};
+    } else {
+      $_->{partner} = undef;
+    }
+  }
 }
 
 sub overall_check {
   my $self = shift;
   my $result = 0;
   if ($self->{sysstatus} && $self->{cpustatus}) {
-    if ($self->{sysstatus} ne 'ok') {
+    if ($self->{sysstatus} eq 'degraded') {
+      $result = 1;
+      $self->add_message(WARNING,
+          sprintf 'system fan overall status is %s', $self->{sysstatus});
+    } elsif ($self->{sysstatus} eq 'failed') {
       $result = 2;
       $self->add_message(CRITICAL,
           sprintf 'system fan overall status is %s', $self->{sysstatus});
     } 
-    if ($self->{cpustatus} ne 'ok') {
+    if ($self->{cpustatus} eq 'degraded') {
+      $result = 1;
+      $self->add_message(WARNING,
+          sprintf 'cpu fan overall status is %s', $self->{cpustatus});
+    } elsif ($self->{cpustatus} eq 'failed') {
       $result = 2;
       $self->add_message(CRITICAL,
           sprintf 'cpu fan overall status is %s', $self->{cpustatus});

@@ -168,7 +168,7 @@ sub whoami {
     my $cpqSiProductName = '1.3.6.1.4.1.232.2.2.4.2.0';
     my $cpqSsMibRevMajor = '1.3.6.1.4.1.232.8.1.1.0';
     my $cpqSsBackplaneModel = '1.3.6.1.4.1.232.8.2.2.6.1.9'.'.1.1';
-    if (exists $self->{rawdata}->{$cpqSiProductName}) {
+    if ($productname = $self->{rawdata}->{$cpqSiProductName}) {
       if (! $productname) {
         $self->{productname} = 'ProLiant';
       } else {

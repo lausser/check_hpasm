@@ -175,11 +175,13 @@ sub check_disk_subsystem {
 
 sub auto_blacklist() {
   my $self = shift;
-  # http://bizsupport1.austin.hp.com/bc/docs/support/SupportManual/c01723408/c01723408.pdf seite 19
   if ($self->{product} =~ /380 g6/) {
+    # http://bizsupport1.austin.hp.com/bc/docs/support/SupportManual/c01723408/c01723408.pdf seite 19
     if ($self->{components}->{cpu_subsystem}->num_cpus() == 1) {
       $self->add_blacklist('ff/f:5,6');
     }
+  } elsif ($self->{product} =~ /380 g6/) {
+    # http://bizsupport1.austin.hp.com/bc/docs/support/SupportManual/c01704762/c01704762.pdf Fan 2 is only required when processor 2 is installed in the server.
   }
 }
 
