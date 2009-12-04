@@ -479,8 +479,9 @@ sub collect {
       my $cpqSeRom =        "1.3.6.1.4.1.232.1.2.6";
       my $cpqHeComponent =  "1.3.6.1.4.1.232.6.2";
       my $cpqHePComponent = "1.3.6.1.4.1.232.6.2.9";
-      my $cpqHeFComponent = "1.3.6.1.4.1.232.6.2.6.7";
-      my $cpqHeTComponent = "1.3.6.1.4.1.232.6.2.6.8";
+      my $cpqHeThermal = "1.3.6.1.4.1.232.6.2.6";
+      #my $cpqHeFComponent = "1.3.6.1.4.1.232.6.2.6.7";
+      #my $cpqHeTComponent = "1.3.6.1.4.1.232.6.2.6.8";
       my $cpqHeMComponent = "1.3.6.1.4.1.232.6.2.14";
       my $cpqDaComponent =  "1.3.6.1.4.1.232.3.2";
       my $cpqSasComponent =  "1.3.6.1.4.1.232.5";
@@ -508,32 +509,47 @@ sub collect {
       $tac = time;
       $self->trace(2, sprintf "%03d seconds for walk cpqHePComponent (%d oids)",
           $tac - $tic, scalar(keys %{$response2p}));
-      # Walk for Fans
+
+      # Walk for Fans/Temp/Overall
       $tic = time;
       my $response2f = $session->get_table(
           -maxrepetitions => 1,
-          -baseoid => $cpqHeFComponent);
+          -baseoid => $cpqHeThermal);
       if (scalar (keys %{$response2f}) == 0) {
         $self->trace(2, sprintf "maxrepetitions failed. fallback");
         $response2f = $session->get_table(
-            -baseoid => $cpqHeFComponent);
+            -baseoid => $cpqHeThermal);
       }
       $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHeFComponent (%d oids)",
+      $self->trace(2, sprintf "%03d seconds for walk cpqHeThermal (%d oids)",
           $tac - $tic, scalar(keys %{$response2f}));
-      # Walk for Temp
-      $tic = time;
-      my $response2t = $session->get_table(
-          -maxrepetitions => 1,
-          -baseoid => $cpqHeTComponent);
-      if (scalar (keys %{$response2t}) == 0) {
-        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-        $response2t = $session->get_table(
-            -baseoid => $cpqHeTComponent);
-      }
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHeTComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response2t}));
+
+#      # Walk for Fans
+#      $tic = time;
+#      my $response2f = $session->get_table(
+#          -maxrepetitions => 1,
+#          -baseoid => $cpqHeFComponent);
+#      if (scalar (keys %{$response2f}) == 0) {
+#        $self->trace(2, sprintf "maxrepetitions failed. fallback");
+#        $response2f = $session->get_table(
+#            -baseoid => $cpqHeFComponent);
+#      }
+#      $tac = time;
+#      $self->trace(2, sprintf "%03d seconds for walk cpqHeFComponent (%d oids)",
+#          $tac - $tic, scalar(keys %{$response2f}));
+#      # Walk for Temp
+#      $tic = time;
+#      my $response2t = $session->get_table(
+#          -maxrepetitions => 1,
+#          -baseoid => $cpqHeTComponent);
+#      if (scalar (keys %{$response2t}) == 0) {
+#        $self->trace(2, sprintf "maxrepetitions failed. fallback");
+#        $response2t = $session->get_table(
+#            -baseoid => $cpqHeTComponent);
+#      }
+#      $tac = time;
+#      $self->trace(2, sprintf "%03d seconds for walk cpqHeTComponent (%d oids)",
+#          $tac - $tic, scalar(keys %{$response2t}));
       # Walk for Mem
       $tic = time;
       my $response2m = $session->get_table(
@@ -589,7 +605,7 @@ sub collect {
       map { $response->{$_} = $response1->{$_} } keys %{$response1};
       map { $response->{$_} = $response2p->{$_} } keys %{$response2p};
       map { $response->{$_} = $response2f->{$_} } keys %{$response2f};
-      map { $response->{$_} = $response2t->{$_} } keys %{$response2t};
+#      map { $response->{$_} = $response2t->{$_} } keys %{$response2t};
       map { $response->{$_} = $response2m->{$_} } keys %{$response2m};
       map { $response->{$_} = $response3->{$_} } keys %{$response3};
       map { $response->{$_} = $response4->{$_} } keys %{$response4};
