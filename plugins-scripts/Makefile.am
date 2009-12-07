@@ -48,8 +48,12 @@ EXTRA_MODULES=\
   HP/Proliant/Component/DiskSubsystem.pm \
   HP/Proliant/Component.pm \
   HP/Proliant.pm \
-  HP/BladeSystem/Component/EnclosureSubsystem/TemperatureSubsystem.pm \
-  HP/BladeSystem/Component/EnclosureSubsystem.pm \
+  HP/BladeSystem/Component/CommonEnclosureSubsystem.pm \
+  HP/BladeSystem/Component/CommonEnclosureSubsystem/FanSubsystem.pm \
+  HP/BladeSystem/Component/PowerEnclosureSubsystem.pm \
+  HP/BladeSystem/Component/PowerSupplySubsystem.pm \
+  HP/BladeSystem/Component/NetConnectorSubsystem.pm \
+  HP/BladeSystem/Component/ServerBladeSubsystem.pm \
   HP/BladeSystem/Component.pm \
   HP/BladeSystem.pm \
   HP/Storage.pm \

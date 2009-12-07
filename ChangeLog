@@ -2,6 +2,10 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.1 2009-12-07
+- added more details for bladecenters (power suppl., server blades)
+- fixed a bug in powersupply checks with hpasmcli (Thanks Guillaume)
+
 4.0.1 2009-12-02
 - added the missing output for --help
 - non-redundant fans are now tolerated if the global fan status says "ok"

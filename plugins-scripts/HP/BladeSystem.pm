@@ -4,12 +4,16 @@ use strict;
 use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 use Data::Dumper;
 
-our @ISA = qw(HP::Server);
+our @ISA = qw(HP::Server HP::Proliant::Component::SNMP);
 
 sub init {
   my $self = shift;
   $self->{components} = {
-      enclosuresubsystem => undef,
+      common_enclosure_subsystem => undef,
+      power_enclosure_subsystem => undef,
+      power_supply_subsystem => undef,
+      net_connector_subsystem => undef,
+      server_blade_subsystem => undef,
   };
   $self->{serial} = 'unknown';
   $self->{product} = 'unknown';
@@ -18,10 +22,16 @@ sub init {
   $self->collect();
   if (! $self->{runtime}->{plugin}->check_messages()) {
     $self->set_serial();
-    $self->analyze_enclosures();
-    $self->analyze_temperatures();
-    $self->check_enclosures();
-    $self->check_temperatures();
+    $self->analyze_common_enclosures();
+    $self->analyze_power_enclosures();
+    $self->analyze_power_supplies();
+    $self->analyze_net_connectors();
+    $self->analyze_server_blades();
+    $self->check_common_enclosures();
+    $self->check_power_enclosures();
+    $self->check_power_supplies();
+    $self->check_net_connectors();
+    $self->check_server_blades();
   }
 }
 
@@ -39,37 +49,88 @@ sub dump {
   printf STDERR "%s\n", Data::Dumper::Dumper($self->{enclosures});
 }
 
-sub analyze_enclosures {
+sub analyze_common_enclosures {
   my $self = shift;
-  $self->{components}->{enclosuresubsystem} =
-      HP::BladeSystem::Component::EnclosureSubsystem->new(
+  $self->{components}->{common_enclosure_subsystem} =
+      HP::BladeSystem::Component::CommonEnclosureSubsystem->new(
     rawdata => $self->{rawdata},
     method => $self->{method},
     runtime => $self->{runtime},
   );
 }
 
-sub analyze_temperatures {
+sub analyze_power_enclosures {
   my $self = shift;
-  $self->{components}->{temperaturesubsystem} =
-      HP::BladeSystem::Component::EnclosureSubsystem::TemperatureSubsystem->new(
+  $self->{components}->{power_enclosure_subsystem} =
+      HP::BladeSystem::Component::PowerEnclosureSubsystem->new(
     rawdata => $self->{rawdata},
     method => $self->{method},
     runtime => $self->{runtime},
   );
 }
 
-sub check_enclosures {
+sub analyze_power_supplies {
   my $self = shift;
-  $self->{components}->{enclosuresubsystem}->check();
-  $self->{components}->{enclosuresubsystem}->dump()
+  $self->{components}->{power_supply_subsystem} =
+      HP::BladeSystem::Component::PowerSupplySubsystem->new(
+    rawdata => $self->{rawdata},
+    method => $self->{method},
+    runtime => $self->{runtime},
+  );
+}
+
+sub analyze_net_connectors {
+  my $self = shift;
+  $self->{components}->{net_connector_subsystem} =
+      HP::BladeSystem::Component::NetConnectorSubsystem->new(
+    rawdata => $self->{rawdata},
+    method => $self->{method},
+    runtime => $self->{runtime},
+  );
+}
+
+sub analyze_server_blades {
+  my $self = shift;
+  $self->{components}->{server_blade_subsystem} =
+      HP::BladeSystem::Component::ServerBladeSubsystem->new(
+    rawdata => $self->{rawdata},
+    method => $self->{method},
+    runtime => $self->{runtime},
+  );
+}
+
+sub check_common_enclosures {
+  my $self = shift;
+  $self->{components}->{common_enclosure_subsystem}->check();
+  $self->{components}->{common_enclosure_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
 }
 
-sub check_temperatures {
+sub check_power_enclosures {
   my $self = shift;
-  $self->{components}->{temperaturesubsystem}->check();
-  $self->{components}->{temperaturesubsystem}->dump()
+  $self->{components}->{power_enclosure_subsystem}->check();
+  $self->{components}->{power_enclosure_subsystem}->dump()
+      if $self->{runtime}->{options}->{verbose} >= 2;
+}
+
+sub check_power_supplies {
+  my $self = shift;
+  $self->{components}->{power_supply_subsystem}->check();
+  $self->{components}->{power_supply_subsystem}->dump()
+      if $self->{runtime}->{options}->{verbose} >= 2;
+}
+
+sub check_net_connectors {
+  my $self = shift;
+  $self->{components}->{net_connector_subsystem}->check();
+  $self->{components}->{net_connector_subsystem}->dump()
+      if $self->{runtime}->{options}->{verbose} >= 2;
+}
+
+sub check_server_blades {
+  my $self = shift;
+  $self->{components}->{server_blade_subsystem}->check();
+  $self->{components}->{server_blade_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
 }
 

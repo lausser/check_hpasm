@@ -247,7 +247,7 @@ EOEO
     if (! $self->{runtime}->{plugin}->check_messages()) {
       $self->check_hpasm_client($hpasmcli);
       if (! $self->{runtime}->{plugin}->check_messages()) {
-        foreach my $component (qw(server fans temp dimm)) {
+        foreach my $component (qw(server fans temp dimm powersupply)) {
           if (open HPASMCLI, "$hpasmcli -s \"show $component\"|") {
             my @output = <HPASMCLI>;
             close HPASMCLI;
@@ -478,7 +478,7 @@ sub collect {
       my $cpqSeProcessor =  "1.3.6.1.4.1.232.1.2.2";
       my $cpqSeRom =        "1.3.6.1.4.1.232.1.2.6";
       my $cpqHeComponent =  "1.3.6.1.4.1.232.6.2";
-      my $cpqHePComponent = "1.3.6.1.4.1.232.6.2.9";
+      my $cpqHePWSComponent = "1.3.6.1.4.1.232.6.2.9";
       my $cpqHeThermal = "1.3.6.1.4.1.232.6.2.6";
       #my $cpqHeFComponent = "1.3.6.1.4.1.232.6.2.6.7";
       #my $cpqHeTComponent = "1.3.6.1.4.1.232.6.2.6.8";
@@ -500,14 +500,14 @@ sub collect {
       $tic = time;
       my $response2p = $session->get_table(
           -maxrepetitions => 1,
-          -baseoid => $cpqHePComponent);
+          -baseoid => $cpqHePWSComponent);
       if (scalar (keys %{$response2p}) == 0) {
         $self->trace(2, sprintf "maxrepetitions failed. fallback");
         $response2p = $session->get_table(
-            -baseoid => $cpqHePComponent);
+            -baseoid => $cpqHePWSComponent);
       }
       $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHePComponent (%d oids)",
+      $self->trace(2, sprintf "%03d seconds for walk cpqHePWSComponent (%d oids)",
           $tac - $tic, scalar(keys %{$response2p}));
 
       # Walk for Fans/Temp/Overall

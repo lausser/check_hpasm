@@ -55,5 +55,39 @@ sub init {
     push(@{$self->{powersupplies}},
         HP::Proliant::Component::PowersupplySubsystem::Powersupply->new(%{$_}));
   }
+
+  $oids = {
+      cpqHePowerConvEntry => "1.3.6.1.4.1.232.6.2.13.3.1",
+      cpqHePowerConvChassis => "1.3.6.1.4.1.232.6.2.13.3.1",
+      cpqHePowerConvIndex => "1.3.6.1.4.1.232.6.2.13.3.1.2",
+      cpqHePowerConvPresent => "1.3.6.1.4.1.232.6.2.13.3.1.3",
+      cpqHePowerConvRedundant => "1.3.6.1.4.1.232.6.2.13.3.1.6",
+      cpqHePowerConvCondition => "1.3.6.1.4.1.232.6.2.13.3.1.8",
+      cpqHePowerConvPresentValue => {
+          1 => "other",
+          2 => "absent",
+          3 => "present",
+      },
+      cpqHePowerConvRedundantValue => {
+          1 => "other",
+          2 => "notRedundant",
+          3 => "redundant",
+      },
+      cpqHePowerConvConditionValue => {
+          1 => "other",
+          2 => "ok",
+          3 => "degraded",
+          4 => "failed",
+      },
+      cpqHePowerConvHwLocation => "1.3.6.1.4.1.232.6.2.13.3.1.9",
+  };
+
+  # INDEX { cpqHePowerConvChassis cpqHePowerConvIndex }
+  #foreach ($self->get_entries($oids, 'cpqHePowerConvEntry')) {
+    #push(@{$self->{powersupplies}},
+    #    HP::Proliant::Component::PowersupplySubsystem::Powersupply->new(%{$_}));
+  #}
+  # keine ahnung, was man damit machen kann
+
 }
 
