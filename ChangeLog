@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.1.1 2010-01-07
+- detect more smart array types when run in local mode (Thanks Trond Hasle)
+
 4.1 2009-12-07
 - added more details for bladecenters (power suppl., server blades)
 - fixed a bug in powersupply checks with hpasmcli (Thanks Guillaume)

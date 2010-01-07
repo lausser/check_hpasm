@@ -174,8 +174,9 @@ sub identified {
   my $self = shift;
   my $info = shift;
   return 1 if $info =~ /Parallel SCSI/;
-  return 1 if $info =~ /Smart Array (5|6)/;
-  return 1 if $info =~ /Smart Array P400i/; # snmp sagt Da, trotz SAS in cli
-  return 1 if $info =~ /Smart Array P410i/; # dto
+  return 1 if $info =~ /Smart Array/; Trond: works fine on E200i, P400, E400
+  #return 1 if $info =~ /Smart Array (5|6)/;
+  #return 1 if $info =~ /Smart Array P400i/; # snmp sagt Da, trotz SAS in cli
+  #return 1 if $info =~ /Smart Array P410i/; # dto
   return 0;
 }
