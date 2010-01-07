@@ -56,7 +56,7 @@ BEGIN {
 /my \$EXTENDEDINFO = 1;/ {sub(/1/,"0");}
 /my \$HWINFO = 1;/ {sub(/1/,"1");}
 /my \$HPACUCLI = 1;/ {sub(/1/,"0");}
-/version => '.*',/ {sub(/'.*'/,"'4.1'");}
+/version => '.*',/ {sub(/'.*'/,"'4.1.1'");}
 
 {
 	print;
