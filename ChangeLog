@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.1.2 2010-02-09
+- fixed a severe bug in detecting multiple logical drives with hpacucli (Thanks Trond Hasle)
+
 4.1.1 2010-01-07
 - detect more smart array types when run in local mode (Thanks Trond Hasle)
 

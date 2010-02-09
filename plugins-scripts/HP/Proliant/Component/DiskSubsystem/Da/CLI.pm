@@ -65,13 +65,12 @@ sub init {
   foreach (split(/\n/, $hpacucli)) {
     next unless /^config/;
     next if /^config\s*$/;
-    s/^status\s*//;
+    s/^config\s*//;
     if (/([\s\w]+) in Slot\s+(\d+)/) {
       $slot = $2;
       $cntlindex++;
       $pdriveindex = 1;
     } elsif (/logicaldrive\s+(.+?)\s+\((.*)\)/) {
-      $tmpld = {};
       # logicaldrive 1 (683.5 GB, RAID 5, OK)
       # logicaldrive 1 (683.5 GB, RAID 5, OK)
       # logicaldrive 2 (442 MB, RAID 1+0, OK)
@@ -108,25 +107,14 @@ sub init {
       $tmppd->{$slot}->{$name}->{cpqDaPhyDrvSize} = $size;
       $tmppd->{$slot}->{$name}->{cpqDaPhyDrvStatus} = $status;
       $tmppd->{$slot}->{$name}->{cpqDaPhyDrvCondition} = $status;
-#printf "loc %s\n", Data::Dumper::Dumper(\%location);
+      $tmppd->{$slot}->{$name}->{ldriveindex} = $ldriveindex || -1;
       foreach (keys %{$tmppd->{$slot}->{$name}}) {
-#printf "key %s is %s\n", $_, $tmppd->{$slot}->{$name}->{$_};
         $tmppd->{$slot}->{$name}->{$_} =~ s/^\s+//g;
         $tmppd->{$slot}->{$name}->{$_} =~ s/\s+$//g;
         $tmppd->{$slot}->{$name}->{$_} = lc $tmppd->{$slot}->{$name}->{$_};
       }
     }
   }
-#$self->dumper($tmppd);
-
-    #cpqDaPhyDrvCntlrIndex => $params{cpqDaPhyDrvCntlrIndex},
-    #cpqDaPhyDrvIndex => $params{cpqDaPhyDrvIndex},
-    #cpqDaPhyDrvBay => $params{cpqDaPhyDrvBay},
-    #cpqDaPhyDrvBusNumber => $params{cpqDaPhyDrvBusNumber},
-    #cpqDaPhyDrvSize => $params{cpqDaPhyDrvSize},
-    #cpqDaPhyDrvStatus => $params{cpqDaPhyDrvStatus},
-    #cpqDaPhyDrvCondition => $params{cpqDaPhyDrvCondition},
-
 
   foreach my $slot (keys %{$tmpcntl}) {
     if (exists $tmpcntl->{$slot}->{cpqDaCntlrModel} &&
@@ -142,13 +130,17 @@ sub init {
 #printf "%s\n", Data::Dumper::Dumper($tmpaccel);
 #printf "%s\n", Data::Dumper::Dumper($tmpld);
 #printf "%s\n", Data::Dumper::Dumper($tmppd);
-  foreach my $slot (keys %{$tmpcntl}) {
+  foreach my $slot (sort {
+      $tmpcntl->{$a}->{cpqDaCntlrIndex} <=> $tmpcntl->{$b}->{cpqDaCntlrIndex}
+      }keys %{$tmpcntl}) {
     $tmpcntl->{$slot}->{runtime} = $self->{runtime};
     push(@{$self->{controllers}},
         HP::Proliant::Component::DiskSubsystem::Da::Controller->new(
             %{$tmpcntl->{$slot}}));
   }
-  foreach my $slot (keys %{$tmpaccel}) {
+  foreach my $slot (sort {
+      $tmpaccel->{$a}->{cpqDaAccelCntlrIndex} <=> $tmpaccel->{$b}->{cpqDaAccelCntlrIndex}
+      } keys %{$tmpaccel}) {
     $tmpaccel->{$slot}->{runtime} = $self->{runtime};
     push(@{$self->{accelerators}},
         HP::Proliant::Component::DiskSubsystem::Da::Accelerator->new(
@@ -161,7 +153,11 @@ sub init {
           HP::Proliant::Component::DiskSubsystem::Da::LogicalDrive->new(
               %{$tmpld->{$slot}->{$ldriveindex}}));
     }
-    foreach my $pdriveindex (keys %{$tmppd->{$slot}}) {
+    foreach my $pdriveindex (sort {
+        (split ':', $a, 2)[0] cmp (split ':', $b, 2)[0] ||
+        (split ':', $a, 2)[1] cmp (split ':', $b, 2)[1] ||
+        (split ':', $a, 2)[2] <=> (split ':', $b, 2)[2]
+        } keys %{$tmppd->{$slot}}) {
       $tmppd->{$slot}->{$pdriveindex}->{runtime} = $self->{runtime};
       push(@{$self->{physical_drives}},
           HP::Proliant::Component::DiskSubsystem::Da::PhysicalDrive->new(
