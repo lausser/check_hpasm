@@ -146,12 +146,12 @@ sub check {
     if ($self->{cpqRackPowerSupplyCondition} eq 'degraded') {
       $self->add_message(WARNING, $info);
       $self->add_info(sprintf 'power supply %s status is %s, inp.line status is %s',
-          $self->{cpqRackPowerSupplyName}, $self->{cpqRackPowerSupplyStatus},
+          $self->{name}, $self->{cpqRackPowerSupplyStatus},
           $self->{cpqRackPowerSupplySupplyInputLineStatus});
     } elsif ($self->{cpqRackPowerSupplyCondition} eq 'failed') {
       $self->add_message(CRITICAL, $info);
       $self->add_info(sprintf 'power supply %s status is %s, inp.line status is %s',
-          $self->{cpqRackPowerSupplyName}, $self->{cpqRackPowerSupplyStatus},
+          $self->{name}, $self->{cpqRackPowerSupplyStatus},
           $self->{cpqRackPowerSupplySupplyInputLineStatus});
     } 
   }
