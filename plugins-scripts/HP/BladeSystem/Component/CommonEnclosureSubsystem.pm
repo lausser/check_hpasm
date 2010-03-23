@@ -12,9 +12,10 @@ sub new {
     rawdata => $params{rawdata},
     method => $params{method},
     common_enclosures => [],
-    common_enclosure_temps => [],
+    common_enclosure_temp_subsys => undef,
     common_enclosure_fan_subsys => undef,
-    common_enclosure_fuses => [],
+    common_enclosure_fuse_subsys => undef,
+    common_enclosure_manager_subsys => undef,
     common_enclosure_frus => [],
     blacklisted => 0,
     info => undef,
@@ -35,6 +36,7 @@ sub init {
       cpqRackCommonEnclosureRack => '1.3.6.1.4.1.232.22.2.3.1.1.1.1',
       cpqRackCommonEnclosureIndex => '1.3.6.1.4.1.232.22.2.3.1.1.1.2',
       cpqRackCommonEnclosureModel => '1.3.6.1.4.1.232.22.2.3.1.1.1.3',
+      cpqRackCommonEnclosureSparePartNumber => '1.3.6.1.4.1.232.22.2.3.1.1.1.6',
       cpqRackCommonEnclosureSerialNum => '1.3.6.1.4.1.232.22.2.3.1.1.1.7',
       cpqRackCommonEnclosureFWRev => '1.3.6.1.4.1.232.22.2.3.1.1.1.8',
       cpqRackCommonEnclosureName => '1.3.6.1.4.1.232.22.2.3.1.1.1.9',
@@ -77,6 +79,21 @@ sub init {
       method => $self->{method},
       runtime => $self->{runtime},
   );
+  $self->{common_enclosure_temp_subsys} = HP::BladeSystem::Component::CommonEnclosureSubsystem::TempSubsystem->new(
+      rawdata => $self->{rawdata},
+      method => $self->{method},
+      runtime => $self->{runtime},
+  );
+  $self->{common_enclosure_fuse_subsys} = HP::BladeSystem::Component::CommonEnclosureSubsystem::FuseSubsystem->new(
+      rawdata => $self->{rawdata},
+      method => $self->{method},
+      runtime => $self->{runtime},
+  );
+  $self->{common_enclosure_manager_subsys} = HP::BladeSystem::Component::CommonEnclosureSubsystem::ManagerSubsystem->new(
+      rawdata => $self->{rawdata},
+      method => $self->{method},
+      runtime => $self->{runtime},
+  );
 }
 
 sub check {
@@ -85,6 +102,9 @@ sub check {
     $_->check();
   }
   $self->{common_enclosure_fan_subsys}->check();
+  $self->{common_enclosure_temp_subsys}->check();
+  $self->{common_enclosure_fuse_subsys}->check();
+  $self->{common_enclosure_manager_subsys}->check();
 }
 
 sub dump {
@@ -93,6 +113,9 @@ sub dump {
     $_->dump();
   }
   $self->{common_enclosure_fan_subsys}->dump();
+  $self->{common_enclosure_temp_subsys}->dump();
+  $self->{common_enclosure_fuse_subsys}->dump();
+  $self->{common_enclosure_manager_subsys}->dump();
 }
 
 
@@ -111,6 +134,7 @@ sub new {
     cpqRackCommonEnclosureRack => $params{cpqRackCommonEnclosureRack},
     cpqRackCommonEnclosureIndex => $params{cpqRackCommonEnclosureIndex},
     cpqRackCommonEnclosureModel => $params{cpqRackCommonEnclosureModel},
+    cpqRackCommonEnclosureSparePartNumber => $params{cpqRackCommonEnclosureSparePartNumber},
     cpqRackCommonEnclosureSerialNum => $params{cpqRackCommonEnclosureSerialNum},
     cpqRackCommonEnclosureFWRev => $params{cpqRackCommonEnclosureFWRev},
     cpqRackCommonEnclosureName => $params{cpqRackCommonEnclosureName},
@@ -126,6 +150,8 @@ sub new {
     extendedinfo => undef,
   };
   $self->{name} = $self->{cpqRackCommonEnclosureRack}.':'.$self->{cpqRackCommonEnclosureIndex};
+  $self->{serfw} = sprintf "Ser: %s, FW: %s", $self->{cpqRackCommonEnclosureSerialNum},
+      $self->{cpqRackCommonEnclosureFWRev};
   bless $self, $class;
   return $self;
 }
@@ -134,12 +160,14 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('ce', $self->{cpqRackCommonEnclosureName});
-  my $info = sprintf 'common enclosure %s condition is %s',
-      $self->{cpqRackCommonEnclosureName}, $self->{cpqRackCommonEnclosureCondition};
+  my $info = sprintf 'common enclosure %s condition is %s (%s)',
+      $self->{cpqRackCommonEnclosureName}, $self->{cpqRackCommonEnclosureCondition}, $self->{serfw};
   $self->add_info($info);
   if ($self->{cpqRackCommonEnclosureCondition} eq 'failed') {
+    $info .= sprintf " (SparePartNum %s)", $self->{cpqRackCommonEnclosureSparePartNumber};
     $self->add_message(CRITICAL, $info);
   } elsif ($self->{cpqRackCommonEnclosureCondition} eq 'degraded') {
+    $info .= sprintf " (SparePartNum %s)", $self->{cpqRackCommonEnclosureSparePartNumber};
     $self->add_message(WARNING, $info);
   } 
 }
@@ -148,7 +176,8 @@ sub dump {
   my $self = shift;
     printf "[COMMON_ENCLOSURE_%s]\n", $self->{cpqRackCommonEnclosureName};
   foreach (qw(cpqRackCommonEnclosureRack cpqRackCommonEnclosureIndex cpqRackCommonEnclosureModel
-      cpqRackCommonEnclosureSerialNum cpqRackCommonEnclosureFWRev cpqRackCommonEnclosureName
+      cpqRackCommonEnclosureSerialNum cpqRackCommonEnclosureFWRev cpqRackCommonEnclosureFWRev
+      cpqRackCommonEnclosureName
       cpqRackCommonEnclosureCondition cpqRackCommonEnclosureHasServerBlades 
       cpqRackCommonEnclosureHasPowerBlades cpqRackCommonEnclosureHasNetConnectors 
       cpqRackCommonEnclosureHasTempSensors cpqRackCommonEnclosureHasFans cpqRackCommonEnclosureHasFuses)) {

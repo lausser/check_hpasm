@@ -1,6 +1,5 @@
-package HP::BladeSystem::Component::EnclosureSubsystem::TemperatureSubsystem;
-our @ISA = qw(HP::BladeSystem::Component::EnclosureSubsystem
-    HP::Proliant::Component::SNMP);
+package HP::BladeSystem::Component::CommonEnclosureSubsystem::TempSubsystem;
+our @ISA = qw(HP::BladeSystem::Component::CommonEnclosureSubsystem);
 
 use strict;
 use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
@@ -49,6 +48,7 @@ sub init {
       cpqRackCommonEnclosureTempRack => '1.3.6.1.4.1.232.22.2.3.1.2.1.1',
       cpqRackCommonEnclosureTempChassis => '1.3.6.1.4.1.232.22.2.3.1.2.1.2',
       cpqRackCommonEnclosureTempSensorIndex => '1.3.6.1.4.1.232.22.2.3.1.2.1.3',
+      cpqRackCommonEnclosureTempSensorEnclosureName => '1.3.6.1.4.1.232.22.2.3.1.2.1.4',
       cpqRackCommonEnclosureTempLocation => '1.3.6.1.4.1.232.22.2.3.1.2.1.5',
       cpqRackCommonEnclosureTempCurrent => '1.3.6.1.4.1.232.22.2.3.12.1.6',
       cpqRackCommonEnclosureTempThreshold => '1.3.6.1.4.1.232.22.2.3.1.2.1.7',
@@ -60,18 +60,20 @@ sub init {
           3 => 'degraded',
           4 => 'failed',
       },
+      cpqRackCommonEnclosureTempTypeValue => {
+          1 => 'other',
+          5 => 'blowout',
+          9 => 'caution',
+          15 => 'critical',
+      },
   };
   # INDEX { cpqRackCommonEnclosureTempRack cpqRackCommonEnclosureTempChassis
   #         cpqRackCommonEnclosureTempSensorIndex }
   foreach ($self->get_entries($oids, 'cpqRackCommonEnclosureTempEntry')) {
     push(@{$self->{temperatures}},
-       HP::BladeSystem::Component::EnclosureSubsystem::TemperatureSubsystem::Temperature->new(%{$_}));
+       HP::BladeSystem::Component::CommonEnclosureSubsystem::TemperatureSubsystem::Temperature->new(%{$_}));
   }
 
-#    my $degrees = SNMP::Utils::get_object(
-#        $snmpwalk, $cpqRackCommonEnclosureTempCurrent, $idx1, $idx2, $idx3);
-#    $degrees = ((($degrees * 9) / 5) + 32)
-#        unless $params{runtime}->{options}->{celsius};
 }
 
 
@@ -95,8 +97,8 @@ sub dump {
 }
 
 
-package HP::BladeSystem::Component::TemperatureSubsystem::Temperature;
-our @ISA = qw(HP::BladeSystem::Component::TemperatureSubsystem);
+package HP::BladeSystem::Component::CommonEnclosureSubsystem::TempSubsystem::Temp;
+our @ISA = qw(HP::BladeSystem::Component::CommonEnclosureSubsystem::TempSubsystem);
 
 use strict;
 use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
@@ -108,6 +110,7 @@ sub new {
     cpqRackCommonEnclosureTempRack => $params{cpqRackCommonEnclosureTempRack},
     cpqRackCommonEnclosureTempChassis => $params{cpqRackCommonEnclosureTempChassis},
     cpqRackCommonEnclosureTempSensorIndex => $params{cpqRackCommonEnclosureTempSensorIndex},
+    cpqRackCommonEnclosureTempSensorEnclosureName => $params{cpqRackCommonEnclosureTempSensorEnclosureName},
     cpqRackCommonEnclosureTempLocation => $params{cpqRackCommonEnclosureTempLocation},
     cpqRackCommonEnclosureTempCurrent => $params{cpqRackCommonEnclosureTempCurrent},
     cpqRackCommonEnclosureTempThreshold => $params{cpqRackCommonEnclosureTempThreshold},
@@ -126,6 +129,7 @@ sub new {
 
 sub check {
   my $self = shift;
+  $self->blacklist('t', $self->{name});
   if ($self->{cpqRackCommonEnclosureTempCurrent} > $self->{cpqRackCommonEnclosureTempThreshold}) {
     $self->add_info(sprintf "%s temperature too high (%d%s)",
         $self->{cpqRackCommonEnclosureTempLocation}, $self->{cpqRackCommonEnclosureTempCurrent},
@@ -156,11 +160,13 @@ sub check {
 
 }
 
+
 sub dump {
   my $self = shift;
   printf "[TEMP_%s]\n", $self->{name};
   foreach (qw(cpqRackCommonEnclosureTempRack cpqRackCommonEnclosureTempChassis
-      cpqRackCommonEnclosureTempSensorIndex cpqRackCommonEnclosureTempLocation
+      cpqRackCommonEnclosureTempSensorIndex cpqRackCommonEnclosureTempSensorEnclosureName
+      cpqRackCommonEnclosureTempLocation
       cpqRackCommonEnclosureTempCurrent cpqRackCommonEnclosureTempThreshold 
       cpqRackCommonEnclosureTempCondition cpqRackCommonEnclosureTempType)) {
     printf "%s: %s\n", $_, $self->{$_};

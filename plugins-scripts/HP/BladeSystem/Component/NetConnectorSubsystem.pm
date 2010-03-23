@@ -115,6 +115,7 @@ sub new {
     extendedinfo => undef,
   };
   $self->{name} = $params{cpqRackNetConnectorRack}.':'.$params{cpqRackNetConnectorChassis}.':'.$params{cpqRackNetConnectorIndex};
+  $self->{serfw} = sprintf "Ser: %s, FW: %s", $self->{cpqRackNetConnectorSerialNum}, $self->{cpqRackNetConnectorFWRev};
   bless $self, $class;
   return $self;
 }
@@ -122,13 +123,13 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('nc', $self->{name});
-  my $info = sprintf 'net connector %s is %s, model is %s', 
+  my $info = sprintf 'net connector %s is %s, model is %s (%s)', 
       $self->{name}.($self->{cpqRackNetConnectorName} ? '('.$self->{cpqRackNetConnectorName}.')' : ''),
-      $self->{cpqRackNetConnectorPresent},
-      $self->{cpqRackNetConnectorModel};
+      $self->{cpqRackNetConnectorPresent}, $self->{cpqRackNetConnectorModel}, $self->{serfw};
   $self->add_info($info) if $self->{cpqRackNetConnectorPresent} eq 'present' || 
       $self->{runtime}->{options}->{verbose} >= 3;
-  # hat weder status noch condition
+  # hat weder status noch condition, vielleicht spaeter mal
+  $info .= sprintf " (SparePartNum %s)", $self->{cpqRackNetConnectorSparePartNumber};
 } 
   
 sub dump {

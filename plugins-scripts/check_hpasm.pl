@@ -131,7 +131,7 @@ $plugin->add_arg(
 $plugin->add_arg(
     spec => 'servertype=s',
     help => '--servertype
-   The type of the server: proliant (default) or bladecenter',
+   The type of the server: proliant (default) or bladesystem',
     required => 0,
 );
 

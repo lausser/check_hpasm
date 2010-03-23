@@ -50,6 +50,9 @@ EXTRA_MODULES=\
   HP/Proliant.pm \
   HP/BladeSystem/Component/CommonEnclosureSubsystem.pm \
   HP/BladeSystem/Component/CommonEnclosureSubsystem/FanSubsystem.pm \
+  HP/BladeSystem/Component/CommonEnclosureSubsystem/TempSubsystem.pm \
+  HP/BladeSystem/Component/CommonEnclosureSubsystem/FuseSubsystem.pm \
+  HP/BladeSystem/Component/CommonEnclosureSubsystem/ManagerSubsystem.pm \
   HP/BladeSystem/Component/PowerEnclosureSubsystem.pm \
   HP/BladeSystem/Component/PowerSupplySubsystem.pm \
   HP/BladeSystem/Component/NetConnectorSubsystem.pm \

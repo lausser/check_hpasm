@@ -29,6 +29,9 @@ sub init {
       cpqRackPowerSupplyChassis => '1.3.6.1.4.1.232.22.2.5.1.1.1.2',
       cpqRackPowerSupplyIndex => '1.3.6.1.4.1.232.22.2.5.1.1.1.3',
       cpqRackPowerSupplyEnclosureName => '1.3.6.1.4.1.232.22.2.5.1.1.1.4',
+      cpqRackPowerSupplySerialNum => '1.3.6.1.4.1.232.22.2.5.1.1.1.5',
+      cpqRackPowerSupplySparePartNumber => '1.3.6.1.4.1.232.22.2.5.1.1.1.7',
+      cpqRackPowerSupplyFWRev => '1.3.6.1.4.1.232.22.2.5.1.1.1.8',
       cpqRackPowerSupplyMaxPwrOutput => '1.3.6.1.4.1.232.22.2.5.1.1.1.9',
       cpqRackPowerSupplyCurPwrOutput => '1.3.6.1.4.1.232.22.2.5.1.1.1.10',
       cpqRackPowerSupplyIntakeTemp => '1.3.6.1.4.1.232.22.2.5.1.1.1.12',
@@ -117,6 +120,9 @@ sub new {
     cpqRackPowerSupplyChassis => $params{cpqRackPowerSupplyChassis},
     cpqRackPowerSupplyIndex => $params{cpqRackPowerSupplyIndex},
     cpqRackPowerSupplyEnclosureName => $params{cpqRackPowerSupplyEnclosureName},
+    cpqRackPowerSupplySerialNum => $params{cpqRackPowerSupplySerialNum},
+    cpqRackPowerSupplySparePartNumber => $params{cpqRackPowerSupplySparePartNumber},
+    cpqRackPowerSupplyFWRev => $params{cpqRackPowerSupplyFWRev},
     cpqRackPowerSupplyMaxPwrOutput => $params{cpqRackPowerSupplyMaxPwrOutput},
     cpqRackPowerSupplyCurPwrOutput => $params{cpqRackPowerSupplyCurPwrOutput},
     cpqRackPowerSupplyIntakeTemp => $params{cpqRackPowerSupplyIntakeTemp},
@@ -130,6 +136,7 @@ sub new {
     extendedinfo => undef,
   };
   $self->{name} = $params{cpqRackPowerSupplyRack}.':'.$params{cpqRackPowerSupplyChassis}.':'.$params{cpqRackPowerSupplyIndex};
+  $self->{serfw} = sprintf "Ser: %s, FW: %s", $self->{cpqRackPowerSupplySerialNum}, $self->{cpqRackPowerSupplyFWRev};
   bless $self, $class;
   return $self;
 }
@@ -137,18 +144,20 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('ps', $self->{name});
-  my $info = sprintf 'power supply %s is %s, condition is %s', 
+  my $info = sprintf 'power supply %s is %s, condition is %s (%s)', 
       $self->{name}, $self->{cpqRackPowerSupplyPresent},
-      $self->{cpqRackPowerSupplyCondition};
+      $self->{cpqRackPowerSupplyCondition}, $self->{serfw};
   $self->add_info($info) if $self->{cpqRackPowerSupplyPresent} eq 'present' ||
       $self->{runtime}->{options}->{verbose} >= 3;
   if ($self->{cpqRackPowerSupplyPresent} eq 'present') {
     if ($self->{cpqRackPowerSupplyCondition} eq 'degraded') {
+      $info .= sprintf " (SparePartNum %s)", $self->{cpqRackPowerSupplySparePartNumber};
       $self->add_message(WARNING, $info);
       $self->add_info(sprintf 'power supply %s status is %s, inp.line status is %s',
           $self->{name}, $self->{cpqRackPowerSupplyStatus},
           $self->{cpqRackPowerSupplySupplyInputLineStatus});
     } elsif ($self->{cpqRackPowerSupplyCondition} eq 'failed') {
+      $info .= sprintf " (SparePartNum %s)", $self->{cpqRackPowerSupplySparePartNumber};
       $self->add_message(CRITICAL, $info);
       $self->add_info(sprintf 'power supply %s status is %s, inp.line status is %s',
           $self->{name}, $self->{cpqRackPowerSupplyStatus},
@@ -160,7 +169,7 @@ sub check {
 sub dump {
   my $self = shift;
     printf "[POWER_SUPPLY%s]\n", $self->{name};
-  foreach (qw(cpqRackPowerSupplyRack cpqRackPowerSupplyChassis cpqRackPowerSupplyIndex cpqRackPowerSupplyEnclosureName cpqRackPowerSupplyMaxPwrOutput cpqRackPowerSupplyCurPwrOutput cpqRackPowerSupplyIntakeTemp cpqRackPowerSupplyExhaustTemp cpqRackPowerSupplyStatus cpqRackPowerSupplySupplyInputLineStatus cpqRackPowerSupplyPresent cpqRackPowerSupplyCondition)) {
+  foreach (qw(cpqRackPowerSupplyRack cpqRackPowerSupplyChassis cpqRackPowerSupplyIndex cpqRackPowerSupplyEnclosureName cpqRackPowerSupplySerialNum cpqRackPowerSupplySparePartNumber cpqRackPowerSupplyFWRev cpqRackPowerSupplyMaxPwrOutput cpqRackPowerSupplyCurPwrOutput cpqRackPowerSupplyIntakeTemp cpqRackPowerSupplyExhaustTemp cpqRackPowerSupplyStatus cpqRackPowerSupplySupplyInputLineStatus cpqRackPowerSupplyPresent cpqRackPowerSupplyCondition)) {
     printf "%s: %s\n", $_, $self->{$_};
   }
   printf "\n";
