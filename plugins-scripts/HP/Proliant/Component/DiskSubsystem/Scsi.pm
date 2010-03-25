@@ -54,15 +54,12 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqScsiCntlrIndex => $params{cpqScsiCntlrIndex},
-    cpqScsiCntlrBusIndex => $params{cpqScsiCntlrBusIndex},
-    cpqScsiCntlrSlot => $params{cpqScsiCntlrSlot},
-    cpqScsiCntlrStatus => $params{cpqScsiCntlrStatus},
-    cpqScsiCntlrCondition => $params{cpqScsiCntlrCondition},
-    cpqScsiCntlrHwLocation => $params{cpqScsiCntlrHwLocation},
     blacklisted => 0,
+    info => undef,
+    extendedinfo => undef,
   };
-  $self->{name} = $params{name} || $self->{cpqScsiCntlrIndex};
+  map { $self->{$_} = $params{$_} } grep /cpqScsiCntlr/, keys %params;
+  $self->{name} = $params{name} || $params{cpqScsiCntlrIndex}.':'.$params{cpqScsiCntlrBusIndex};
   $self->{controllerindex} = $self->{cpqScsiCntlrIndex};
   bless $self, $class;
   return $self;
@@ -70,27 +67,25 @@ sub new {
 
 sub check {
   my $self = shift;
+  $self->blacklist('scco', $self->{name});
+  my $info = sprintf 'scsi controller %s in slot %s is %s',
+      $self->{name}, $self->{cpqScsiCntlrSlot}, $self->{cpqScsiCntlrCondition};
   if ($self->{cpqScsiCntlrCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
-      $self->add_message(CRITICAL,
-          sprintf 'scsi controller in slot %s needs attention',
-              $self->{cpqScsiCntlrSlot});
-      $self->add_info(sprintf 'scsi controller in slot %s needs attention',
-          $self->{cpqScsiCntlrSlot});
+      $info .= ' and needs attention';
+      $self->add_message(CRITICAL, $info);
+      $self->add_info($info);
     } else {
-      $self->add_info(sprintf 'scsi controller in slot %s is ok and unused',
-          $self->{cpqScsiCntlrSlot});
+      $info .= ' and unused';
+      $self->add_info($info);
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqScsiCntlrCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf 'scsi controller in slot %s needs attention',
-            $self->{cpqScsiCntlrSlot});
-    $self->add_info(sprintf 'scsi controller in slot %s needs attention',
-        $self->{cpqScsiCntlrSlot});
+    $info .= ' and needs attention';
+    $self->add_message(CRITICAL, $info);
+    $self->add_info($info);
   } else {
-    $self->add_info(sprintf 'scsi controller in slot %s is ok',
-        $self->{cpqScsiCntlrSlot});
+    $self->add_info($info);
   }
   foreach (@{$self->{logical_drives}}) {
     $_->check();
@@ -134,47 +129,35 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqScsiLogDrvCntlrIndex => $params{cpqScsiLogDrvCntlrIndex},
-    cpqScsiLogDrvBusIndex => $params{cpqScsiLogDrvBusIndex},
-    cpqScsiLogDrvIndex => $params{cpqScsiLogDrvIndex},
-    cpqScsiLogDrvFaultTol => $params{cpqScsiLogDrvFaultTol},
-    cpqScsiLogDrvStatus => $params{cpqScsiLogDrvStatus},
-    cpqScsiLogDrvSize => $params{cpqScsiLogDrvSize},
-    cpqScsiLogDrvPhyDrvIDs => $params{cpqScsiLogDrvPhyDrvIDs},
-    cpqScsiLogDrvCondition => $params{cpqScsiLogDrvCondition},
     blacklisted => 0,
+    info => undef,
+    extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqScsiLogDrv/, keys %params;
+  $self->{name} = $params{name} || $params{cpqScsiLogDrvCntlrIndex}.':'.$params{cpqScsiLogDrvBusIndex}.':'.$params{cpqScsiLogDrvIndex};
   bless $self, $class;
-  $self->{name} = $params{name} || 
-      $self->{cpqScsiLogDrvCntlrIndex}.':'.
-      $self->{cpqScsiLogDrvBusIndex}.':'.
-      $self->{cpqScsiLogDrvIndex}; ####vorerst
   $self->{controllerindex} = $self->{cpqScsiLogDrvCntlrIndex};
   return $self;
 }
 
 sub check {
   my $self = shift;
+  $self->blacklist('scld', $self->{name});
+  my $info = sprintf 'logical drive %s is %s', $self->{name}, $self->{cpqScsiLogDrvStatus};
   if ($self->{cpqScsiLogDrvCondition} ne "ok") {
     if ($self->{cpqScsiLogDrvStatus} =~ 
         /rebuild|recovering/) {
-      $self->add_message(WARNING,
-          sprintf "logical drive %s is %s", 
-              $self->{name}, $self->{cpqScsiLogDrvStatus});
+      $self->add_message(WARNING, $info);
     } else {
-      $self->add_message(CRITICAL,
-          sprintf "logical drive %s is %s",
-              $self->{name}, $self->{cpqScsiLogDrvStatus});
+      $self->add_message(CRITICAL, $info);
     }
   } 
-  $self->add_info(
-      sprintf "logical drive %s is %s", $self->{name},
-          $self->{cpqScsiLogDrvStatus});
+  $self->add_info($info);
 }
 
 sub dump {
   my $self = shift;
-  printf "[LOGICAL_DRIVE]\n";
+  printf "[LOGICAL_DRIVE_%s]\n", $self->{name};
   foreach (qw(cpqScsiLogDrvCntlrIndex cpqScsiLogDrvBusIndex cpqScsiLogDrvIndex
       cpqScsiLogDrvFaultTol cpqScsiLogDrvStatus cpqScsiLogDrvSize 
       cpqScsiLogDrvPhyDrvIDs cpqScsiLogDrvCondition)) {
@@ -195,16 +178,13 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqScsiPhyDrvCntlrIndex => $params{cpqScsiPhyDrvCntlrIndex},
-    cpqScsiPhyDrvBusIndex => $params{cpqScsiPhyDrvBusIndex},
-    cpqScsiPhyDrvIndex => $params{cpqScsiPhyDrvIndex},
-    cpqScsiPhyDrvStatus => $params{cpqScsiPhyDrvStatus},
-    cpqScsiPhyDrvSize => $params{cpqScsiPhyDrvSize},
-    cpqScsiPhyDrvCondition => $params{cpqScsiPhyDrvCondition},
     blacklisted => 0,
+    info => undef,
+    extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqScsiPhyDrv/, keys %params;
   $self->{name} = $params{name} || 
-      $self->{cpqScsiPhyDrvCntlrIndex}.':'.$self->{cpqScsiPhyDrvIndex}; 
+      $self->{cpqScsiPhyDrvCntlrIndex}.':'.$self->{cpqScsiPhyDrvBusIndex}.':'.$self->{cpqScsiPhyDrvIndex}; 
   $self->{controllerindex} = $self->{cpqScsiPhyDrvCntlrIndex};
   bless $self, $class;
   return $self;
@@ -212,19 +192,17 @@ sub new {
 
 sub check {
   my $self = shift;
+  $self->blacklist('scpd', $self->{name});
+  my $info = sprintf 'physical drive %s is %s', $self->{name}, $self->{cpqScsiPhyDrvCondition};
   if ($self->{cpqScsiPhyDrvCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqScsiPhyDrvCondition});
+    $self->add_message(CRITICAL, $info);
   }
-  $self->add_info(
-      sprintf "physical drive %s is %s", 
-          $self->{name}, $self->{cpqScsiPhyDrvCondition});
+  $self->add_info($info);
 }
 
 sub dump {
   my $self = shift;
-  printf "[PHYSICAL_DRIVE]\n";
+  printf "[PHYSICAL_DRIVE_%s]\n", $self->{name};
   foreach (qw(cpqScsiPhyDrvCntlrIndex cpqScsiPhyDrvBusIndex cpqScsiPhyDrvIndex
       cpqScsiPhyDrvStatus cpqScsiPhyDrvSize cpqScsiPhyDrvCondition)) {
     printf "%s: %s\n", $_, $self->{$_};
