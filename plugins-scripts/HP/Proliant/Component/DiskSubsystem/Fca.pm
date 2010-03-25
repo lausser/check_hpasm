@@ -153,7 +153,8 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('fcahc', $self->{name});
-  my $info = sprintf 'fcal host controller %s is %s', $self->{name}, $self->{cpqFcaHostCntlrCondition};
+  my $info = sprintf 'fcal host controller %s in slot %s is %s',
+      $self->{name}, $self->{cpqFcaHostCntlrSlot}, $self->{cpqFcaHostCntlrCondition};
   if ($self->{cpqFcaHostCntlrCondition} eq 'other') {
     $info .= sprintf ' and needs attention (%s)', $self->{cpqFcaHostCntlrStatus};
     $self->add_message(CRITICAL, $info);
