@@ -91,14 +91,16 @@ sub init {
 sub check {
   my $self = shift;
   foreach (@{$self->{power_supplies}}) {
-    $_->check();
+    $_->check() if $_->{cpqRackPowerSupplyPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
 sub dump {
   my $self = shift;
   foreach (@{$self->{power_supplies}}) {
-    $_->dump();
+    $_->dump() if $_->{cpqRackPowerSupplyPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
@@ -116,26 +118,14 @@ sub new {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
     method => $params{method},
-    cpqRackPowerSupplyRack => $params{cpqRackPowerSupplyRack},
-    cpqRackPowerSupplyChassis => $params{cpqRackPowerSupplyChassis},
-    cpqRackPowerSupplyIndex => $params{cpqRackPowerSupplyIndex},
-    cpqRackPowerSupplyEnclosureName => $params{cpqRackPowerSupplyEnclosureName},
-    cpqRackPowerSupplySerialNum => $params{cpqRackPowerSupplySerialNum},
-    cpqRackPowerSupplySparePartNumber => $params{cpqRackPowerSupplySparePartNumber},
-    cpqRackPowerSupplyFWRev => $params{cpqRackPowerSupplyFWRev},
-    cpqRackPowerSupplyMaxPwrOutput => $params{cpqRackPowerSupplyMaxPwrOutput},
-    cpqRackPowerSupplyCurPwrOutput => $params{cpqRackPowerSupplyCurPwrOutput},
-    cpqRackPowerSupplyIntakeTemp => $params{cpqRackPowerSupplyIntakeTemp},
-    cpqRackPowerSupplyExhaustTemp => $params{cpqRackPowerSupplyExhaustTemp},
-    cpqRackPowerSupplyStatus => $params{cpqRackPowerSupplyStatus},
-    cpqRackPowerSupplySupplyInputLineStatus => $params{cpqRackPowerSupplySupplyInputLineStatus},
-    cpqRackPowerSupplyPresent => $params{cpqRackPowerSupplyPresent},
-    cpqRackPowerSupplyCondition => $params{cpqRackPowerSupplyCondition},
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
-  $self->{name} = $params{cpqRackPowerSupplyRack}.':'.$params{cpqRackPowerSupplyChassis}.':'.$params{cpqRackPowerSupplyIndex};
+  map { $self->{$_} = $params{$_} } grep /cpqRackPowerSupply/, keys %params;
+  $self->{name} = $params{cpqRackPowerSupplyRack}.
+      ':'.$params{cpqRackPowerSupplyChassis}.
+      ':'.$params{cpqRackPowerSupplyIndex};
   $self->{serfw} = sprintf "Ser: %s, FW: %s", $self->{cpqRackPowerSupplySerialNum}, $self->{cpqRackPowerSupplyFWRev};
   bless $self, $class;
   return $self;
@@ -147,8 +137,7 @@ sub check {
   my $info = sprintf 'power supply %s is %s, condition is %s (%s)', 
       $self->{name}, $self->{cpqRackPowerSupplyPresent},
       $self->{cpqRackPowerSupplyCondition}, $self->{serfw};
-  $self->add_info($info) if $self->{cpqRackPowerSupplyPresent} eq 'present' ||
-      $self->{runtime}->{options}->{verbose} >= 3;
+  $self->add_info($info);
   if ($self->{cpqRackPowerSupplyPresent} eq 'present') {
     if ($self->{cpqRackPowerSupplyCondition} eq 'degraded') {
       $info .= sprintf " (SparePartNum %s)", $self->{cpqRackPowerSupplySparePartNumber};

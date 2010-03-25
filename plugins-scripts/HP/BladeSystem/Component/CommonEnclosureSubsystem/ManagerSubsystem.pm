@@ -65,20 +65,21 @@ sub init {
     push(@{$self->{managers}},
         HP::BladeSystem::Component::CommonEnclosureSubsystem::ManagerSubsystem::Manager->new(%{$_}));
   }
-
 }
 
 sub check {
   my $self = shift;
   foreach (@{$self->{managers}}) {
-    $_->check();
+    $_->check() if $_->{cpqRackCommonEnclosureManagerPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
 sub dump {
   my $self = shift;
   foreach (@{$self->{managers}}) {
-    $_->dump();
+    $_->dump() if $_->{cpqRackCommonEnclosureManagerPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
@@ -96,37 +97,29 @@ sub new {
   my $self = {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
-    method => $params{method},cklisted => 0,
-#params
-    cpqRackCommonEnclosureManagerEntry => $params{cpqRackCommonEnclosureManagerEntry},
-    cpqRackCommonEnclosureManagerRack => $params{cpqRackCommonEnclosureManagerRack},
-    cpqRackCommonEnclosureManagerChassis => $params{cpqRackCommonEnclosureManagerChassis},
-    cpqRackCommonEnclosureManagerIndex => $params{cpqRackCommonEnclosureManagerIndex},
-    cpqRackCommonEnclosureManagerEnclosureName => $params{cpqRackCommonEnclosureManagerEnclosureName},
-    cpqRackCommonEnclosureManagerLocation => $params{cpqRackCommonEnclosureManagerLocation},
-    cpqRackCommonEnclosureManagerPartNumber => $params{cpqRackCommonEnclosureManagerPartNumber},
-    cpqRackCommonEnclosureManagerSparePartNumber => $params{cpqRackCommonEnclosureManagerSparePartNumber},
-    cpqRackCommonEnclosureManagerRole => $params{cpqRackCommonEnclosureManagerRole},
-    cpqRackCommonEnclosureManagerPresent => $params{cpqRackCommonEnclosureManagerPresent},
-    cpqRackCommonEnclosureManagerRedundant => $params{cpqRackCommonEnclosureManagerRedundant},
-    cpqRackCommonEnclosureManagerCondition => $params{cpqRackCommonEnclosureManagerCondition},
-    cpqRackCommonEnclosureManagerFWRev => $params{cpqRackCommonEnclosureManagerEnclosureFWRev},
+    method => $params{method},
+    blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
-  $self->{name} = $self->{cpqRackCommonEnclosureManagerRack}.':'.$self->{cpqRackCommonEnclosureManagerChassis}.':'.$self->{cpqRackCommonEnclosureManagerIndex};
+  map { $self->{$_} = $params{$_} } grep /cpqRackCommonEnclosureManager/, keys %params;
+  $self->{name} = $self->{cpqRackCommonEnclosureManagerRack}.
+      ':'.$self->{cpqRackCommonEnclosureManagerChassis}.
+      ':'.$self->{cpqRackCommonEnclosureManagerIndex};
   bless $self, $class;
   return $self;
 }
 
 sub check {
   my $self = shift;
-  $self->blacklist('m', $self->{name});
-  $self->add_info(sprintf 'manager %s is %s, location is %s, redundance is %s, condition is %s',
+  $self->blacklist('em', $self->{name});
+  my $info = sprintf 'manager %s is %s, location is %s, redundance is %s, condition is %s',
       $self->{name}, $self->{cpqRackCommonEnclosureManagerPresent},
       $self->{cpqRackCommonEnclosureManagerLocation},
       $self->{cpqRackCommonEnclosureManagerRedundant},
-      $self->{cpqRackCommonEnclosureManagerCondition});
+      $self->{cpqRackCommonEnclosureManagerCondition};
+  $self->add_info($info) if $self->{cpqRackCommonEnclosureManagerPresent} eq 'present' ||
+      $self->{runtime}->{options}->{verbose} >= 3; # absent managers nur bei -vvv
   if ($self->{cpqRackCommonEnclosureManagerCondition} eq 'degraded') {
     $self->{info} .= sprintf ' (SparePartNum: %s)',
         $self->{cpqRackCommonEnclosureManagerSparePartNumber};

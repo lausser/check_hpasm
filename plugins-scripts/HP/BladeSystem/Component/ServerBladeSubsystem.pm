@@ -83,14 +83,16 @@ sub init {
 sub check {
   my $self = shift;
   foreach (@{$self->{server_blades}}) {
-    $_->check();
+    $_->check() if $_->{cpqRackServerBladePresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent blades nur bei -vvv
   }
 }
 
 sub dump {
   my $self = shift;
   foreach (@{$self->{server_blades}}) {
-    $_->dump();
+    $_->dump() if $_->{cpqRackServerBladePresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent blades nur bei -vvv
   }
 }
 
@@ -108,29 +110,15 @@ sub new {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
     method => $params{method},
-    cpqRackServerBladeRack => $params{cpqRackServerBladeRack},
-    cpqRackServerBladeChassis => $params{cpqRackServerBladeChassis},
-    cpqRackServerBladeIndex => $params{cpqRackServerBladeIndex},
-    cpqRackServerBladeName => $params{cpqRackServerBladeName},
-    cpqRackServerBladeEnclosureName => $params{cpqRackServerBladeEnclosureName},
-    cpqRackServerBladePartNumber => $params{cpqRackServerBladePartNumber},
-    cpqRackServerBladeSparePartNumber => $params{cpqRackServerBladeSparePartNumber},
-    cpqRackServerBladePosition => $params{cpqRackServerBladePosition},
-    cpqRackServerBladeHeight => $params{cpqRackServerBladeHeight},
-    cpqRackServerBladeWidth => $params{cpqRackServerBladeWidth},
-    cpqRackServerBladeDepth => $params{cpqRackServerBladeDepth},
-    cpqRackServerBladePresent => $params{cpqRackServerBladePresent},
-    cpqRackServerBladeHasFuses => $params{cpqRackServerBladeHasFuses},
-    cpqRackServerBladeEnclosureSerialNum => $params{cpqRackServerBladeEnclosureSerialNum},
-    cpqRackServerBladeSlotsUsed => $params{cpqRackServerBladeSlotsUsed},
-    cpqRackServerBladeStatus => $params{cpqRackServerBladeStatus},
-    cpqRackServerBladeDiagnosticString => $params{cpqRackServerBladeDiagnosticString} || '',
-    cpqRackServerBladePowered => $params{cpqRackServerBladePowered},
-    cpqRackServerBladePOSTStatus => $params{cpqRackServerBladePOSTStatus},
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqRackServerBlade/, keys %params;
+  $self->{cpqRackServerBladeDiagnosticString} ||= '';
+  $self->{name} = $self->{cpqRackServerBladeRack}.
+      ':'.$self->{cpqRackServerBladeChassis}.
+      ':'.$self->{cpqRackServerBladeIndex};
   bless $self, $class;
   $self->init();
   return $self;
@@ -138,12 +126,11 @@ sub new {
 
 sub check {
   my $self = shift;
-  $self->blacklist('sb', $self->{cpqRackServerBladeName});
-  my $info = sprintf 'server blade %s is %s, status is %s, powered is %s',
-      $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladePresent},
+  $self->blacklist('sb', $self->{name});
+  my $info = sprintf 'server blade %s \'%s\' is %s, status is %s, powered is %s',
+      $self->{name}, $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladePresent},
       $self->{cpqRackServerBladeStatus}, $self->{cpqRackServerBladePowered};
-  $self->add_info($info) if $self->{cpqRackServerBladePresent} eq 'present' || 
-      $self->{runtime}->{options}->{verbose} >= 3; # absent blades nur bei -vvv
+  $self->add_info($info);
   if ($self->{cpqRackServerBladePowered} eq 'on') {
     if ($self->{cpqRackServerBladeCondition} eq 'degraded') {
       $self->add_message(WARNING, sprintf 'server blade %s diag is \'%s\', post status is %s',

@@ -66,14 +66,16 @@ sub init {
 sub check {
   my $self = shift;
   foreach (@{$self->{fans}}) {
-    $_->check();
+    $_->check() if $_->{cpqRackCommonEnclosureFanPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
 sub dump {
   my $self = shift;
   foreach (@{$self->{fans}}) {
-    $_->dump();
+    $_->dump() if $_->{cpqRackCommonEnclosureFanPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
@@ -91,24 +93,12 @@ sub new {
   my $self = {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
-    method => $params{method},cklisted => 0,
-#params
-    cpqRackCommonEnclosureFanEntry => $params{cpqRackCommonEnclosureFanEntry},
-    cpqRackCommonEnclosureFanRack => $params{cpqRackCommonEnclosureFanRack},
-    cpqRackCommonEnclosureFanChassis => $params{cpqRackCommonEnclosureFanChassis},
-    cpqRackCommonEnclosureFanIndex => $params{cpqRackCommonEnclosureFanIndex},
-    cpqRackCommonEnclosureFanEnclosureName => $params{cpqRackCommonEnclosureFanEnclosureName},
-    cpqRackCommonEnclosureFanLocation => $params{cpqRackCommonEnclosureFanLocation},
-    cpqRackCommonEnclosureFanPartNumber => $params{cpqRackCommonEnclosureFanPartNumber},
-    cpqRackCommonEnclosureFanSparePartNumber => $params{cpqRackCommonEnclosureFanSparePartNumber},
-    cpqRackCommonEnclosureFanPresent => $params{cpqRackCommonEnclosureFanPresent},
-    cpqRackCommonEnclosureFanRedundant => $params{cpqRackCommonEnclosureFanRedundant},
-    cpqRackCommonEnclosureFanRedundantGroupId => $params{cpqRackCommonEnclosureFanRedundantGroupId},
-    cpqRackCommonEnclosureFanCondition => $params{cpqRackCommonEnclosureFanCondition},
-    cpqRackCommonEnclosureFanEnclosureSerialNum => $params{cpqRackCommonEnclosureFanEnclosureSerialNum},
+    method => $params{method},
+    blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqRackCommonEnclosureFan/, keys %params;
   $self->{name} = $self->{cpqRackCommonEnclosureFanRack}.':'.$self->{cpqRackCommonEnclosureFanChassis}.':'.$self->{cpqRackCommonEnclosureFanIndex};
   bless $self, $class;
   return $self;

@@ -107,19 +107,11 @@ sub new {
   my $class = shift;
   my %params = @_;
   my $self = {
-    cpqRackCommonEnclosureTempRack => $params{cpqRackCommonEnclosureTempRack},
-    cpqRackCommonEnclosureTempChassis => $params{cpqRackCommonEnclosureTempChassis},
-    cpqRackCommonEnclosureTempSensorIndex => $params{cpqRackCommonEnclosureTempSensorIndex},
-    cpqRackCommonEnclosureTempSensorEnclosureName => $params{cpqRackCommonEnclosureTempSensorEnclosureName},
-    cpqRackCommonEnclosureTempLocation => $params{cpqRackCommonEnclosureTempLocation},
-    cpqRackCommonEnclosureTempCurrent => $params{cpqRackCommonEnclosureTempCurrent},
-    cpqRackCommonEnclosureTempThreshold => $params{cpqRackCommonEnclosureTempThreshold},
-    cpqRackCommonEnclosureTempCondition => $params{cpqRackCommonEnclosureTempCondition},
-    cpqRackCommonEnclosureTempType => $params{cpqRackCommonEnclosureTempType},
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqRackCommonEnclosureTemp/, keys %params;
   $self->{name} = $params{cpqRackCommonEnclosureTempRack}.':'.
       $params{cpqRackCommonEnclosureTempChassis}.':'.
       $params{cpqRackCommonEnclosureTempSensorIndex};

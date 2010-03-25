@@ -54,14 +54,16 @@ sub init {
 sub check {
   my $self = shift;
   foreach (@{$self->{fuses}}) {
-    $_->check();
+    $_->check() if $_->{cpqRackCommonEnclosureFusePresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
 sub dump {
   my $self = shift;
   foreach (@{$self->{fuses}}) {
-    $_->dump();
+    $_->dump() if $_->{cpqRackCommonEnclosureFusePresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
@@ -79,19 +81,12 @@ sub new {
   my $self = {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
-    method => $params{method},cklisted => 0,
-#params
-    cpqRackCommonEnclosureFuseEntry => $params{cpqRackCommonEnclosureFuseEntry},
-    cpqRackCommonEnclosureFuseRack => $params{cpqRackCommonEnclosureFuseRack},
-    cpqRackCommonEnclosureFuseChassis => $params{cpqRackCommonEnclosureFuseChassis},
-    cpqRackCommonEnclosureFuseIndex => $params{cpqRackCommonEnclosureFuseIndex},
-    cpqRackCommonEnclosureFuseEnclosureName => $params{cpqRackCommonEnclosureFuseEnclosureName},
-    cpqRackCommonEnclosureFuseLocation => $params{cpqRackCommonEnclosureFuseLocation},
-    cpqRackCommonEnclosureFusePresent => $params{cpqRackCommonEnclosureFusePresent},
-    cpqRackCommonEnclosureFuseCondition => $params{cpqRackCommonEnclosureFuseCondition},
+    method => $params{method},
+    blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqRackCommonEnclosureFuse/, keys %params;
   $self->{name} = $self->{cpqRackCommonEnclosureFuseRack}.':'.$self->{cpqRackCommonEnclosureFuseChassis}.':'.$self->{cpqRackCommonEnclosureFuseIndex};
   bless $self, $class;
   return $self;

@@ -70,14 +70,16 @@ sub init {
 sub check {
   my $self = shift;
   foreach (@{$self->{net_connectors}}) {
-    $_->check();
+    $_->check() if $_->{cpqRackNetConnectorPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
 sub dump {
   my $self = shift;
   foreach (@{$self->{net_connectors}}) {
-    $_->dump();
+    $_->dump() if $_->{cpqRackNetConnectorPresent} eq 'present' ||
+        $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
   }
 }
 
@@ -95,26 +97,14 @@ sub new {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
     method => $params{method},
-    cpqRackNetConnectorRack => $params{cpqRackNetConnectorRack},
-    cpqRackNetConnectorChassis => $params{cpqRackNetConnectorChassis},
-    cpqRackNetConnectorIndex => $params{cpqRackNetConnectorIndex},
-    cpqRackNetConnectorEnclosureName => $params{cpqRackNetConnectorEnclosureName},
-    cpqRackNetConnectorName => $params{cpqRackNetConnectorName},
-    cpqRackNetConnectorModel => $params{cpqRackNetConnectorModel},
-    cpqRackNetConnectorSerialNum => $params{cpqRackNetConnectorSerialNum},
-    cpqRackNetConnectorPartNumber => $params{cpqRackNetConnectorPartNumber},
-    cpqRackNetConnectorSparePartNumber => $params{cpqRackNetConnectorSparePartNumber},
-    cpqRackNetConnectorFWRev => $params{cpqRackNetConnectorFWRev},
-    cpqRackNetConnectorType => $params{cpqRackNetConnectorType},
-    cpqRackNetConnectorLocation => $params{cpqRackNetConnectorLocation},
-    cpqRackNetConnectorPresent => $params{cpqRackNetConnectorPresent},
-    cpqRackNetConnectorHasFuses => $params{cpqRackNetConnectorHasFuses},
-    cpqRackNetConnectorEnclosureSerialNum => $params{cpqRackNetConnectorEnclosureSerialNum},
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
-  $self->{name} = $params{cpqRackNetConnectorRack}.':'.$params{cpqRackNetConnectorChassis}.':'.$params{cpqRackNetConnectorIndex};
+  map { $self->{$_} = $params{$_} } grep /cpqRackNetConnector/, keys %params;
+  $self->{name} = $params{cpqRackNetConnectorRack}.
+      ':'.$params{cpqRackNetConnectorChassis}.
+      ':'.$params{cpqRackNetConnectorIndex};
   $self->{serfw} = sprintf "Ser: %s, FW: %s", $self->{cpqRackNetConnectorSerialNum}, $self->{cpqRackNetConnectorFWRev};
   bless $self, $class;
   return $self;
@@ -124,10 +114,9 @@ sub check {
   my $self = shift;
   $self->blacklist('nc', $self->{name});
   my $info = sprintf 'net connector %s is %s, model is %s (%s)', 
-      $self->{name}.($self->{cpqRackNetConnectorName} ? '('.$self->{cpqRackNetConnectorName}.')' : ''),
+      $self->{name}.($self->{cpqRackNetConnectorName} ? ' \''.$self->{cpqRackNetConnectorName}.'\'' : ''),
       $self->{cpqRackNetConnectorPresent}, $self->{cpqRackNetConnectorModel}, $self->{serfw};
-  $self->add_info($info) if $self->{cpqRackNetConnectorPresent} eq 'present' || 
-      $self->{runtime}->{options}->{verbose} >= 3;
+  $self->add_info($info);
   # hat weder status noch condition, vielleicht spaeter mal
   $info .= sprintf " (SparePartNum %s)", $self->{cpqRackNetConnectorSparePartNumber};
 } 

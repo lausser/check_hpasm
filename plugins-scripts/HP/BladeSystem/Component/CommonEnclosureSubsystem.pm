@@ -131,24 +131,11 @@ sub new {
   my $self = { 
     runtime => $params{runtime},
     rawdata => $params{rawdata},
-    cpqRackCommonEnclosureRack => $params{cpqRackCommonEnclosureRack},
-    cpqRackCommonEnclosureIndex => $params{cpqRackCommonEnclosureIndex},
-    cpqRackCommonEnclosureModel => $params{cpqRackCommonEnclosureModel},
-    cpqRackCommonEnclosureSparePartNumber => $params{cpqRackCommonEnclosureSparePartNumber},
-    cpqRackCommonEnclosureSerialNum => $params{cpqRackCommonEnclosureSerialNum},
-    cpqRackCommonEnclosureFWRev => $params{cpqRackCommonEnclosureFWRev},
-    cpqRackCommonEnclosureName => $params{cpqRackCommonEnclosureName},
-    cpqRackCommonEnclosureCondition => $params{cpqRackCommonEnclosureCondition},
-    cpqRackCommonEnclosureHasServerBlades => $params{cpqRackCommonEnclosureHasServerBlades},
-    cpqRackCommonEnclosureHasPowerBlades => $params{cpqRackCommonEnclosureHasPowerBlades},
-    cpqRackCommonEnclosureHasNetConnectors => $params{cpqRackCommonEnclosureHasNetConnectors},
-    cpqRackCommonEnclosureHasTempSensors => $params{cpqRackCommonEnclosureHasTempSensors},
-    cpqRackCommonEnclosureHasFans => $params{cpqRackCommonEnclosureHasFans},
-    cpqRackCommonEnclosureHasFuses => $params{cpqRackCommonEnclosureHasFuses},
     blacklisted => 0,
     info => undef, 
     extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqRackCommonEnclosure/, keys %params;
   $self->{name} = $self->{cpqRackCommonEnclosureRack}.':'.$self->{cpqRackCommonEnclosureIndex};
   $self->{serfw} = sprintf "Ser: %s, FW: %s", $self->{cpqRackCommonEnclosureSerialNum},
       $self->{cpqRackCommonEnclosureFWRev};

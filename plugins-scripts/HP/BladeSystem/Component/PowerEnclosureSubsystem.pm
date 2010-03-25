@@ -97,20 +97,12 @@ sub new {
     runtime => $params{runtime},
     rawdata => $params{rawdata},
     method => $params{method},
-    cpqRackPowerEnclosureEntry => $params{cpqRackPowerEnclosureEntry},
-    cpqRackPowerEnclosureRack => $params{cpqRackPowerEnclosureRack},
-    cpqRackPowerEnclosureIndex => $params{cpqRackPowerEnclosureIndex},
-    cpqRackPowerEnclosureName => $params{cpqRackPowerEnclosureName},
-    cpqRackPowerEnclosureMgmgtBoardSerialNum => $params{cpqRackPowerEnclosureMgmgtBoardSerialNum},
-    cpqRackPowerEnclosureRedundant => $params{cpqRackPowerEnclosureRedundant},
-    cpqRackPowerEnclosureLoadBalanced => $params{cpqRackPowerEnclosureLoadBalanced},
-    cpqRackPowerEnclosureInputPwrType => $params{cpqRackPowerEnclosureInputPwrType},
-    cpqRackPowerEnclosurePwrFeedMax => $params{cpqRackPowerEnclosurePwrFeedMax},
-    cpqRackPowerEnclosureCondition => $params{cpqRackPowerEnclosureCondition},
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
   };
+  map { $self->{$_} = $params{$_} } grep /cpqRackPowerEnclosure/, keys %params;
+  $self->{name} = $self->{cpqRackPowerEnclosureRack}.':'.$self->{cpqRackPowerEnclosureIndex};
   bless $self, $class;
   $self->init();
   return $self;
@@ -118,9 +110,9 @@ sub new {
 
 sub check {
   my $self = shift;
-  $self->blacklist('pe', $self->{cpqRackPowerEnclosureName});
-  my $info = sprintf 'power enclosure %s condition is %s',
-      $self->{cpqRackPowerEnclosureName}, $self->{cpqRackPowerEnclosureCondition};
+  $self->blacklist('pe', $self->{name});
+  my $info = sprintf 'power enclosure %s \'%s\' condition is %s',
+      $self->{name}, $self->{cpqRackPowerEnclosureName}, $self->{cpqRackPowerEnclosureCondition};
   $self->add_info($info);
   if ($self->{cpqRackPowerEnclosureCondition} eq 'degraded') {
     $self->add_message(WARNING, $info);
