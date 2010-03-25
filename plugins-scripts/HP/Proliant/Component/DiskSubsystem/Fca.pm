@@ -139,54 +139,39 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqFcaHostCntlrIndex => $params{cpqFcaHostCntlrIndex},
-    cpqFcaHostCntlrSlot => $params{cpqFcaHostCntlrSlot},
-    cpqFcaHostCntlrModel => $params{cpqFcaHostCntlrModel},
-    cpqFcaHostCntlrStatus => $params{cpqFcaHostCntlrStatus},
-    cpqFcaHostCntlrCondition => $params{cpqFcaHostCntlrCondition},
-    cpqFcaHostCntlrOverallCondition => $params{cpqFcaHostCntlrOverallCondition},
     blacklisted => 0,
-  };
+    info => undef,
+    extendedinfo => undef, 
+  }; 
+  map { $self->{$_} = $params{$_} } grep /cpqFcaHostCntlr/, keys %params;
   $self->{name} = $params{name} || $self->{cpqFcaHostCntlrIndex};
   $self->{controllerindex} = $self->{cpqFcaHostCntlrIndex};
-  $self->{ident} = sprintf '%s in slot %s',
-      $self->{cpqFcaHostCntlrIndex}, $self->{cpqFcaHostCntlrSlot};
   bless $self, $class;
   return $self;
 }
 
 sub check {
   my $self = shift;
-  if ($self->is_blacklisted('fcahc',
-      $self->{cpqFcaHostCntlrSlot}.'-'.$self->{cpqFcaHostCntlrIndex})) {
-    $self->add_info(sprintf 'fcal host controller %s is %s (blacklisted)',
-        $self->{ident}, $self->{cpqFcaHostCntlrCondition});
-  } elsif ($self->{cpqFcaHostCntlrCondition} eq 'other') {
-    $self->add_message(CRITICAL, 
-        sprintf 'fcal host controller %s needs attention (%s)',
-            $self->{ident}, $self->{cpqFcaHostCntlrStatus});
-    $self->add_info(sprintf 'fcal host controller %s needs attention (%s)',
-        $self->{ident}, $self->{cpqFcaHostCntlrStatus});
+  $self->blacklist('fcahc', $self->{name});
+  my $info = sprintf 'fcal host controller %s is %s', $self->{name}, $self->{cpqFcaHostCntlrCondition};
+  if ($self->{cpqFcaHostCntlrCondition} eq 'other') {
+    $info .= sprintf ' and needs attention (%s)', $self->{cpqFcaHostCntlrStatus};
+    $self->add_message(CRITICAL, $info);
+    $self->add_info($info);
   } elsif ($self->{cpqFcaHostCntlrCondition} ne 'ok') {
-    $self->add_message(CRITICAL, 
-        sprintf 'fcal host controller %s needs attention (%s)',
-            $self->{ident}, $self->{cpqFcaHostCntlrStatus});
-    $self->add_info(sprintf 'fcal host controller %s needs attention (%s)',
-        $self->{ident}, $self->{cpqFcaHostCntlrStatus});
-  } else {
-    $self->add_info(sprintf 'fcal host controller %s is ok',
-        $self->{ident});
+    $self->add_message(CRITICAL, $info);
+    $self->add_info($info);
+  } else { 
+    $self->add_info($info);
   }
-  if ($self->is_blacklisted('fcahc',
-      $self->{cpqFcaHostCntlrSlot}.'-'.$self->{cpqFcaHostCntlrIndex})) {
-  } elsif ($self->{cpqFcaHostCntlrOverallCondition} ne 'ok') {
-    $self->add_message(CRITICAL, 
-        sprintf 'fcal host controller %s reports problems (%s)',
-            $self->{ident}, $self->{cpqFcaHostCntlrStatus});
-    $self->add_info(sprintf 'fcal host controller %s reports problems (%s)',
-        $self->{ident}, $self->{cpqFcaHostCntlrStatus});
+  $self->blacklist('fcahco', $self->{name});
+  $info = sprintf 'fcal host controller %s overall condition is %s',
+      $self->{name}, $self->{cpqFcaHostCntlrOverallCondition};
+  if ($self->{cpqFcaHostCntlrOverallCondition} ne 'ok') {
+    $self->add_message(WARNING, $info);
   }
-}
+  $self->add_info($info);
+}   
 
 sub dump { 
   my $self = shift;
@@ -211,18 +196,14 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqFcaCntlrBoxIndex => $params{cpqFcaCntlrBoxIndex},
-    cpqFcaCntlrBoxIoSlot => $params{cpqFcaCntlrBoxIoSlot},
-    cpqFcaCntlrModel => $params{cpqFcaCntlrModel},
-    cpqFcaCntlrStatus => $params{cpqFcaCntlrStatus},
-    cpqFcaCntlrCondition => $params{cpqFcaCntlrCondition},
     blacklisted => 0,
-  };
+    info => undef,
+    extendedinfo => undef, 
+  }; 
+  map { $self->{$_} = $params{$_} } grep /cpqFcaCntlr/, keys %params;
   $self->{name} = $params{name} || 
       $self->{cpqFcaCntlrBoxIndex}.':'.$self->{cpqFcaCntlrBoxIoSlot};
   $self->{controllerindex} = $self->{cpqFcaCntlrBoxIndex};
-  $self->{ident} = sprintf 'in box %s/slot %s',
-      $self->{cpqFcaCntlrBoxIndex}, $self->{cpqFcaCntlrBoxIoSlot};
   bless $self, $class;
   return $self;
 }
@@ -230,27 +211,26 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('fcaco', $self->{name});
+  my $info = sprintf 'fcal controller %s in box %s/slot %s is %s',
+      $self->{name}, $self->{cpqFcaCntlrBoxIndex}, $self->{cpqFcaCntlrBoxIoSlot},
+      $self->{cpqFcaCntlrCondition};
   if ($self->{cpqFcaCntlrCondition} eq 'other') {
     if (1) { # was ist mit phys. drives?
-      $self->add_message(CRITICAL,
-          sprintf 'fcal controller %s needs attention (%s)',
-              $self->{ident}, $self->{cpqFcaCntlrStatus});
-      $self->add_info(sprintf 'fcal controller %s %s needs attention (%s)',
-          $self->{name}, $self->{ident}, $self->{cpqFcaCntlrStatus});
+      $info .= ' needs attention';
+      $info .= sprintf(' (%s)', $self->{cpqFcaCntlrStatus}) unless $self->{cpqFcaCntlrStatus} eq 'ok';
+      $self->add_message(CRITICAL, $info);
+      $self->add_info($info);
     } else {
-      $self->add_info(sprintf 'fcal controller %s is ok and unused',
-          $self->{ident});
+      $self->add_info($info);
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqFcaCntlrCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf 'fcal controller %s needs attention',
-            $self->{ident});
-    $self->add_info(sprintf 'fcal controller %s %s needs attention (%s)',
-        $self->{name}, $self->{ident}, $self->{cpqFcaCntlrCondition});
+    $info .= ' needs attention';
+    $info .= sprintf(' (%s)', $self->{cpqFcaCntlrStatus}) unless $self->{cpqFcaCntlrStatus} eq 'ok';
+    $self->add_message(CRITICAL, $info);
+    $self->add_info($info);
   } else {
-    $self->add_info(sprintf 'fcal controller %s is ok',
-        $self->{ident});
+    $self->add_info($info);
   }
 } 
 
@@ -276,19 +256,14 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqFcaAccelBoxIndex => $params{cpqFcaAccelBoxIndex},
-    cpqFcaAccelBoxIoSlot => $params{cpqFcaAccelBoxIoSlot},
-    cpqFcaAccelStatus => $params{cpqFcaAccelStatus},
-    cpqFcaAccelErrCode => $params{cpqFcaAccelErrCode},
-    cpqFcaAccelBatteryStatus => $params{cpqFcaAccelBatteryStatus},
-    cpqFcaAccelCondition => $params{cpqFcaAccelCondition},
     blacklisted => 0,
-  };
+    info => undef,
+    extendedinfo => undef, 
+  }; 
+  map { $self->{$_} = $params{$_} } grep /cpqFcaAccel/, keys %params;
   $self->{name} = $params{name} ||
       $self->{cpqFcaAccelBoxIndex}.':'.$self->{cpqFcaAccelBoxIoSlot};
   $self->{controllerindex} = $self->{cpqFcaAccelBoxIndex};
-  $self->{ident} = sprintf 'in box %s/slot %s',
-      $self->{cpqFcaAccelBoxIndex}, $self->{cpqFcaAccelBoxIoSlot};
   bless $self, $class;
   return $self;
 }
@@ -297,27 +272,27 @@ sub check {
   my $self = shift;
   # !!! cpqFcaAccelStatus
   $self->blacklist('fcaac', $self->{name});
+  my $info = sprintf 'fcal accelerator %s in box %s/slot %s is ',
+      $self->{name}, $self->{cpqFcaAccelBoxIndex}, $self->{cpqFcaAccelBoxIoSlot};
   if ($self->{cpqFcaAccelStatus} eq 'invalid') {
-    $self->add_info(sprintf 'fcal accelerator %s is not installed',
-        $self->{ident});
+    $info .= 'not installed';
+    $self->add_info($info);
   } elsif ($self->{cpqFcaAccelStatus} eq 'tmpDisabled') {
-    $self->add_info(sprintf 'fcal accelerator %s is temp disabled',
-        $self->{ident});
+    $info .= 'temp disabled';
+    $self->add_info($info);
   } elsif ($self->{cpqFcaAccelCondition} eq 'other') {
-    $self->add_message(CRITICAL,
-        sprintf 'fcal accelerator %s needs attention (%s)',
-            $self->{ident}, $self->{cpqFcaAccelErrCode});
-    $self->add_info(sprintf 'fcal accelerator %s needs attention (%s)',
-        $self->{ident}, $self->{cpqFcaAccelErrCode});
+    $info .= sprintf '%s and needs attention (%s)',
+        $self->{cpqFcaAccelCondition}, $self->{cpqFcaAccelErrCode};
+    $self->add_message(CRITICAL, $info);
+    $self->add_info($info);
   } elsif ($self->{cpqFcaAccelCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf 'fcal accelerator %s needs attention (%s)',
-            $self->{ident}, $self->{cpqFcaAccelErrCode});
-    $self->add_info(sprintf 'fcal accelerator %s needs attention (%s)',
-        $self->{ident}, $self->{cpqFcaAccelErrCode});
+    $info .= sprintf '%s and needs attention (%s)',
+        $self->{cpqFcaAccelCondition}, $self->{cpqFcaAccelErrCode};
+    $self->add_message(CRITICAL, $info);
+    $self->add_info($info);
   } else {
-    $self->add_info(sprintf 'fcal accelerator %s is ok',
-        $self->{ident});
+    $info .= sprintf '%s', $self->{cpqFcaAccelCondition};
+    $self->add_info($info);
   }
 }
 
@@ -343,16 +318,11 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqFcaLogDrvBoxIndex => $params{cpqFcaLogDrvBoxIndex},
-    cpqFcaLogDrvIndex => $params{cpqFcaLogDrvIndex},
-    cpqFcaLogDrvFaultTol => $params{cpqFcaLogDrvFaultTol},
-    cpqFcaLogDrvStatus => $params{cpqFcaLogDrvStatus},
-    cpqFcaLogDrvPercentRebuild => $params{cpqFcaLogDrvPercentRebuild},
-    cpqFcaLogDrvSize => $params{cpqFcaLogDrvSize},
-    cpqFcaLogDrvPhyDrvIDs => $params{cpqFcaLogDrvPhyDrvIDs},
-    cpqFcaLogDrvCondition => $params{cpqFcaLogDrvCondition},
     blacklisted => 0,
-  };
+    info => undef,
+    extendedinfo => undef, 
+  }; 
+  map { $self->{$_} = $params{$_} } grep /cpqFcaLogDrv/, keys %params;
   bless $self, $class;
   $self->{name} = $params{name} || 
       $self->{cpqFcaLogDrvBoxIndex}.':'.
@@ -364,28 +334,24 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('fcald', $self->{name});
+  my $info = sprintf 'logical drive %s (%s) is %s',
+      $self->{name}, $self->{cpqFcaLogDrvFaultTol}, $self->{cpqFcaLogDrvCondition};
   if ($self->{cpqFcaLogDrvCondition} ne "ok") {
+    $info .= sprintf ' (%s)', $self->{cpqFcaLogDrvStatus};
     if ($self->{cpqFcaLogDrvStatus} =~ 
         /rebuild|recovering|expand/) {
-      $self->add_message(WARNING,
-          sprintf "logical drive %s is %s (%s)", 
-              $self->{name}, $self->{cpqFcaLogDrvStatus},
-              $self->{cpqFcaLogDrvFaultTol});
+      $info .= sprintf ' (%s)', $self->{cpqFcaLogDrvStatus};
+      $self->add_message(WARNING, $info);
     } else {
-      $self->add_message(CRITICAL,
-          sprintf "logical drive %s is %s (%s)",
-              $self->{name}, $self->{cpqFcaLogDrvStatus},
-              $self->{cpqFcaLogDrvFaultTol});
+      $self->add_message(CRITICAL, $info);
     }
   } 
-  $self->add_info(
-      sprintf "logical drive %s is %s (%s)", $self->{name},
-          $self->{cpqFcaLogDrvStatus}, $self->{cpqFcaLogDrvFaultTol});
+  $self->add_info($info);
 }
 
 sub dump {
   my $self = shift;
-  printf "[LOGICAL_DRIVE]\n";
+  printf "[LOGICAL_DRIVE_%s]\n", $self->{name};
   foreach (qw(cpqFcaLogDrvBoxIndex cpqFcaLogDrvIndex cpqFcaLogDrvFaultTol
       cpqFcaLogDrvStatus cpqFcaLogDrvPercentRebuild cpqFcaLogDrvSize 
       cpqFcaLogDrvPhyDrvIDs cpqFcaLogDrvCondition)) {
@@ -406,16 +372,11 @@ sub new {
   my %params = @_;
   my $self = {
     runtime => $params{runtime},
-    cpqFcaPhyDrvBoxIndex => $params{cpqFcaPhyDrvBoxIndex},
-    cpqFcaPhyDrvIndex => $params{cpqFcaPhyDrvIndex},
-    cpqFcaPhyDrvModel => $params{cpqFcaPhyDrvModel},
-    cpqFcaPhyDrvBay => $params{cpqFcaPhyDrvBay},
-    cpqFcaPhyDrvStatus => $params{cpqFcaPhyDrvStatus},
-    cpqFcaPhyDrvCondition => $params{cpqFcaPhyDrvCondition},
-    cpqFcaPhyDrvSize => $params{cpqFcaPhyDrvSize},
-    cpqFcaPhyDrvBusNumber => $params{cpqFcaPhyDrvBusNumber},
     blacklisted => 0,
-  };
+    info => undef,
+    extendedinfo => undef, 
+  }; 
+  map { $self->{$_} = $params{$_} } grep /cpqFcaPhyDrv/, keys %params;
   $self->{name} = $params{name} || 
       $self->{cpqFcaPhyDrvBoxIndex}.':'.$self->{cpqFcaPhyDrvIndex}; ####vorerst
   $self->{controllerindex} = $self->{cpqScsiPhyDrvCntlrIndex};
@@ -426,22 +387,20 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('fcapd', $self->{name});
+  my $info = sprintf "physical drive %s is %s", 
+      $self->{name}, $self->{cpqFcaPhyDrvStatus};
   if ($self->{cpqFcaPhyDrvStatus} eq 'unconfigured') {
     # not part of a logical drive
     # condition will surely be other
   } elsif ($self->{cpqFcaPhyDrvCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqFcaPhyDrvStatus});
+    $self->add_message(CRITICAL, $info);
   }
-  $self->add_info(
-      sprintf "physical drive %s is %s", 
-          $self->{name}, $self->{cpqFcaPhyDrvStatus});
+  $self->add_info($info);
 }
 
 sub dump {
   my $self = shift;
-  printf "[PHYSICAL_DRIVE]\n";
+  printf "[PHYSICAL_DRIVE_%s]\n", $self->{name};
   foreach (qw(cpqFcaPhyDrvBoxIndex cpqFcaPhyDrvIndex cpqFcaPhyDrvModel
       cpqFcaPhyDrvBay cpqFcaPhyDrvStatus cpqFcaPhyDrvCondition
       cpqFcaPhyDrvSize cpqFcaPhyDrvBusNumber)) {
