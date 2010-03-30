@@ -196,6 +196,7 @@ sub unite {
 sub overall_check {
   my $self = shift;
   my $result = 0;
+  $self->blacklist('ofs', '');
   if ($self->{sysstatus} && $self->{cpustatus}) {
     if ($self->{sysstatus} eq 'degraded') {
       $result = 1;

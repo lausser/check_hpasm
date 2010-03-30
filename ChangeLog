@@ -7,6 +7,7 @@
 - added fuses for bladesystems
 - added enclosure managers for bladesystems
 - added blacklisting for scsi devices (scco,scld,scpd) (Thanks Marco Hill)
+- added blacklisting for overall fan status (ofs) (Thanks Thomas Jampen)
 
 4.1.2.1 2010-03-03
 - fixed a harmless bug in BladeCenter::Powersupply output
