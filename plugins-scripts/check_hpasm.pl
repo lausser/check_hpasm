@@ -146,6 +146,14 @@ if ($PERFDATA && $plugin->opts->get('perfdata') &&
 $plugin->{messages}->{unknown} = []; # wg. add_message(UNKNOWN,...)
 
 $plugin->{info} = []; # gefrickel
+
+$SIG{'ALRM'} = sub {
+  printf "UNKNOWN - check_hpasm timed out after %d seconds\n", 
+      $plugin->opts->get('timeout');
+  exit $ERRORS{UNKNOWN};
+};
+#alarm($TIMEOUT);
+
 my $server = HP::Server->new( runtime => {
     plugin => $plugin,
     options => {

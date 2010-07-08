@@ -2,6 +2,10 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.2.1
+- added timeout handling
+- better hpacucli da controller handling
+
 4.2 2010-03-20
 - added temperatures for bladesystems (although not implemented by HP)
 - added fuses for bladesystems

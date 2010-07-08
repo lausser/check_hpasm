@@ -48,11 +48,29 @@ sub init {
     } elsif (/Controller Status: (\w+)/) {
       $tmpcntl->{$slot}->{cpqDaCntlrBoardCondition} = lc $1;
       $tmpcntl->{$slot}->{cpqDaCntlrCondition} = lc $1;
-    } elsif (/Cache Status: (\w+)/) {
+    } elsif (/Cache Status: ([\w\s]+\s*$)/) {
+      # Cache Status: OK
+      # Cache Status: Not Configured
+      # Cache Status: Temporarily Disabled
       $tmpaccel->{$slot}->{cpqDaAccelCntlrIndex} = $cntlindex;
       $tmpaccel->{$slot}->{cpqDaAccelSlot} = $slot;
-      $tmpaccel->{$slot}->{cpqDaAccelCondition} = lc $1;
-      $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'enabled';
+      #condition: other,ok,degraded,failed
+      #status: other,invalid,enabled,tmpDisabled,permDisabled
+      $tmpaccel->{$slot}->{cpqDaAccelCondition} = lc $1; 
+      if ($tmpaccel->{$slot}->{cpqDaAccelCondition} eq 'ok') {
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'enabled';
+      } elsif ($tmpaccel->{$slot}->{cpqDaAccelCondition} eq 'not configured') {
+        $tmpaccel->{$slot}->{cpqDaAccelCondition} = 'ok';
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'enabled';
+      } elsif ($tmpaccel->{$slot}->{cpqDaAccelCondition} eq 'temporarily disabled') {
+        $tmpaccel->{$slot}->{cpqDaAccelCondition} = 'ok';
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'tempdisabled';
+      } elsif ($tmpaccel->{$slot}->{cpqDaAccelCondition} eq 'permanently disabled') {
+        $tmpaccel->{$slot}->{cpqDaAccelCondition} = 'ok';
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'permdisabled';
+      } else {
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'enabled';
+      }
     } elsif (/Battery.* Status: (\w+)/) {
       # sowas gibts auch Battery/Capacitor Status: OK
       $tmpaccel->{$slot}->{cpqDaAccelBattery} = lc $1;
