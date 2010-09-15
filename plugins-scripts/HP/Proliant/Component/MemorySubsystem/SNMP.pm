@@ -464,8 +464,7 @@ sub update_si_with_he {
   } elsif ((scalar(@{$self->{si_dimms}}) > 1) && 
       (scalar(@{$self->{he_dimms}}) == 1)) {
     # siehe update_si_with_si. he-fragment
-    $self->update_si_with_si();
-    return;
+    return $self->update_si_with_si();
   } else { 
     # z.b. 4 si notpresent, 4 si present, 4 he
   }
