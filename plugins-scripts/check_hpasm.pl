@@ -152,7 +152,7 @@ $SIG{'ALRM'} = sub {
       $plugin->opts->get('timeout');
   exit $ERRORS{UNKNOWN};
 };
-#alarm($TIMEOUT);
+alarm($plugin->opts->get('timeout'));
 
 my $server = HP::Server->new( runtime => {
     plugin => $plugin,
