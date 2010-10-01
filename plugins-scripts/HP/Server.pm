@@ -279,6 +279,18 @@ sub add_message {
   my $message = shift;
   $self->{runtime}->{plugin}->add_message($level, $message) 
       unless $self->{blacklisted};
+  if (exists $self->{failed}) {
+    if ($level == UNKNOWN && $self->{failed} == OK) {
+      $self->{failed} = $level;
+    } elsif ($level > $self->{failed}) {
+      $self->{failed} = $level;
+    }
+  }
+}
+
+sub has_failed {
+  my $self = shift;
+  return $self->{failed};
 }
 
 sub add_info {

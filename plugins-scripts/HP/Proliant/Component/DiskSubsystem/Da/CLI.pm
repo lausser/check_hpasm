@@ -64,10 +64,10 @@ sub init {
         $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'enabled';
       } elsif ($tmpaccel->{$slot}->{cpqDaAccelCondition} eq 'temporarily disabled') {
         $tmpaccel->{$slot}->{cpqDaAccelCondition} = 'ok';
-        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'tempdisabled';
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'tmpDisabled';
       } elsif ($tmpaccel->{$slot}->{cpqDaAccelCondition} eq 'permanently disabled') {
         $tmpaccel->{$slot}->{cpqDaAccelCondition} = 'ok';
-        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'permdisabled';
+        $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'permDisabled';
       } else {
         $tmpaccel->{$slot}->{cpqDaAccelStatus} = 'enabled';
       }

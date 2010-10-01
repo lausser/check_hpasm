@@ -72,28 +72,6 @@ sub check {
   my $self = shift;
 #$self->dumper($self);
   $self->blacklist('daco', $self->{cpqDaCntlrIndex});
-  if ($self->{cpqDaCntlrCondition} eq 'other') {
-    if (scalar(@{$self->{physical_drives}})) {
-      $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-    } else {
-      $self->add_info(sprintf 'da controller %s in slot %s is ok and unused',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->{blacklisted} = 1;
-    }
-  } elsif ($self->{cpqDaCntlrCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf 'da controller %s in slot %s needs attention', 
-            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-    $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-  } else {
-    $self->add_info(sprintf 'da controller %s in slot %s is ok', 
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-  }
   foreach (@{$self->{accelerators}}) {
     $_->check();
   } 
@@ -106,6 +84,41 @@ sub check {
   foreach (@{$self->{spare_drives}}) {
     $_->check();
   } 
+  if ($self->{cpqDaCntlrCondition} eq 'other') {
+    if (scalar(@{$self->{physical_drives}})) {
+      $self->add_message(CRITICAL,
+          sprintf 'da controller %s in slot %s needs attention', 
+              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+    } else {
+      $self->add_info(sprintf 'da controller %s in slot %s is ok and unused',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+      $self->{blacklisted} = 1;
+    }
+  } elsif ($self->{cpqDaCntlrCondition} eq 'degraded') {
+    # maybe only the battery has failed and is disabled, no problem
+    if (scalar(grep {
+        $_->has_failed() && $_->is_disabled()
+    } @{$self->{accelerators}})) {
+      # message was already written in the accel code
+    } else {
+      $self->add_message(CRITICAL,
+          sprintf 'da controller %s in slot %s needs attention', 
+              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+    }
+  } elsif ($self->{cpqDaCntlrCondition} ne 'ok') {
+    $self->add_message(CRITICAL,
+        sprintf 'da controller %s in slot %s needs attention', 
+            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+    $self->add_info(sprintf 'da controller %s in slot %s needs attention',
+        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+  } else {
+    $self->add_info(sprintf 'da controller %s in slot %s is ok', 
+        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+  }
 } 
 
 sub dump {
@@ -147,6 +160,7 @@ sub new {
     cpqDaAccelCondition => $params{cpqDaAccelCondition},
     cpqDaAccelStatus => $params{cpqDaAccelStatus},
     blacklisted => 0,
+    failed => 0,
   };
   $self->{controllerindex} = $self->{cpqDaAccelCntlrIndex};
   bless $self, $class;
@@ -160,7 +174,12 @@ sub check {
       $self->{cpqDaAccelCondition});
   if ($self->{cpqDaAccelStatus} ne "enabled") {
   } elsif ($self->{cpqDaAccelCondition} ne "ok") {
-    $self->add_message(CRITICAL, "controller accelerator needs attention");
+    if ($self->{cpqDaAccelBattery} eq "failed" &&
+        $self->{cpqDaAccelStatus} eq "tmpDisabled") {
+      # handled later
+    } else {
+      $self->add_message(CRITICAL, "controller accelerator needs attention");
+    }
   }
   $self->blacklist('daacb', $self->{cpqDaAccelCntlrIndex});
   $self->add_info(sprintf 'controller accelerator battery is %s',
@@ -168,10 +187,23 @@ sub check {
   if ($self->{cpqDaAccelBattery} eq "notPresent") {
   } elsif ($self->{cpqDaAccelBattery} eq "recharging") {
     $self->add_message(WARNING, "controller accelerator battery recharging");
+  } elsif ($self->{cpqDaAccelBattery} eq "failed" &&
+      $self->{cpqDaAccelStatus} eq "tmpDisabled") {
+    $self->add_message(WARNING, "controller accelerator battery needs attention");
   } elsif ($self->{cpqDaAccelBattery} ne "ok") {
     # (other) failed degraded
     $self->add_message(CRITICAL, "controller accelerator battery needs attention");
   } 
+}
+
+sub has_failed {
+  my $self = shift;
+  return $self->{cpqDaAccelStatus} =~ /Disabled/ ? 1 : 0;
+}
+
+sub is_disabled {
+  my $self = shift;
+  return $self->{cpqDaAccelStatus} =~ /Disabled/ ? 1 : 0;
 }
 
 sub dump {

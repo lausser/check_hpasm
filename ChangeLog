@@ -6,6 +6,7 @@
 - added timeout handling
 - better hpacucli da controller handling
 - fix a bug in memory detection (0 dimms were shown) (Thanks Anthony Cano)
+- better handling for failed and disabled controller batteries. warning only.
 
 4.2 2010-03-20
 - added temperatures for bladesystems (although not implemented by HP)
