@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.2.1.1
+- fix a bug in HP::Storage. disks were not found (Thanks Maik Schulz)
+
 4.2.1
 - added timeout handling
 - better hpacucli da controller handling
