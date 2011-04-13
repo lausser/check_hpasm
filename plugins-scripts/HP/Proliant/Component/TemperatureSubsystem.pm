@@ -120,6 +120,12 @@ sub check {
         $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits},
         $self->{cpqHeTemperatureThreshold});
     $self->add_message(CRITICAL, $self->{info});
+  } elsif ($self->{cpqHeTemperature} < 0) {
+    # #21 SCSI_BACKPLANE_ZONE -1C/31F 60C/140F OK - can't be true
+    $self->add_info(sprintf "%d %s temperature too low (%d%s)",
+        $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale},
+        $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits});
+    $self->add_message(CRITICAL, $self->{info});
   } else {
     $self->add_info(sprintf "%d %s temperature is %d%s (%d max)",
         $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale}, 

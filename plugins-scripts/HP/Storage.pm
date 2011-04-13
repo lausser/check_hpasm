@@ -217,11 +217,6 @@ sub collect {
       $self->trace(2, sprintf "Protocol is %s", 
           $self->{runtime}->{snmpparams}->{'-version'});
       my $cpqSsSys =  "1.3.6.1.4.1.232.8";
-      my $cpqDaComponent =  "1.3.6.1.4.1.232.3.2";
-      my $cpqSasComponent =  "1.3.6.1.4.1.232.5";
-      my $cpqIdeComponent =  "1.3.6.1.4.1.232.14";
-      my $cpqFcaComponent =  "1.3.6.1.4.1.232.16.2";
-      my $cpqSiComponent =  "1.3.6.1.4.1.232.2.2";
       $session->translate;
       my $response = {}; #break the walk up in smaller pieces
       my $tic = time; my $tac = $tic;
@@ -230,44 +225,8 @@ sub collect {
       $tac = time;
       $self->trace(2, sprintf "%03d seconds for walk cpqSsSys (%d oids)",
           $tac - $tic, scalar(keys %{$response1}));
-      $tic = time;
-      my $response2 = $session->get_table(
-          -baseoid => $cpqSiComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqSiComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response2}));
-      $tic = time;
-      my $response3 = $session->get_table(
-          -baseoid => $cpqDaComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqDaComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response3}));
-      $tic = time;
-      my $response6 = $session->get_table(
-          -baseoid => $cpqSasComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqSasComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response6}));
-      $tic = time;
-      my $response7 = $session->get_table(
-          -baseoid => $cpqIdeComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqIdeComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response7}));
-      $tic = time;
-      my $response8 = $session->get_table(
-          -baseoid => $cpqFcaComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqFcaComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response8}));
-      $tic = time;
       $session->close;
       map { $response->{$_} = $response1->{$_} } keys %{$response1};
-      map { $response->{$_} = $response2->{$_} } keys %{$response2};
-      map { $response->{$_} = $response3->{$_} } keys %{$response3};
-      map { $response->{$_} = $response6->{$_} } keys %{$response6};
-      map { $response->{$_} = $response7->{$_} } keys %{$response7};
-      map { $response->{$_} = $response8->{$_} } keys %{$response8};
       map { $response->{$_} =~ s/^\s+//; $response->{$_} =~ s/\s+$//; }
           keys %$response;
       $self->{rawdata} = $response;

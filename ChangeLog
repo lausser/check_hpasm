@@ -2,8 +2,11 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.2.2 2011-01-21
+- add support for msa500 and hpasmcli (Thanks Kalle Andersson)
+
 4.2.1.1
-- fix a bug in HP::Storage. disks were not found (Thanks Maik Schulz)
+- added support for x1** nas storage, which was detected as storage but in fact is like a proliant (Thanks Maik Schulz)
 
 4.2.1
 - added timeout handling

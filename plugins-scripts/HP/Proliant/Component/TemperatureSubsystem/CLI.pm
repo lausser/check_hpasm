@@ -26,7 +26,7 @@ sub init {
   my $tempcnt = 1;
   foreach (grep(/^temp/, split(/\n/, $params{rawdata}))) {
     s/^temp\s*//g;
-    if (/^#(\d+)\s+([\w_\/\-#]+)\s+(\d+)C\/(\d+)F\s+(\d+)C\/(\d+)F/) {
+    if (/^#(\d+)\s+([\w_\/\-#]+)\s+(-*\d+)C\/(\d+)F\s+(\d+)C\/(\d+)F/) {
       my %params = ();
       $params{runtime} = $self->{runtime};
       $params{cpqHeTemperatureChassis} = 1;

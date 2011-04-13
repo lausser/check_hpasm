@@ -45,6 +45,13 @@ sub init {
       $tmpcntl->{$slot}->{cpqDaCntlrIndex} = $cntlindex;
       $tmpcntl->{$slot}->{cpqDaCntlrModel} = $1;
       $tmpcntl->{$slot}->{cpqDaCntlrSlot} = $slot;
+    } elsif (/(MSA[\s\w]+)\s+in\s+(\w+)/) { 
+      $incontroller = 1;
+      $slot = $2;
+      $cntlindex++;
+      $tmpcntl->{$slot}->{cpqDaCntlrIndex} = $cntlindex;
+      $tmpcntl->{$slot}->{cpqDaCntlrModel} = $1;
+      $tmpcntl->{$slot}->{cpqDaCntlrSlot} = $slot;
     } elsif (/Controller Status: (\w+)/) {
       $tmpcntl->{$slot}->{cpqDaCntlrBoardCondition} = lc $1;
       $tmpcntl->{$slot}->{cpqDaCntlrCondition} = lc $1;
@@ -88,6 +95,10 @@ sub init {
       $slot = $2;
       $cntlindex++;
       $pdriveindex = 1;
+    } elsif (/(MSA[\s\w]+)\s+in\s+(\w+)/) {
+      $slot = $2;
+      $cntlindex++;
+      $pdriveindex = 1;
     } elsif (/logicaldrive\s+(.+?)\s+\((.*)\)/) {
       # logicaldrive 1 (683.5 GB, RAID 5, OK)
       # logicaldrive 1 (683.5 GB, RAID 5, OK)
@@ -105,6 +116,7 @@ sub init {
     } elsif (/physicaldrive\s+(.+?)\s+\((.*)\)/) {
       # physicaldrive 2:0   (port 2:id 0 , Parallel SCSI, 36.4 GB, OK)
       # physicaldrive 2I:1:6 (port 2I:box 1:bay 6, SAS, 146 GB, OK)
+      # physicaldrive 1:1 (box 1:bay 1, Parallel SCSI, 146 GB, OK)
       my $name = $1;
       my($location, $type, $size, $status) = split(/,/, $2);
       $status =~ s/^\s+//g;
@@ -117,6 +129,7 @@ sub init {
       $location{box} ||= 0;
       $location{id} ||= $pdriveindex;
       $location{bay} ||= $location{id};
+      $location{port} ||= $location{bay};
       $tmppd->{$slot}->{$name}->{name} = lc $name;
       $tmppd->{$slot}->{$name}->{cpqDaPhyDrvCntlrIndex} = $cntlindex;
       $tmppd->{$slot}->{$name}->{cpqDaPhyDrvIndex} = $location{id};
@@ -131,6 +144,7 @@ sub init {
         $tmppd->{$slot}->{$name}->{$_} =~ s/\s+$//g;
         $tmppd->{$slot}->{$name}->{$_} = lc $tmppd->{$slot}->{$name}->{$_};
       }
+      $pdriveindex++;
     }
   }
 
@@ -189,6 +203,7 @@ sub identified {
   my $info = shift;
   return 1 if $info =~ /Parallel SCSI/;
   return 1 if $info =~ /Smart Array/; # Trond: works fine on E200i, P400, E400
+  return 1 if $info =~ /MSA500/;
   #return 1 if $info =~ /Smart Array (5|6)/;
   #return 1 if $info =~ /Smart Array P400i/; # snmp sagt Da, trotz SAS in cli
   #return 1 if $info =~ /Smart Array P410i/; # dto

@@ -38,6 +38,9 @@ sub new {
       } elsif ($self->{productname} =~ /PROLIANT 4LEE/) {
         bless $self, 'HP::Storage';
         $self->trace(3, 'using HP::Storage');
+      } elsif ($self->{productname} =~ /X\d+ Network Storage/) {
+        bless $self, 'HP::Proliant::SNMP';
+        $self->trace(3, 'using HP::Proliant::SNMP');
       } elsif ($self->{productname} =~ /Storage/) { # fake
         bless $self, 'HP::Storage';
         $self->trace(3, 'using HP::Storage');
@@ -92,7 +95,7 @@ sub check_snmp_and_model {
         } elsif (/^.*?\.(232\.[\d\.]+) = .*?: "(.*?)"/) {
           $response->{'1.3.6.1.4.1.'.$1} = $2;
           $response->{'1.3.6.1.4.1.'.$1} =~ s/\s+$//;
-        } elsif (/^.*?\.(232\.[\d\.]+) = (\-*\d+)/) {
+        } if (/^.*?\.(232\.[\d\.]+) = (\-*\d+)/) {
           $response->{'1.3.6.1.4.1.'.$1} = $2;
         } elsif (/^.*?\.(232\.[\d\.]+) = "(.*?)"/) {
           $response->{'1.3.6.1.4.1.'.$1} = $2;
