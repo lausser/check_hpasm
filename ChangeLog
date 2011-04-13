@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.2.2.1 2011-04-17
+- fix a bug when a wrong --hostname was used (Thanks Wim Savenberg)
+
 4.2.2 2011-01-21
 - add support for msa500 and hpasmcli (Thanks Kalle Andersson)
 

@@ -141,7 +141,7 @@ sub check_snmp_and_model {
       my ($session, $error) = Net::SNMP->session(%params);
       $self->{session} = $session;
       if (! defined $session) {
-        $self->{plugin}->add_message(CRITICAL, 'cannot create session object');
+        $self->add_message(CRITICAL, 'cannot create session object (maybe wrong hostname)');
         $self->trace(1, Data::Dumper::Dumper(\%params));
       } else {
         my $sysUpTime = '1.3.6.1.2.1.1.3.0';
