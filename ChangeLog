@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.2.4 2011-07-21
+add a check for asr (Thanks Ingmar Verheij http://www.ingmarverheij.com/)
+
 4.2.3 2011-07-21
 - add a global temperature check when no temperature sensors are found
 - check power converters if no fault tolerant power supplies are found

@@ -29,6 +29,9 @@ EXTRA_MODULES=\
   HP/Proliant/Component/MemorySubsystem/CLI.pm \
   HP/Proliant/Component/MemorySubsystem/SNMP.pm \
   HP/Proliant/Component/MemorySubsystem.pm \
+  HP/Proliant/Component/AsrSubsystem/CLI.pm \
+  HP/Proliant/Component/AsrSubsystem/SNMP.pm \
+  HP/Proliant/Component/AsrSubsystem.pm \
   HP/Proliant/Component/SNMP.pm \
   HP/Proliant/Component/DiskSubsystem/Da/CLI.pm \
   HP/Proliant/Component/DiskSubsystem/Da/SNMP.pm \

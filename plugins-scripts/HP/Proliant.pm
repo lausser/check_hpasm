@@ -30,6 +30,7 @@ sub init {
     $self->analyze_temperatures();
     $self->analyze_memory_subsystem();
     $self->analyze_disk_subsystem();
+    $self->analyze_asr_subsystem();
     $self->auto_blacklist();
     $self->check_cpus();
     $self->check_powersupplies();
@@ -37,6 +38,7 @@ sub init {
     $self->check_temperatures();
     $self->check_memory_subsystem();
     $self->check_disk_subsystem();
+    $self->check_asr_subsystem();
   }
 }
 
@@ -127,6 +129,16 @@ sub analyze_disk_subsystem {
   );
 }
 
+sub analyze_asr_subsystem {
+  my $self = shift;
+  $self->{components}->{asr_subsystem} =
+      HP::Proliant::Component::AsrSubsystem->new(
+    rawdata => $self->{rawdata},
+    method => $self->{method},
+    runtime => $self->{runtime},
+  );
+}
+
 sub check_cpus {
   my $self = shift;
   $self->{components}->{cpu_subsystem}->check();
@@ -171,6 +183,13 @@ sub check_disk_subsystem {
   $self->{runtime}->{plugin}->add_message(OK,
       $self->{components}->{disk_subsystem}->{summary})
       if $self->{components}->{disk_subsystem}->{summary};
+}
+
+sub check_asr_subsystem {
+  my $self = shift;
+  $self->{components}->{asr_subsystem}->check();
+  $self->{components}->{asr_subsystem}->dump()
+      if $self->{runtime}->{options}->{verbose} >= 2;
 }
 
 sub auto_blacklist() {
@@ -488,6 +507,7 @@ sub collect {
       my $cpqIdeComponent =  "1.3.6.1.4.1.232.14";
       my $cpqFcaComponent =  "1.3.6.1.4.1.232.16.2";
       my $cpqSiComponent =  "1.3.6.1.4.1.232.2.2";
+      my $cpqHeAsr = "1.3.6.1.4.1.232.6.2.5";
       $session->translate;
       my $response = {}; #break the walk up in smaller pieces
       my $tic = time; my $tac = $tic;
@@ -601,7 +621,22 @@ sub collect {
       $self->trace(2, sprintf "%03d seconds for walk cpqFcaComponent (%d oids)",
           $tac - $tic, scalar(keys %{$response8}));
       $tic = time;
-      $session->close;
+
+      # Walk for ASR
+      $tic = time;
+      my $response9 = $session->get_table(
+          -maxrepetitions => 1,
+          -baseoid => $cpqHeAsr);
+      if (scalar (keys %{$response9}) == 0) {
+        $self->trace(2, sprintf "maxrepetitions failed. fallback");
+        $response9 = $session->get_table(
+            -baseoid => $cpqHeAsr);
+      }
+      $tac = time;
+      $self->trace(2, sprintf "%03d seconds for walk $cpqHeAsr (%d oids)",
+          $tac - $tic, scalar(keys %{$response9}));
+      $session->close();
+
       map { $response->{$_} = $response1->{$_} } keys %{$response1};
       map { $response->{$_} = $response2p->{$_} } keys %{$response2p};
       map { $response->{$_} = $response2f->{$_} } keys %{$response2f};
@@ -613,6 +648,7 @@ sub collect {
       map { $response->{$_} = $response6->{$_} } keys %{$response6};
       map { $response->{$_} = $response7->{$_} } keys %{$response7};
       map { $response->{$_} = $response8->{$_} } keys %{$response8};
+      map { $response->{$_} = $response9->{$_} } keys %{$response9};
       map { $response->{$_} =~ s/^\s+//; $response->{$_} =~ s/\s+$//; }
           keys %$response;
       $self->{rawdata} = $response;
