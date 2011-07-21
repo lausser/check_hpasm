@@ -58,7 +58,7 @@ sub init {
 
   $oids = {
       cpqHePowerConvEntry => "1.3.6.1.4.1.232.6.2.13.3.1",
-      cpqHePowerConvChassis => "1.3.6.1.4.1.232.6.2.13.3.1",
+      cpqHePowerConvChassis => "1.3.6.1.4.1.232.6.2.13.3.1.1",
       cpqHePowerConvIndex => "1.3.6.1.4.1.232.6.2.13.3.1.2",
       cpqHePowerConvPresent => "1.3.6.1.4.1.232.6.2.13.3.1.3",
       cpqHePowerConvRedundant => "1.3.6.1.4.1.232.6.2.13.3.1.6",
@@ -83,10 +83,10 @@ sub init {
   };
 
   # INDEX { cpqHePowerConvChassis cpqHePowerConvIndex }
-  #foreach ($self->get_entries($oids, 'cpqHePowerConvEntry')) {
-    #push(@{$self->{powersupplies}},
-    #    HP::Proliant::Component::PowersupplySubsystem::Powersupply->new(%{$_}));
-  #}
+  foreach ($self->get_entries($oids, 'cpqHePowerConvEntry')) {
+    push(@{$self->{powersupplies}},
+        HP::Proliant::Component::PowersupplySubsystem::Powersupply->new(%{$_}));
+  }
   # keine ahnung, was man damit machen kann
 
 }

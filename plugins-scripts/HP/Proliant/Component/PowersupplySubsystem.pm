@@ -109,13 +109,21 @@ sub check {
 
 sub dump {
   my $self = shift;
-  printf "[PS_%s]\n", $self->{cpqHeFltTolPowerSupplyBay};
-  foreach (qw(cpqHeFltTolPowerSupplyBay cpqHeFltTolPowerSupplyChassis
-      cpqHeFltTolPowerSupplyPresent cpqHeFltTolPowerSupplyCondition
-      cpqHeFltTolPowerSupplyRedundant)) {
-    printf "%s: %s\n", $_, $self->{$_};
+  if (exists $self->{cpqHeFltTolPowerSupplyBay}) {
+    printf "[PS_%s]\n", $self->{cpqHeFltTolPowerSupplyBay};
+    foreach (qw(cpqHeFltTolPowerSupplyBay cpqHeFltTolPowerSupplyChassis
+        cpqHeFltTolPowerSupplyPresent cpqHeFltTolPowerSupplyCondition
+        cpqHeFltTolPowerSupplyRedundant)) {
+      printf "%s: %s\n", $_, $self->{$_};
+    }
+  } elsif (exists $self->{cpqHePowerConvChassis}) {
+    printf "[PS_%s]\n", ($self->{cpqHePowerConvChassis} ? $self->{cpqHePowerConvChassis}.":" : "").$self->{cpqHePowerConvIndex};
+    foreach (qw(cpqHePowerConvIndex cpqHePowerConvPresent cpqHePowerConvRedundant cpqHePowerConvCondition)) {
+      printf "%s: %s\n", $_, $self->{$_};
+    }
   }
   printf "info: %s\n\n", $self->{info};
 }
+
 
 1;

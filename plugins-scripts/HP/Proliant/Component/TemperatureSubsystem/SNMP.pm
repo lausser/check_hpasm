@@ -17,8 +17,26 @@ sub new {
     extendedinfo => undef,
   };
   bless $self, $class;
+  $self->overall_init(%params);
   $self->init(%params);
   return $self;
+}
+
+sub overall_init {
+  my $self = shift;
+  my %params = @_;
+  my $snmpwalk = $params{rawdata};
+  # overall
+  my $cpqHeThermalTempStatus  = '1.3.6.1.4.1.232.6.2.6.3.0';
+  my $cpqHeThermalTempStatusValue = {
+    1 => 'other',
+    2 => 'ok',
+    3 => 'degraded',
+    4 => 'failed',
+  };
+  $self->{tempstatus} = lc SNMP::Utils::get_object_value(
+      $snmpwalk, $cpqHeThermalTempStatus,
+      $cpqHeThermalTempStatusValue);
 }
 
 sub init {
@@ -59,6 +77,31 @@ sub init {
   foreach ($self->get_entries($oids, 'cpqHeTemperatureEntry')) {
     push(@{$self->{temperatures}},
         HP::Proliant::Component::TemperatureSubsystem::Temperature->new(%{$_}));
+  }
+}
+
+sub overall_check {
+  my $self = shift;
+  my $result = 0;
+  $self->blacklist('ots', '');
+  if ($self->{tempstatus}) {
+    if ($self->{tempstatus} eq "ok") {
+      $result = 0;
+      $self->add_info('all temp sensors are within normal operating range');
+    } elsif ($self->{tempstatus} eq "degraded") {
+      $result = 1;
+      $self->add_info('a temp sensor is outside of normal operating range');
+    } elsif ($self->{tempstatus} eq "failed") {
+      $result = 2;
+      $self->add_info('a temp sensor detects a condition that could permanently
+damage the system');
+    } elsif ($self->{tempstatus} eq "other") {
+      $result = 0;
+      $self->add_info('temp sensing is not supported by this system or driver');
+    }
+  } else {
+    $result = 0;
+    $self->add_info('no global temp status found');
   }
 }
 

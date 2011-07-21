@@ -2,6 +2,10 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.2.3 2011-07-21
+- add a global temperature check when no temperature sensors are found
+- check power converters if no fault tolerant power supplies are found
+
 4.2.2.1 2011-04-17
 - fix a bug when a wrong --hostname was used (Thanks Wim Savenberg)
 
