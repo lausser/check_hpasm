@@ -55,6 +55,22 @@ sub init {
           runtime => $params{runtime},
         );
       }
+    } elsif (/(\d+)\s+(\d+)\s+(\w+)\s+(0x\w+)\s+(0x\w+)\s+(\d+[MGT]B)\s+(\d+MHz)\s+(\w+)/) {
+      $tmpdimm{cartridge} = $1;
+      $tmpdimm{module} = $2;
+      $tmpdimm{status} = lc $3 eq 'yes' ? 'present' :
+          lc $3 eq 'no' ? 'notPresent' : 'other';
+      my $formfactor = $4;
+      my $memorytype = $5;
+      my $memorysize = $6;
+      my $memoryspeed = $7;
+      $tmpdimm{condition} = lc $8 =~ /degraded/ ? 'degraded' :
+          lc $8 eq 'ok' ? 'ok' : lc $8 =~ /n\/a/ ? 'n/a' : 'other';
+      $memorysize =~ /(\d+)([MGT]B)/;
+      $tmpdimm{size} = $1 * (lc $2 eq 'mb' ? 1024*1024 :
+          lc $2 eq 'gb' ? 1024*1024*1024 : 1);
+      push(@{$self->{dimms}},
+          HP::Proliant::Component::MemorySubsystem::Dimm->new(%tmpdimm));
     }
   }
   if ($inblock) {
