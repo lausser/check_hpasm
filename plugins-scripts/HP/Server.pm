@@ -38,7 +38,9 @@ sub new {
       } elsif ($self->{productname} =~ /PROLIANT 4LEE/) {
         bless $self, 'HP::Storage';
         $self->trace(3, 'using HP::Storage');
-      } elsif ($self->{productname} =~ /X\d+ Network Storage/) {
+      } elsif ($self->{productname} =~ /X\d+[\s\w]* Network Storage/) {
+        # HP X1600 Network Storage System
+        # HP X1600 G2 Network Storage System
         bless $self, 'HP::Proliant::SNMP';
         $self->trace(3, 'using HP::Proliant::SNMP');
       } elsif ($self->{productname} =~ /Storage/) { # fake
