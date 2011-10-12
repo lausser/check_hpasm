@@ -69,6 +69,7 @@ sub new {
 
 sub check {
   my $self = shift;
+  $self->blacklist('saco', $self->{cpqSasHbaSlot});
   if ($self->{cpqSasHbaCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
       $self->add_message(CRITICAL,
@@ -154,6 +155,7 @@ sub new {
 
 sub check {
   my $self = shift;
+  $self->blacklist('sald', $self->{name});
   if ($self->{cpqSasLogDrvCondition} ne "ok") {
     if ($self->{cpqSasLogDrvStatus} =~ 
         /rebuild|recovering|expanding|queued/) {
@@ -211,6 +213,7 @@ sub new {
 
 sub check {
   my $self = shift;
+  $self->blacklist('sapd', $self->{name});
   if ($self->{cpqSasPhyDrvCondition} ne 'ok') {
     $self->add_message(CRITICAL,
         sprintf "physical drive %s is %s", 

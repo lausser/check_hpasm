@@ -4,6 +4,7 @@
 
 4.2.5
 - G2 series of X1660 storage systems are now correctly detected. (Thanks Andre Zaborowski)
+- blacklisting for SAS controller & disks was added (Thanks Jewi)
 todo: logs
 
 4.2.4.1 2011-08-09
