@@ -278,6 +278,7 @@ EOEO
 # check if this exists at all
 # descend the directory
     if ($< != 0) {
+      close STDIN;
       $hpasmcli = "sudo -S ".$hpasmcli;
     }
     $self->trace(2, sprintf "calling %s\n", $hpasmcli);
@@ -309,6 +310,7 @@ EOEO
           }
           if ($hpacucli) {
             if ($< != 0) {
+              close STDIN;
               $hpacucli = "sudo -S ".$hpacucli;
             }
             $self->trace(2, sprintf "calling %s\n", $hpacucli);
