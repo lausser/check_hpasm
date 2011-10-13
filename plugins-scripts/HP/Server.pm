@@ -306,6 +306,13 @@ sub add_message {
   }
 }
 
+sub remove_message {
+  my $self = shift;
+  my $level = shift;
+  my $message = shift;
+  $self->{runtime}->{plugin}->remove_message($level) ;
+}
+
 sub has_failed {
   my $self = shift;
   return $self->{failed};
