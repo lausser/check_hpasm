@@ -278,7 +278,7 @@ EOEO
 # check if this exists at all
 # descend the directory
     if ($< != 0) {
-      $hpasmcli = "sudo ".$hpasmcli;
+      $hpasmcli = "sudo -S ".$hpasmcli;
     }
     $self->trace(2, sprintf "calling %s\n", $hpasmcli);
     $self->check_daemon();
@@ -309,7 +309,7 @@ EOEO
           }
           if ($hpacucli) {
             if ($< != 0) {
-              $hpacucli = "sudo ".$hpacucli;
+              $hpacucli = "sudo -S ".$hpacucli;
             }
             $self->trace(2, sprintf "calling %s\n", $hpacucli);
             $self->check_hpacu_client($hpacucli);
