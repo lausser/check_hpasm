@@ -83,6 +83,8 @@ AC_ARG_ENABLE([hpacucli],
 
 if test x"$enable_hpacucli" = xyes ; then
   AC_SUBST(HPACUCLI, 1)
+elif test x"$enable_hpacucli" = xmaybe ; then
+  AC_SUBST(HPACUCLI, 2)
 else
   AC_SUBST(HPACUCLI, 0)
 fi

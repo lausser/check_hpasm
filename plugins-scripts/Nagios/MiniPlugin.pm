@@ -70,6 +70,14 @@ sub add_message {
   push @{$self->{messages}->{$code}}, @messages;
 }
 
+sub remove_message {
+  my $self = shift;
+  my ($code, @messages) = @_;
+  $code = (qw(ok warning critical unknown))[$code] if $code =~ /^\d+$/;
+  $code = lc $code;
+  pop @{$self->{messages}->{$code}};
+}
+
 sub add_perfdata {
   my ($self, %args) = @_;
   my $str = $args{label}.'='.$args{value};

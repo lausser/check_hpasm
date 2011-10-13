@@ -328,6 +328,12 @@ EOEO
                     'status '.$_;
                 } @output);
               }
+            } elsif ($self->{runtime}->{options}->{hpacucli} == 2) {
+              # we probably don't have sudo-privileges, but we were compiled with
+              # --enable-hpacucli=maybe
+              # so we cover it up in silence
+              $self->remove_message(UNKNOWN);
+              $self->trace(2, sprintf "calling %s seems to have failed, but nobody cares\n", $hpacucli);
             }
           } else {
             if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
