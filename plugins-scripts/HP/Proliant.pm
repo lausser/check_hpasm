@@ -31,6 +31,7 @@ sub init {
     $self->analyze_memory_subsystem();
     $self->analyze_disk_subsystem();
     $self->analyze_asr_subsystem();
+    $self->analyze_event_subsystem();
     $self->auto_blacklist();
     $self->check_cpus();
     $self->check_powersupplies();
@@ -39,6 +40,7 @@ sub init {
     $self->check_memory_subsystem();
     $self->check_disk_subsystem();
     $self->check_asr_subsystem();
+    $self->check_event_subsystem();
   }
 }
 
@@ -139,6 +141,16 @@ sub analyze_asr_subsystem {
   );
 }
 
+sub analyze_event_subsystem {
+  my $self = shift;
+  $self->{components}->{event_subsystem} =
+      HP::Proliant::Component::EventSubsystem->new(
+    rawdata => $self->{rawdata},
+    method => $self->{method},
+    runtime => $self->{runtime},
+  );
+}
+
 sub check_cpus {
   my $self = shift;
   $self->{components}->{cpu_subsystem}->check();
@@ -189,6 +201,13 @@ sub check_asr_subsystem {
   my $self = shift;
   $self->{components}->{asr_subsystem}->check();
   $self->{components}->{asr_subsystem}->dump()
+      if $self->{runtime}->{options}->{verbose} >= 2;
+}
+
+sub check_event_subsystem {
+  my $self = shift;
+  $self->{components}->{event_subsystem}->check();
+  $self->{components}->{event_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
 }
 
@@ -266,7 +285,7 @@ EOEO
     if (! $self->{runtime}->{plugin}->check_messages()) {
       $self->check_hpasm_client($hpasmcli);
       if (! $self->{runtime}->{plugin}->check_messages()) {
-        foreach my $component (qw(server fans temp dimm powersupply)) {
+        foreach my $component (qw(server fans temp dimm powersupply iml)) {
           if (open HPASMCLI, "$hpasmcli -s \"show $component\"|") {
             my @output = <HPASMCLI>;
             close HPASMCLI;

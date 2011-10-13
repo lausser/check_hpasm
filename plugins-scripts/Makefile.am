@@ -14,6 +14,9 @@ MY_MODULES=
 EXTRA_MODULES=\
   Nagios/MiniPlugin.pm \
   HP/SNMP/Utils.pm \
+  HP/Proliant/Component/EventSubsystem.pm \
+  HP/Proliant/Component/EventSubsystem/CLI.pm \
+  HP/Proliant/Component/EventSubsystem/SNMP.pm \
   HP/Proliant/Component/PowersupplySubsystem.pm \
   HP/Proliant/Component/PowersupplySubsystem/CLI.pm \
   HP/Proliant/Component/PowersupplySubsystem/SNMP.pm \

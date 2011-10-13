@@ -90,18 +90,31 @@ sub check_snmp_and_model {
       close WALK;
     } else {
       open(MESS, $self->{runtime}->{plugin}->opts->snmpwalk);
+      my $in_hex_string = 0;
+      my $hex_oid = 0;
       while(<MESS>) {
-        # SNMPv2-SMI::enterprises.232.6.2.6.7.1.3.1.4 = INTEGER: 6
-        if (/^.*?\.(232\.[\d\.]+) = .*?: (\-*\d+)/) {
+        chomp;
+        if ($in_hex_string && /^(([0-9a-fA-F]{2})( [0-9a-fA-F]{2})*)\s*$/) {
+          $response->{$hex_oid} .= " ".$1;
+        } elsif (/^.*?\.(232\.[\d\.]+) = .*?: (\-*\d+)\s*$/) {
+          # SNMPv2-SMI::enterprises.232.6.2.6.7.1.3.1.4 = INTEGER: 6
           $response->{'1.3.6.1.4.1.'.$1} = $2;
+          $in_hex_string = 0;
         } elsif (/^.*?\.(232\.[\d\.]+) = .*?: "(.*?)"/) {
           $response->{'1.3.6.1.4.1.'.$1} = $2;
           $response->{'1.3.6.1.4.1.'.$1} =~ s/\s+$//;
-        } if (/^.*?\.(232\.[\d\.]+) = (\-*\d+)/) {
+          $in_hex_string = 0;
+        } elsif (/^.*?\.(232\.[\d\.]+) = (\-*\d+)/) {
           $response->{'1.3.6.1.4.1.'.$1} = $2;
+          $in_hex_string = 0;
         } elsif (/^.*?\.(232\.[\d\.]+) = "(.*?)"/) {
           $response->{'1.3.6.1.4.1.'.$1} = $2;
           $response->{'1.3.6.1.4.1.'.$1} =~ s/\s+$//;
+          $in_hex_string = 0;
+        } elsif (/^.*?\.(232\.[\d\.]+) = Hex-STRING: (.*)/) {
+          $response->{'1.3.6.1.4.1.'.$1} = $2;
+          $in_hex_string = 1;
+          $hex_oid = '1.3.6.1.4.1.'.$1;
         }
       }
       close MESS;

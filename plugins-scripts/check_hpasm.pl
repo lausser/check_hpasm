@@ -52,6 +52,13 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
+    spec => 'eventrange=s',
+    help => '--eventrange=<warningrange>/<criticalrange>
+   Period of time before critical IML events respecively become warnings or vanish
+   A range is descibed as a number and a unit (s, m, h, d), e.g. --eventrange 1h/20m',
+    required => 0,
+);
+$plugin->add_arg(
     spec => 'perfdata=s',
     help => '--perfdata=[short]
    Output performance data. If your performance data string becomes
@@ -163,6 +170,7 @@ my $server = HP::Server->new( runtime => {
         ignore_fan_redundancy => $plugin->opts->get('ignore-fan-redundancy'),
         ignore_dimms => $plugin->opts->get('ignore-dimms'),
         customthresholds => $plugin->opts->get('customthresholds'),
+        eventrange => $plugin->opts->get('eventrange'),
         blacklist => $plugin->opts->get('blacklist'),
         celsius => $CELSIUS,
         perfdata => $PERFDATA,
