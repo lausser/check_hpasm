@@ -140,7 +140,7 @@ sub new {
 
 sub check {
   my $self = shift;
-  $self->blacklist('e', $self->{cpqHeEventLogEntryNumber});
+  $self->blacklist('evt', $self->{cpqHeEventLogEntryNumber});
   # only check severity "critical" and "caution"
   # optional: only check interesting events
   # POST events only if they date maximum from reboot-5min
