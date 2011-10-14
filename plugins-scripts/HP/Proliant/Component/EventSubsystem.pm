@@ -147,7 +147,8 @@ sub check {
   # younger than critical? -> critical
   # 
   my $uptime = do { local (@ARGV, $/) = "/proc/uptime"; my $x = <>; close ARGV; $x };
-  my $boottime = time - int((split(/\s+/, $uptime))[0]) - 1;
+  # also watch 10 minutes of booting before the operating system starts ticking
+  my $boottime = time - int((split(/\s+/, $uptime))[0]) - 600;
   $self->add_info(sprintf "Event: %d Added: %s Class: (%s) %s %s",
       $self->{cpqHeEventLogEntryNumber},
       $self->{cpqHeEventLogUpdateTime},
