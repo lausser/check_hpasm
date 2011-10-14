@@ -2,14 +2,13 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
-4.3
+4.3 2011-10-14
 - add monitoring of IML events (Thanks Klaus)
   esp. Memory initialization error... The OS may not have access to all of the memory installed in the system 
 
 4.2.5
 - G2 series of X1660 storage systems are now correctly detected. (Thanks Andre Zaborowski)
 - blacklisting for SAS controller & disks was added (Thanks Jewi)
-todo: logs
 
 4.2.4.1 2011-08-09
 - dimm output of G7 hpasmcli (under Solaris) is now handled (Thanks Ron Waffle)
