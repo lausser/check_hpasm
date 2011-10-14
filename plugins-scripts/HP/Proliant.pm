@@ -277,81 +277,102 @@ EOEO
         $self->{runtime}->{plugin}->opts->hpasmcli : '/sbin/hpasmcli';
 # check if this exists at all
 # descend the directory
-    if ($< != 0) {
-      close STDIN;
-      $hpasmcli = "sudo -S ".$hpasmcli;
+    if ($self->{runtime}->{plugin}->opts->hpasmcli &&
+        -e $self->{runtime}->{plugin}->opts->hpasmcli) {
+      $hpasmcli = $self->{runtime}->{plugin}->opts->hpasmcli;
+    } elsif (-e '/sbin/hpasmcli') {
+      $hpasmcli = '/sbin/hpasmcli';
+    } else {
+      $hpasmcli = undef;
     }
-    $self->trace(2, sprintf "calling %s\n", $hpasmcli);
-    $self->check_daemon();
-    if (! $self->{runtime}->{plugin}->check_messages()) {
-      $self->check_hpasm_client($hpasmcli);
+    if ($hpasmcli) {
+      if ($< != 0) {
+        close STDIN;
+        $hpasmcli = "sudo -S ".$hpasmcli;
+      }
+      $self->trace(2, sprintf "calling %s\n", $hpasmcli);
+      $self->check_daemon();
       if (! $self->{runtime}->{plugin}->check_messages()) {
-        foreach my $component (qw(server fans temp dimm powersupply iml)) {
-          if (open HPASMCLI, "$hpasmcli -s \"show $component\"|") {
-            my @output = <HPASMCLI>;
-            close HPASMCLI;
-            $self->{rawdata} .= join("\n", map {
-                $component.' '.$_;
-            } @output);
-          }
-        }
-        if ($self->{runtime}->{options}->{hpacucli}) { 
-          #1 oder 0. pfad selber finden
-          my $hpacucli = undef;
-          if (-e '/usr/sbin/hpacucli') {
-            $hpacucli = '/usr/sbin/hpacucli';
-          } elsif (-e '/usr/local/sbin/hpacucli') {
-            $hpacucli = '/usr/local/sbin/hpacucli';
-          } else {
-            $hpacucli = $hpasmcli;
-            $hpacucli =~ s/^sudo\s*//;
-            $hpacucli =~ s/hpasmcli/hpacucli/;
-            $hpacucli = -e $hpacucli ? $hpacucli : undef;
-          }
-          if ($hpacucli) {
-            if ($< != 0) {
-              close STDIN;
-              $hpacucli = "sudo -S ".$hpacucli;
+        $self->check_hpasm_client($hpasmcli);
+        if (! $self->{runtime}->{plugin}->check_messages()) {
+          foreach my $component (qw(server fans temp dimm powersupply iml)) {
+            if (open HPASMCLI, "$hpasmcli -s \"show $component\"|") {
+              my @output = <HPASMCLI>;
+              close HPASMCLI;
+              $self->{rawdata} .= join("\n", map {
+                  $component.' '.$_;
+              } @output);
             }
-            $self->trace(2, sprintf "calling %s\n", $hpacucli);
-            $self->check_hpacu_client($hpacucli);
-            if (! $self->{runtime}->{plugin}->check_messages()) {
-              if (open HPACUCLI, "$hpacucli ctrl all show config 2>&1|") {
-                my @output = <HPACUCLI>;
-                close HPACUCLI;
-                $self->{rawdata} .= join("\n", map {
-                    'config '.$_;
-                } @output);
-              }
-              if (open HPACUCLI, "$hpacucli ctrl all show status 2>&1|") {
-                my @output = <HPACUCLI>;
-                close HPACUCLI;
-                $self->{rawdata} .= join("\n", map {
-                    'status '.$_;
-                } @output);
-              }
-            } elsif ($self->{runtime}->{options}->{hpacucli} == 2) {
-              # we probably don't have sudo-privileges, but we were compiled with
-              # --enable-hpacucli=maybe
-              # so we cover it up in silence
-              $self->remove_message(UNKNOWN);
-              $self->trace(2, sprintf "calling %s seems to have failed, but nobody cares\n", $hpacucli);
-            }
-          } else {
-            if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
-              $self->add_message(OK,
-                  'hpacucli is not installed. let\'s hope the best...');
+          }
+          if ($self->{runtime}->{options}->{hpacucli}) {
+            #1 oder 0. pfad selber finden
+            my $hpacucli = undef;
+            if (-e '/usr/sbin/hpacucli') {
+              $hpacucli = '/usr/sbin/hpacucli';
+            } elsif (-e '/usr/local/sbin/hpacucli') {
+              $hpacucli = '/usr/local/sbin/hpacucli';
             } else {
-              $self->add_message(
-                  uc $self->{runtime}->{options}->{noinstlevel},
-                  'hpacucli is not installed.');
+              $hpacucli = $hpasmcli;
+              $hpacucli =~ s/^sudo\s*//;
+              $hpacucli =~ s/hpasmcli/hpacucli/;
+              $hpacucli = -e $hpacucli ? $hpacucli : undef;
+            }
+            if ($hpacucli) {
+              if ($< != 0) {
+                close STDIN;
+                $hpacucli = "sudo -S ".$hpacucli;
+              }
+              $self->trace(2, sprintf "calling %s\n", $hpacucli);
+              $self->check_hpacu_client($hpacucli);
+              if (! $self->{runtime}->{plugin}->check_messages()) {
+                if (open HPACUCLI, "$hpacucli ctrl all show config 2>&1|") {
+                  my @output = <HPACUCLI>;
+                  close HPACUCLI;
+                  $self->{rawdata} .= join("\n", map {
+                      'config '.$_;
+                  } @output);
+                }
+                if (open HPACUCLI, "$hpacucli ctrl all show status 2>&1|") {
+                  my @output = <HPACUCLI>;
+                  close HPACUCLI;
+                  $self->{rawdata} .= join("\n", map {
+                      'status '.$_;
+                  } @output);
+                }
+              } elsif ($self->{runtime}->{options}->{hpacucli} == 2) {
+                # we probably don't have sudo-privileges, but we were compiled with
+                # --enable-hpacucli=maybe
+                # so we cover it up in silence
+                $self->remove_message(UNKNOWN);
+                $self->trace(2, sprintf "calling %s seems to have failed, but nobody cares\n", $hpacucli);
+              }
+            } else {
+              if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
+                $self->add_message(OK,
+                    'hpacucli is not installed. let\'s hope the best...');
+              } else {
+                $self->add_message(
+                    uc $self->{runtime}->{options}->{noinstlevel},
+                    'hpacucli is not installed.');
+              }
             }
           }
         }
       }
+    } else {
+      if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
+        $self->add_message(OK,
+            'hpasm is not installed, i can only guess');
+        $self->{noinst_hint} = 1;
+      } else {
+        $self->add_message(
+            uc $self->{runtime}->{options}->{noinstlevel},
+            'hpasmcli is not installed.');
+      }
     }
   }
 }
+
 
 sub check_daemon {
   my $self = shift;
@@ -387,9 +408,9 @@ sub check_daemon {
       }
     }
     if ($numcliprocs == 1) {
-      $self->add_message(UNKNOWN, 'another hpasmdcli is running');
+      $self->add_message(UNKNOWN, 'another hpasmcli is running');
     } elsif ($numcliprocs > 1) {
-      $self->add_message(UNKNOWN, 'hanging hpasmdcli processes');
+      $self->add_message(UNKNOWN, 'hanging hpasmcli processes');
     }
   }
 }
