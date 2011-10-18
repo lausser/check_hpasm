@@ -2,6 +2,8 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+- fix a bug with invalid date/time from iml
+
 4.3 2011-10-14
 - add monitoring of IML events (Thanks Klaus)
   esp. Memory initialization error... The OS may not have access to all of the memory installed in the system 
