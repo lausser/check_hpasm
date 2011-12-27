@@ -7,6 +7,7 @@
 - add checks for nic teaming
 - fix a bug with invalid date/time from iml
 - fix a bug in blade enclosure manager verbose output
+- add msa2xxx storage sensors
 
 4.3 2011-10-14
 - add monitoring of IML events (Thanks Klaus)
