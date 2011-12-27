@@ -20,11 +20,29 @@ sub new {
   };
   bless $self, $class;
   if ($self->{method} eq 'snmp') {
-    return HP::Proliant::Component::EventSubsystem::SNMP->new(%params);
+    $self = HP::Proliant::Component::EventSubsystem::SNMP->new(%params);
   } elsif ($self->{method} eq 'cli') {
-    return HP::Proliant::Component::EventSubsystem::CLI->new(%params);
+    $self = HP::Proliant::Component::EventSubsystem::CLI->new(%params);
   } else {
     die "unknown method";
+  }
+  # repair dates
+  my $lasttime = 0;
+  for my $event (reverse @{$self->{events}}) {
+    if ($event->{cpqHeEventLogUpdateTime} != 0) {
+      $lasttime = $event->{cpqHeEventLogUpdateTime};
+    } else {
+      $event->{cpqHeEventLogUpdateTime} = $lasttime;
+    }
+  }
+  # maybe the most recent events had zero timestamps.
+  # fill them up with timestamps from the past.
+  for my $event (@{$self->{events}}) {
+    if ($event->{cpqHeEventLogUpdateTime} != 0) {
+      $lasttime = $event->{cpqHeEventLogUpdateTime};
+    } else {
+      $event->{cpqHeEventLogUpdateTime} = $lasttime;
+    }
   }
   return $self;
 }

@@ -2,7 +2,11 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.4 2011-12-16
+- add checks for power converters
+- add checks for nic teaming
 - fix a bug with invalid date/time from iml
+- fix a bug in blade enclosure manager verbose output
 
 4.3 2011-10-14
 - add monitoring of IML events (Thanks Klaus)
