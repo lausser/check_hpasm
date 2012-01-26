@@ -2,9 +2,12 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.5 2012-01-26
+- output power consumption perfdata for BladeCenters
+
 4.4 2011-12-16
 - add checks for power converters
-- add checks for nic teaming
+- add checks for nic teaming (experimental!!, must be enabled with --eval-nics)
 - fix a bug with invalid date/time from iml
 - fix a bug in blade enclosure manager verbose output
 - add msa2xxx storage sensors

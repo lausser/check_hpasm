@@ -90,10 +90,30 @@ sub init {
 
 sub check {
   my $self = shift;
+  my $total_current_watt = 0;
+  my $total_max_watt = 0;
   foreach (@{$self->{power_supplies}}) {
     $_->check() if $_->{cpqRackPowerSupplyPresent} eq 'present' ||
         $self->{runtime}->{options}->{verbose} >= 3; # absent nur bei -vvv
+    $total_max_watt += $_->{cpqRackPowerSupplyMaxPwrOutput}
+        if $_->{cpqRackPowerSupplyPresent} eq 'present';
+    $total_current_watt += $_->{cpqRackPowerSupplyCurPwrOutput}
+        if $_->{cpqRackPowerSupplyPresent} eq 'present';
   }
+  $self->{runtime}->{plugin}->add_perfdata(
+      label => 'watt_total',
+      value => $total_current_watt,
+      warning => $total_max_watt,
+      critical => $total_max_watt,
+  );
+  $self->{runtime}->{plugin}->add_perfdata(
+      label => 'watt_total_pct',
+      value => ($total_current_watt == 0 ? 0 :
+          ($total_current_watt / $total_max_watt * 100)),
+      warning => 100,
+      critical => 100,
+      uom => '%',
+  );
 }
 
 sub dump {
@@ -152,6 +172,23 @@ sub check {
           $self->{name}, $self->{cpqRackPowerSupplyStatus},
           $self->{cpqRackPowerSupplySupplyInputLineStatus});
     } 
+    if ($self->{runtime}->{options}->{perfdata} != 2) {
+        $self->{runtime}->{plugin}->add_perfdata(
+            label => sprintf('watt_%s', $self->{name}),
+            value => $self->{cpqRackPowerSupplyCurPwrOutput},
+            warning => $self->{cpqRackPowerSupplyMaxPwrOutput},
+            critical => $self->{cpqRackPowerSupplyMaxPwrOutput}
+        );
+        $self->{runtime}->{plugin}->add_perfdata(
+            label => sprintf('watt_pct_%s', $self->{name}),
+            value => ($self->{cpqRackPowerSupplyCurPwrOutput} == 0 ? 0 :
+                ($self->{cpqRackPowerSupplyCurPwrOutput} /
+                $self->{cpqRackPowerSupplyMaxPwrOutput} * 100)),
+            warning => 100,
+            critical => 100,
+            uom => '%',
+        );
+    }
   }
 } 
   
