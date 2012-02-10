@@ -81,11 +81,8 @@ sub init {
  
  
   # INDEX { cpqRackPowerSupplyRack, cpqRackPowerSupplyChassis, cpqRackPowerSupplyIndex }
-  # dreckada dreck, dreckada
-  my $hpnr = 1;
   foreach ($self->get_entries($oids, 'cpqRackPowerSupplyEntry')) {
     push(@{$self->{power_supplies}},
-        $_->{PSUNr} = $hpnr++;
         HP::BladeSystem::Component::PowerSupplySubsystem::PowerSupply->new(%{$_}));
   }
 }
@@ -116,15 +113,15 @@ sub check {
       warning => $total_max_watt,
       critical => $total_max_watt,
   );
-  $self->{runtime}->{plugin}->add_perfdata(
-      label => 'watt_total_pct',
-      value => ($total_current_watt == 0 ? 0 :
-          sprintf("%.2f",
-          ($total_current_watt / $total_max_watt * 100))),
-      warning => 100,
-      critical => 100,
-      uom => '%',
-  );
+  #$self->{runtime}->{plugin}->add_perfdata(
+  #    label => 'watt_total_pct',
+  #    value => ($total_current_watt == 0 ? 0 :
+  #        sprintf("%.2f",
+  #        ($total_current_watt / $total_max_watt * 100))),
+  #    warning => 100,
+  #    critical => 100,
+  #    uom => '%',
+  #);
   if ($total_in_temp) {
     $self->{runtime}->{plugin}->add_perfdata(
         label => 'in_temp',
@@ -202,26 +199,20 @@ sub check {
           warning => $self->{cpqRackPowerSupplyMaxPwrOutput},
           critical => $self->{cpqRackPowerSupplyMaxPwrOutput}
       );
-      $self->{runtime}->{plugin}->add_perfdata(
-          label => sprintf('watt_pct_%s', $self->{name}),
-          value => ($self->{cpqRackPowerSupplyCurPwrOutput} == 0 ? 0 :
-              sprintf ("%.2f",
-              ($self->{cpqRackPowerSupplyCurPwrOutput} /
-              $self->{cpqRackPowerSupplyMaxPwrOutput} * 100))),
-          warning => 100,
-          critical => 100,
-          uom => '%',
-      );
+      #$self->{runtime}->{plugin}->add_perfdata(
+      #    label => sprintf('watt_pct_%s', $self->{name}),
+      #    value => ($self->{cpqRackPowerSupplyCurPwrOutput} == 0 ? 0 :
+      #        sprintf ("%.2f",
+      #        ($self->{cpqRackPowerSupplyCurPwrOutput} /
+      #        $self->{cpqRackPowerSupplyMaxPwrOutput} * 100))),
+      #    warning => 100,
+      #    critical => 100,
+      #    uom => '%',
+      #);
       if ($self->{cpqRackPowerSupplyIntakeTemp} != -1) {
         $self->{runtime}->{plugin}->add_perfdata(
             label => sprintf('in_temp_%s', $self->{name}),
             value => $self->{cpqRackPowerSupplyIntakeTemp},
-        );
-      }
-      if ($self->{cpqRackPowerSupplyIntakeTemp} != -1) {
-        $self->{runtime}->{plugin}->add_perfdata(
-            label => sprintf('out_temp_%s', $self->{name}),
-            value => $self->{cpqRackPowerSupplyExhaustTemp},
         );
       }
       if ($self->{cpqRackPowerSupplyExhaustTemp} != -1) {

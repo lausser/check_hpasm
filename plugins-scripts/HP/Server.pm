@@ -29,6 +29,9 @@ sub new {
       if ($self->{productname} =~ /ProLiant/) {
         bless $self, 'HP::Proliant::SNMP';
         $self->trace(3, 'using HP::Proliant::SNMP');
+      } elsif ($self->{productname} =~ /^DL\d+\s*G\d+/) {
+        bless $self, 'HP::Proliant::SNMP';
+        $self->trace(3, 'using HP::Proliant::SNMP');
       } elsif ($self->{productname} =~ /OpenView .* appliance/) {
         bless $self, 'HP::Proliant::SNMP';
         $self->trace(3, 'using HP::Proliant::SNMP');
