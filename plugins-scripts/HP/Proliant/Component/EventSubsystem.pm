@@ -82,8 +82,10 @@ use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
     # POST Error: 201-Memory Error Single-bit error occured during memory initialization, Board 1, DIMM 1. Bank containing DIMM(s) has been disabled..
     # POST Error: 207-Memory initialization error on Memory Board 5 DIMM 7. The operating system may not have access to all of the memory installed in the system..
     # POST Error: 207-Invalid Memory Configuration-Mismatched DIMMs within DIMM Bank Memory in Bank A Not Utilized..  
+    # POST Error: 210 - Quick Path Interconnect (QPI) Link Degradation. A QPI link is operating in a degraded performace state..
     'POST Messages' => [
-      '201-Memory', '207-Memory'
+      '201-Memory', '207-Memory',
+      '210\s*-\s*Quick Path Interconnect.*degraded.*'
     ],
   };
 }
