@@ -128,6 +128,7 @@ sub analyze_memory_subsystem {
 
 sub analyze_nic_subsystem {
   my $self = shift;
+  return if $self->{method} != "snmp";
   $self->{components}->{nic_subsystem} = 
       HP::Proliant::Component::NicSubsystem->new(
     rawdata => $self->{rawdata},
@@ -203,11 +204,12 @@ sub check_memory_subsystem {
 
 sub check_nic_subsystem {
   my $self = shift;
-if ($self->{runtime}->{plugin}->{opts}->get('eval-nics')) {
-  $self->{components}->{nic_subsystem}->check();
-  $self->{components}->{nic_subsystem}->dump()
-      if $self->{runtime}->{options}->{verbose} >= 2;
-}
+  return if $self->{method} != "snmp";
+  if ($self->{runtime}->{plugin}->{opts}->get('eval-nics')) {
+    $self->{components}->{nic_subsystem}->check();
+    $self->{components}->{nic_subsystem}->dump()
+        if $self->{runtime}->{options}->{verbose} >= 2;
+  }
 }
 sub check_disk_subsystem {
   my $self = shift;
