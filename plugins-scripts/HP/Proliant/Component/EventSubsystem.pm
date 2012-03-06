@@ -87,6 +87,9 @@ use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
       '201-Memory', '207-Memory',
       '210\s*-\s*Quick Path Interconnect.*degraded.*'
     ],
+    'Main Memory' => [
+      'Corrected Memory Error threshold exceeded',
+    ],
   };
 }
 

@@ -2,6 +2,8 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.5.2 2012-03-06
+- add another error log: Main Memory - Corrected Memory Error threshold exceeded 
 4.5.1 2012-02
 - add another error log: 210 - Quick Path Interconnect (QPI) Link Degradation
 - remove watt percent for blade center power supply
