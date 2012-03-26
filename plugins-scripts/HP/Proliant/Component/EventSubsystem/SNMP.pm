@@ -42,9 +42,12 @@ sub overall_init {
     3 => 'degraded',
     4 => 'failed',
   };
+  $self->{eventsupp} = lc SNMP::Utils::get_object_value(
+      $snmpwalk, $cpqHeEventLogSupported,
+      $cpqHeEventLogSupportedValue);
   $self->{eventstatus} = lc SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeEventLogCondition,
-      $cpqHeEventLogSupportedValue);
+      $cpqHeEventLogConditionValue);
 }
 
 sub init {
@@ -171,7 +174,7 @@ sub overall_check {
   my $self = shift;
   my $result = 0;
   $self->blacklist('oe', '');
-  if ($self->{eventstatus}) {
+  if ($self->{eventsupp} && $self->{eventsupp} eq "supported") {
     if ($self->{eventstatus} eq "ok") {
       $result = 0;
       $self->add_info('eventlog system is ok');

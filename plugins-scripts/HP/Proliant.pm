@@ -582,6 +582,7 @@ sub collect {
       my $cpqSiComponent =  "1.3.6.1.4.1.232.2.2";
       my $cpqHeAsr = "1.3.6.1.4.1.232.6.2.5";
       my $cpqNic = "1.3.6.1.4.1.232.18.2";
+      my $cpqHeEventLog = "1.3.6.1.4.1.232.6.2.11";
       $session->translate;
       my $response = {}; #break the walk up in smaller pieces
       my $tic = time; my $tac = $tic;
@@ -707,7 +708,7 @@ sub collect {
             -baseoid => $cpqHeAsr);
       }
       $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk $cpqHeAsr (%d oids)",
+      $self->trace(2, sprintf "%03d seconds for walk cpqHeAsr (%d oids)",
           $tac - $tic, scalar(keys %{$response9}));
       $tic = time;
       my $response10 = $session->get_table(
@@ -715,6 +716,19 @@ sub collect {
       $tac = time;
       $self->trace(2, sprintf "%03d seconds for walk cpqNic (%d oids)",
           $tac - $tic, scalar(keys %{$response10}));
+      
+      $tic = time;
+      my $response11 = $session->get_table(
+          -maxrepetitions => 1,
+          -baseoid => $cpqHeEventLog);
+      $tac = time;
+      if (scalar (keys %{$response11}) == 0) {
+        $self->trace(2, sprintf "maxrepetitions failed. fallback");
+        $response11 = $session->get_table(
+            -baseoid => $cpqHeEventLog);
+      }
+      $self->trace(2, sprintf "%03d seconds for walk cpqHeEventlog (%d oids)",
+          $tac - $tic, scalar(keys %{$response11}));
       $session->close();
 
       map { $response->{$_} = $response1->{$_} } keys %{$response1};
@@ -730,6 +744,7 @@ sub collect {
       map { $response->{$_} = $response8->{$_} } keys %{$response8};
       map { $response->{$_} = $response9->{$_} } keys %{$response9};
       map { $response->{$_} = $response10->{$_} } keys %{$response10};
+      map { $response->{$_} = $response11->{$_} } keys %{$response11};
       map { $response->{$_} =~ s/^\s+//; $response->{$_} =~ s/\s+$//; }
           keys %$response;
       $self->{rawdata} = $response;
