@@ -2,7 +2,8 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
-4.5.4
+4.5.3.1 2012-04-19
+- change the way --snmpwalk reads oids from a file
 
 4.5.3 2012-03-26
 - fix a bug in snmp-eventlogs
