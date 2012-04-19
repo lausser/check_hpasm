@@ -526,6 +526,44 @@ sub collect {
         $self->add_message(CRITICAL,
             'snmpwalk returns no health data (cpqhlth-mib)');
     }
+    $self->{fullrawdata} = {};
+    %{$self->{fullrawdata}} = %{$self->{rawdata}};
+    $self->{rawdata} = {};
+    if (! $self->{runtime}->{plugin}->check_messages()) {
+      # for a better simulation, only put those oids into 
+      # rawdata which would also be put by a real snmp agent.
+      my %oidtables = (
+          cpqSeProcessor =>    "1.3.6.1.4.1.232.1.2.2",
+          cpqHePWSComponent => "1.3.6.1.4.1.232.6.2.9",
+          cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
+          cpqHeMComponent =>   "1.3.6.1.4.1.232.6.2.14",
+          cpqDaComponent =>    "1.3.6.1.4.1.232.3.2",
+          cpqSiComponent =>    "1.3.6.1.4.1.232.2.2",
+          cpqSeRom =>          "1.3.6.1.4.1.232.1.2.6",
+          cpqSasComponent =>   "1.3.6.1.4.1.232.5",
+          cpqIdeComponent =>   "1.3.6.1.4.1.232.14",
+          cpqFcaComponent =>   "1.3.6.1.4.1.232.16.2",
+          cpqHeAsr =>          "1.3.6.1.4.1.232.6.2.5",
+          cpqNic =>            "1.3.6.1.4.1.232.18.2",
+          cpqHeEventLog =>     "1.3.6.1.4.1.232.6.2.11",
+
+      #    cpqHeComponent =>  "1.3.6.1.4.1.232.6.2",
+      #    cpqHeFComponent => "1.3.6.1.4.1.232.6.2.6.7",
+      #    cpqHeTComponent => "1.3.6.1.4.1.232.6.2.6.8",
+      );
+      foreach my $table (keys %oidtables) {
+        my $oid = $oidtables{$table};
+        $oid =~ s/\./\\./g;
+        my $tmpoids = {};
+        my $tic = time;
+        map { $tmpoids->{$_} = $self->{fullrawdata}->{$_} }
+            grep /^$oid/, %{$self->{fullrawdata}};
+        my $tac = time;
+        $self->trace(2, sprintf "%03d seconds for walk %s (%d oids)",
+            $tac - $tic, $table, scalar(keys %{$tmpoids}));
+        map { $self->{rawdata}->{$_} = $tmpoids->{$_} } keys %{$tmpoids};
+      }
+    }
   } else {
     my $net_snmp_version = Net::SNMP->VERSION(); # 5.002000 or 6.000000
     #$params{'-translate'} = [
