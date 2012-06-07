@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.6 2012-06-07
+- output power consumption as performance data (onle newer proliant models)
+
 4.5.3.1 2012-04-19
 - change the way --snmpwalk reads oids from a file
 

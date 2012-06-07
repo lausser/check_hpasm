@@ -51,6 +51,8 @@ sub init {
           lc $1 eq 'no' ? 'notRedundant' : 'other';
     } elsif (/\s*Condition\s*:\s+(\w+)/) {
       $tmpps{cpqHeFltTolPowerSupplyCondition} = lc $1;
+    } elsif (/\s*Power\s*:\s+(\d+)/) {
+      $tmpps{cpqHeFltTolPowerSupplyCapacityUsed} = $1;
     } elsif (/\s*Power Supply not present/) {
       $tmpps{cpqHeFltTolPowerSupplyPresent} = "absent";
       $tmpps{cpqHeFltTolPowerSupplyCondition} = "other";

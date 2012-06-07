@@ -67,6 +67,8 @@ sub new {
     cpqHeFltTolPowerSupplyPresent => $params{cpqHeFltTolPowerSupplyPresent},
     cpqHeFltTolPowerSupplyCondition => $params{cpqHeFltTolPowerSupplyCondition},
     cpqHeFltTolPowerSupplyRedundant => $params{cpqHeFltTolPowerSupplyRedundant},
+    cpqHeFltTolPowerSupplyCapacityUsed => $params{cpqHeFltTolPowerSupplyCapacityUsed},
+    cpqHeFltTolPowerSupplyCapacityMaximum => $params{cpqHeFltTolPowerSupplyCapacityMaximum},
     blacklisted => 0,
     info => undef,
     extendexinfo => undef,
@@ -97,6 +99,20 @@ sub check {
     $self->add_extendedinfo(sprintf "ps_%s=%s",
         $self->{cpqHeFltTolPowerSupplyBay},
         $self->{cpqHeFltTolPowerSupplyCondition});
+    if ($self->{cpqHeFltTolPowerSupplyCapacityUsed} &&
+        $self->{cpqHeFltTolPowerSupplyCapacityMaximum}) {
+      $self->{runtime}->{plugin}->add_perfdata(
+          label => sprintf("pc_%s", $self->{cpqHeFltTolPowerSupplyBay}),
+          value => $self->{cpqHeFltTolPowerSupplyCapacityUsed},
+          warning => $self->{cpqHeFltTolPowerSupplyCapacityMaximum},
+          critical => $self->{cpqHeFltTolPowerSupplyCapacityMaximum}
+      );
+    } elsif ($self->{cpqHeFltTolPowerSupplyCapacityUsed}) {
+      $self->{runtime}->{plugin}->add_perfdata(
+          label => sprintf("pc_%s", $self->{cpqHeFltTolPowerSupplyBay}),
+          value => $self->{cpqHeFltTolPowerSupplyCapacityUsed}
+      );
+    }
   } else {
     $self->add_info(sprintf "powersupply %d is %s",
         $self->{cpqHeFltTolPowerSupplyBay},
@@ -113,7 +129,8 @@ sub dump {
   printf "[PS_%s]\n", $self->{cpqHeFltTolPowerSupplyBay};
   foreach (qw(cpqHeFltTolPowerSupplyBay cpqHeFltTolPowerSupplyChassis
       cpqHeFltTolPowerSupplyPresent cpqHeFltTolPowerSupplyCondition
-      cpqHeFltTolPowerSupplyRedundant)) {
+      cpqHeFltTolPowerSupplyRedundant cpqHeFltTolPowerSupplyCapacityUsed
+      cpqHeFltTolPowerSupplyCapacityMaximum)) {
     printf "%s: %s\n", $_, $self->{$_};
   }
   printf "info: %s\n\n", $self->{info};

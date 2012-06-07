@@ -44,6 +44,8 @@ sub init {
           3 => "degraded",
           4 => "failed",
       },
+      cpqHeFltTolPowerSupplyCapacityUsed => '1.3.6.1.4.1.232.6.2.9.3.1.7',
+      cpqHeFltTolPowerSupplyCapacityMaximum => '1.3.6.1.4.1.232.6.2.9.3.1.8',
       cpqHeFltTolPowerSupplyRedundantValue => {
           1 => "other",
           2 => "notRedundant",
