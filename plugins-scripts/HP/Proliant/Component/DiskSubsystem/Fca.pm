@@ -33,7 +33,7 @@ sub new {
 
 sub assemble {
   my $self = shift;
-  $self->trace(3, sprintf "%s controllers und platten zusammenführen",
+  $self->trace(3, sprintf "%s controllers und platten zusammenfuehren",
       ref($self));
   $self->trace(3, sprintf "has %d host controllers", 
       scalar(@{$self->{host_controllers}}));

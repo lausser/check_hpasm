@@ -3,7 +3,9 @@
 #######################################
 
 4.6 2012-06-07
-- output power consumption as performance data (onle newer proliant models)
+- output power consumption as performance data (only newer proliant models)
+- support older <=7 versions of hpacucli
+- add another error log: Uncorrectable Memory Error 
 
 4.5.3.1 2012-04-19
 - change the way --snmpwalk reads oids from a file

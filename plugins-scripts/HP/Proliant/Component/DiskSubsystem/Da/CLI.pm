@@ -84,6 +84,7 @@ sub init {
     } elsif (/^\s*$/) {
     }
   }
+  $slot = 0;
   $cntlindex = 0;
   $ldriveindex = 0;
   $pdriveindex = 0;
@@ -92,8 +93,10 @@ sub init {
     next if /^config\s*$/;
     s/^config\s*//;
     if (/([\s\w]+) in Slot\s+(\d+)/) {
+      if ($slot != $2) {
+        $cntlindex++;
+      }
       $slot = $2;
-      $cntlindex++;
       $pdriveindex = 1;
     } elsif (/(MSA[\s\w]+)\s+in\s+(\w+)/) {
       $slot = $2;

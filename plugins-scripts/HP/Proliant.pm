@@ -350,19 +350,38 @@ EOEO
               $self->trace(2, sprintf "calling %s\n", $hpacucli);
               $self->check_hpacu_client($hpacucli);
               if (! $self->{runtime}->{plugin}->check_messages()) {
-                if (open HPACUCLI, "$hpacucli ctrl all show config 2>&1|") {
-                  my @output = <HPACUCLI>;
-                  close HPACUCLI;
-                  $self->{rawdata} .= join("\n", map {
-                      'config '.$_;
-                  } @output);
-                }
                 if (open HPACUCLI, "$hpacucli ctrl all show status 2>&1|") {
                   my @output = <HPACUCLI>;
                   close HPACUCLI;
                   $self->{rawdata} .= join("\n", map {
                       'status '.$_;
                   } @output);
+                }
+                if (open HPACUCLI, "$hpacucli ctrl all show config 2>&1|") {
+                  my @output = <HPACUCLI>;
+                  close HPACUCLI;
+                  $self->{rawdata} .= join("\n", map {
+                      'config '.$_;
+                  } @output);
+                  if (grep /Syntax error at "config"/, @output) {
+                    # older version of hpacucli CLI 7.50.18.0
+                    foreach my $slot (0..10) {
+                      if (open HPACUCLI, "$hpacucli ctrl slot=$slot logicaldrive all show 2>&1|") {
+                        my @output = <HPACUCLI>;
+                        close HPACUCLI;
+                        $self->{rawdata} .= join("\n", map {
+                            'config '.$_;
+                        } @output);
+                      }
+                      if (open HPACUCLI, "$hpacucli ctrl slot=$slot physicaldrive all show 2>&1|") {
+                        my @output = <HPACUCLI>;
+                        close HPACUCLI;
+                        $self->{rawdata} .= join("\n", map {
+                            'config '.$_;
+                        } @output);
+                      }
+                    }
+                  }
                 }
               } elsif ($self->{runtime}->{options}->{hpacucli} == 2) {
                 # we probably don't have sudo-privileges, but we were compiled with
@@ -478,7 +497,7 @@ sub check_hpacu_client {
     } elsif (grep /(asswor[dt]:)|(You must be root)/, @output) {
       $self->add_message(UNKNOWN,
           sprintf "insufficient rights to call %s", $hpacucli);
-    } elsif (! grep /CLI Syntax/, @output) {
+    } elsif (! grep /(CLI Syntax)|(ACU CLI)/, @output) {
       $self->add_message(UNKNOWN,
           sprintf "insufficient rights to call %s", $hpacucli);
     }

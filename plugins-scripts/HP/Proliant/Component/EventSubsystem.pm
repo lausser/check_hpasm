@@ -89,6 +89,7 @@ use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
     ],
     'Main Memory' => [
       'Corrected Memory Error threshold exceeded',
+      'Uncorrectable Memory Error',
     ],
   };
 }

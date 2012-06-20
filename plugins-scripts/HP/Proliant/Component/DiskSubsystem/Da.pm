@@ -257,7 +257,7 @@ sub check {
           $self->{cpqDaLogDrvFaultTol});
   if ($self->{cpqDaLogDrvCondition} ne "ok") {
     if ($self->{cpqDaLogDrvStatus} =~ 
-        /rebuild|recovering|expanding|queued/) {
+        /rebuild|recovering|recovery|expanding|queued/) {
       $self->add_message(WARNING,
           sprintf "logical drive %s is %s", 
               $self->{name}, $self->{cpqDaLogDrvStatus});

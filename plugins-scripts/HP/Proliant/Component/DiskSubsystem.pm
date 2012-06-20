@@ -86,7 +86,7 @@ sub disk_summary {
 
 sub assemble {
   my $self = shift;
-  $self->trace(3, sprintf "%s controllers und platten zusammenführen",
+  $self->trace(3, sprintf "%s controllers und platten zusammenfuehren",
       ref($self));
   $self->trace(3, sprintf "has %d controllers",
       scalar(@{$self->{controllers}}));
