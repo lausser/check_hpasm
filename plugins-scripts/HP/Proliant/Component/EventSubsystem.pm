@@ -191,10 +191,13 @@ sub check {
               if (0) {
                 # auto-ack?
               } 
+              last;
             } elsif ($self->{cpqHeEventLogUpdateTime} < $self->{criticaltime}) {
               $self->add_message(WARNING, $self->{info});
+              last;
             } else {
               $self->add_message(CRITICAL, $self->{info});
+              last;
             }
           }
         }

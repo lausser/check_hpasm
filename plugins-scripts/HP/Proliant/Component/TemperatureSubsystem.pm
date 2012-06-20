@@ -85,6 +85,7 @@ sub new {
     cpqHeTemperatureCelsius => $params{cpqHeTemperatureCelsius},
     cpqHeTemperatureThresholdCelsius => $params{cpqHeTemperatureThresholdCelsius},
     cpqHeTemperatureCondition => $params{cpqHeTemperatureCondition},
+    cpqHeTemperatureThresholdType => $params{cpqHeTemperatureThresholdType} || "unknown",
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
@@ -158,7 +159,7 @@ sub dump {
   printf "[TEMP_%s]\n", $self->{cpqHeTemperatureIndex};
   foreach (qw(cpqHeTemperatureChassis cpqHeTemperatureIndex 
       cpqHeTemperatureLocale cpqHeTemperatureCelsius cpqHeTemperatureThreshold
-      cpqHeTemperatureCondition)) {
+      cpqHeTemperatureThresholdType cpqHeTemperatureCondition)) {
     printf "%s: %s\n", $_, $self->{$_};
   }
   printf "info: %s\n\n", $self->{info};

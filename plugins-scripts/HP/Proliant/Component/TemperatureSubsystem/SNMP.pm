@@ -51,6 +51,7 @@ sub init {
       cpqHeTemperatureCelsius => "1.3.6.1.4.1.232.6.2.6.8.1.4",
       cpqHeTemperatureThresholdCelsius => "1.3.6.1.4.1.232.6.2.6.8.1.5",
       cpqHeTemperatureCondition => "1.3.6.1.4.1.232.6.2.6.8.1.6",
+      cpqHeTemperatureThresholdType => "1.3.6.1.4.1.232.6.2.6.8.1.7",
       cpqHeTemperatureLocaleValue => {
           1 => "other",
           2 => "unknown",
@@ -71,6 +72,12 @@ sub init {
           2 => 'ok',
           3 => 'degraded',
           4 => 'failed',
+      }
+      cpqHeTemperatureThresholdType => {
+          1 => 'other',
+          5 => 'blowout',
+          9 => 'caution',
+          15 => 'critical',
       }
   };
   # INDEX { cpqHeTemperatureChassis, cpqHeTemperatureIndex }
