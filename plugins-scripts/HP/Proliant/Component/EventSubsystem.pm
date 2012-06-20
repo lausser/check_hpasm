@@ -17,11 +17,17 @@ sub new {
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
+    boottime => 0,
   };
   bless $self, $class;
   if ($self->{method} eq 'snmp') {
+    $self->{boottime} = time - SNMP::Utils::get_object(
+        $self->{rawdata}, '1.3.6.1.2.1.25.1.1.0') / 100;
     $self = HP::Proliant::Component::EventSubsystem::SNMP->new(%params);
   } elsif ($self->{method} eq 'cli') {
+    my $uptime = do { local (@ARGV, $/) = "/proc/uptime"; my $x = <>; close ARGV; $x };
+    # also watch 10 minutes of booting before the operating system starts ticking
+    $self->{boottime} = time - int((split(/\s+/, $uptime))[0]) - 600;
     $self = HP::Proliant::Component::EventSubsystem::CLI->new(%params);
   } else {
     die "unknown method";
@@ -43,6 +49,10 @@ sub new {
     } else {
       $event->{cpqHeEventLogUpdateTime} = $lasttime;
     }
+  }
+  # we need the boottime in the event's check method
+  for my $event (@{$self->{events}}) {
+    $event->{boottime} = $self->{boottime};
   }
   return $self;
 }
@@ -170,9 +180,6 @@ sub check {
   # POST events only if they date maximum from reboot-5min
   # younger than critical? -> critical
   # 
-  my $uptime = do { local (@ARGV, $/) = "/proc/uptime"; my $x = <>; close ARGV; $x };
-  # also watch 10 minutes of booting before the operating system starts ticking
-  my $boottime = time - int((split(/\s+/, $uptime))[0]) - 600;
   $self->add_info(sprintf "Event: %d Added: %s Class: (%s) %s %s",
       $self->{cpqHeEventLogEntryNumber},
       $self->{cpqHeEventLogUpdateTime},
@@ -181,7 +188,8 @@ sub check {
       $self->{cpqHeEventLogErrorDesc});
   if ($self->{cpqHeEventLogEntrySeverity} eq "caution" ||
       $self->{cpqHeEventLogEntrySeverity} eq "critical") {
-    if ($self->{cpqHeEventLogUpdateTime} >= $boottime) {
+    # also watch 10 minutes of booting before the operating system starts ticking
+    if ($self->{cpqHeEventLogUpdateTime} >= $self->{boottime}) {
       foreach my $class (keys %{$HP::Proliant::Component::EventSubsystem::Event::interesting_events}) {
         foreach my $pattern (@{$HP::Proliant::Component::EventSubsystem::Event::interesting_events->{$class}}) {
           if ($self->{cpqHeEventLogErrorDesc} =~ /$pattern/) {
