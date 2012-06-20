@@ -73,7 +73,7 @@ sub init {
           3 => 'degraded',
           4 => 'failed',
       },
-      cpqHeTemperatureThresholdType => {
+      cpqHeTemperatureThresholdTypeValue => {
           1 => 'other',
           5 => 'blowout',
           9 => 'caution',
