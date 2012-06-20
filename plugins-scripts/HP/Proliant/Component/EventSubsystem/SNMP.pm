@@ -147,10 +147,34 @@ sub init {
           $_->{cpqHeEventLogInitialTime} = 0;
         }
       }
+    } elsif ($_->{cpqHeEventLogInitialTime} =~ /^0x([0-9a-fA-F]{4})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/) {
+      my  ($year, $month, $day, $hour, $min) = map { hex($_) } ($1, $2, $3, $4, $5);
+      if ($year == 0) {
+        $_->{cpqHeEventLogInitialTime} = 0;
+      } else {
+        eval {
+          $_->{cpqHeEventLogInitialTime} = timelocal(0, $min, $hour, $day, $month - 1, $year);
+        };
+        if ($@) {
+          $_->{cpqHeEventLogInitialTime} = 0;
+        }
+      }
     }
     if ($_->{cpqHeEventLogUpdateTime} =~ /^(([0-9a-fA-F]{2})( [0-9a-fA-F]{2})*)\s*$/) {
       $_->{cpqHeEventLogUpdateTime} =~ s/ //;
       my  ($year, $month, $day, $hour, $min) = map { hex($_) } split(/\s+/, $_->{cpqHeEventLogUpdateTime});
+      if ($year == 0) {
+        $_->{cpqHeEventLogUpdateTime} = 0;
+      } else {
+        eval {
+          $_->{cpqHeEventLogUpdateTime} = timelocal(0, $min, $hour, $day, $month - 1, $year);
+        };
+        if ($@) {
+          $_->{cpqHeEventLogUpdateTime} = 0;
+        }
+      }
+    } elsif ($_->{cpqHeEventLogUpdateTime} =~ /^0x([0-9a-fA-F]{4})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/) {
+      my  ($year, $month, $day, $hour, $min) = map { hex($_) } ($1, $2, $3, $4, $5);
       if ($year == 0) {
         $_->{cpqHeEventLogUpdateTime} = 0;
       } else {
