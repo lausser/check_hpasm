@@ -72,13 +72,13 @@ sub init {
           2 => 'ok',
           3 => 'degraded',
           4 => 'failed',
-      }
+      },
       cpqHeTemperatureThresholdType => {
           1 => 'other',
           5 => 'blowout',
           9 => 'caution',
           15 => 'critical',
-      }
+      },
   };
   # INDEX { cpqHeTemperatureChassis, cpqHeTemperatureIndex }
   foreach ($self->get_entries($oids, 'cpqHeTemperatureEntry')) {
