@@ -82,6 +82,9 @@ sub init {
   };
   # INDEX { cpqHeTemperatureChassis, cpqHeTemperatureIndex }
   foreach ($self->get_entries($oids, 'cpqHeTemperatureEntry')) {
+    # sieht aus, als wurden die gar nicht existieren.
+    # im ilo4 werden sie als n/a angezeigt
+    next if $_->{cpqHeTemperatureThresholdType} eq "caution" && $_->{cpqHeTemperatureThresholdCelsius} == 0;
     push(@{$self->{temperatures}},
         HP::Proliant::Component::TemperatureSubsystem::Temperature->new(%{$_}));
   }
