@@ -178,7 +178,7 @@ use Getopt::Long qw(:config no_ignore_case bundling);
 
 # Standard defaults
 my %DEFAULT = (
-  timeout => 15,
+  timeout => 60,
   verbose => 0,
   license =>
 "This nagios plugin is free software, and comes with ABSOLUTELY NO WARRANTY.
