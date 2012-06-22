@@ -521,6 +521,9 @@ sub set_serial {
   $self->{serial} = $self->{serial};
   $self->{product} = lc $self->{product};
   $self->{romversion} = $self->{romversion};
+  foreach (qw(serial product romversion)) {
+    $self->{$_} =~ s/\s+$//g;
+  }
 }
 
 
@@ -533,6 +536,26 @@ our @ISA = qw(HP::Proliant);
 
 sub collect {
   my $self = shift;
+  my %oidtables = (
+      hostresources =>     "1.3.6.1.2.1.25.1",
+      cpqSeProcessor =>    "1.3.6.1.4.1.232.1.2.2",
+      cpqHePWSComponent => "1.3.6.1.4.1.232.6.2.9",
+      cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
+      cpqHeMComponent =>   "1.3.6.1.4.1.232.6.2.14",
+      cpqDaComponent =>    "1.3.6.1.4.1.232.3.2",
+      cpqSiComponent =>    "1.3.6.1.4.1.232.2.2",
+      cpqSeRom =>          "1.3.6.1.4.1.232.1.2.6",
+      cpqSasComponent =>   "1.3.6.1.4.1.232.5",
+      cpqIdeComponent =>   "1.3.6.1.4.1.232.14",
+      cpqFcaComponent =>   "1.3.6.1.4.1.232.16.2",
+      cpqHeAsr =>          "1.3.6.1.4.1.232.6.2.5",
+      cpqNic =>            "1.3.6.1.4.1.232.18.2",
+      cpqHeEventLog =>     "1.3.6.1.4.1.232.6.2.11",
+
+      #    cpqHeComponent =>  "1.3.6.1.4.1.232.6.2",
+      #    cpqHeFComponent => "1.3.6.1.4.1.232.6.2.6.7",
+      #    cpqHeTComponent => "1.3.6.1.4.1.232.6.2.6.8",
+  );
   if ($self->{runtime}->{plugin}->opts->snmpwalk) {
     my $cpqSeMibCondition = '1.3.6.1.4.1.232.1.1.3.0'; # 2=ok
     my $cpqHeMibCondition = '1.3.6.1.4.1.232.6.1.3.0'; # hat nicht jeder
@@ -551,25 +574,6 @@ sub collect {
     if (! $self->{runtime}->{plugin}->check_messages()) {
       # for a better simulation, only put those oids into 
       # rawdata which would also be put by a real snmp agent.
-      my %oidtables = (
-          cpqSeProcessor =>    "1.3.6.1.4.1.232.1.2.2",
-          cpqHePWSComponent => "1.3.6.1.4.1.232.6.2.9",
-          cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
-          cpqHeMComponent =>   "1.3.6.1.4.1.232.6.2.14",
-          cpqDaComponent =>    "1.3.6.1.4.1.232.3.2",
-          cpqSiComponent =>    "1.3.6.1.4.1.232.2.2",
-          cpqSeRom =>          "1.3.6.1.4.1.232.1.2.6",
-          cpqSasComponent =>   "1.3.6.1.4.1.232.5",
-          cpqIdeComponent =>   "1.3.6.1.4.1.232.14",
-          cpqFcaComponent =>   "1.3.6.1.4.1.232.16.2",
-          cpqHeAsr =>          "1.3.6.1.4.1.232.6.2.5",
-          cpqNic =>            "1.3.6.1.4.1.232.18.2",
-          cpqHeEventLog =>     "1.3.6.1.4.1.232.6.2.11",
-
-      #    cpqHeComponent =>  "1.3.6.1.4.1.232.6.2",
-      #    cpqHeFComponent => "1.3.6.1.4.1.232.6.2.6.7",
-      #    cpqHeTComponent => "1.3.6.1.4.1.232.6.2.6.8",
-      );
       foreach my $table (keys %oidtables) {
         my $oid = $oidtables{$table};
         $oid =~ s/\./\\./g;
@@ -594,6 +598,7 @@ sub collect {
       $self->{plugin}->add_message(CRITICAL, 'cannot create session object');
       $self->trace(1, Data::Dumper::Dumper($self->{runtime}->{snmpparams}));
     } else {
+      $session->translate(['-timeticks' => 0]);
       # revMajor is often used for discovery of hp devices
       my $cpqHeMibRev = '1.3.6.1.4.1.232.6.1';
       my $cpqHeMibRevMajor = '1.3.6.1.4.1.232.6.1.1.0';
@@ -623,187 +628,25 @@ sub collect {
       # snmp peer is alive
       $self->trace(2, sprintf "Protocol is %s", 
           $self->{runtime}->{snmpparams}->{'-version'});
-      my $cpqStdEquipment = "1.3.6.1.4.1.232";
-      my $cpqSeProcessor =  "1.3.6.1.4.1.232.1.2.2";
-      my $cpqSeRom =        "1.3.6.1.4.1.232.1.2.6";
-      my $cpqHeComponent =  "1.3.6.1.4.1.232.6.2";
-      my $cpqHePWSComponent = "1.3.6.1.4.1.232.6.2.9";
-      my $cpqHeThermal = "1.3.6.1.4.1.232.6.2.6";
-      #my $cpqHeFComponent = "1.3.6.1.4.1.232.6.2.6.7";
-      #my $cpqHeTComponent = "1.3.6.1.4.1.232.6.2.6.8";
-      my $cpqHeMComponent = "1.3.6.1.4.1.232.6.2.14";
-      my $cpqDaComponent =  "1.3.6.1.4.1.232.3.2";
-      my $cpqSasComponent =  "1.3.6.1.4.1.232.5";
-      my $cpqIdeComponent =  "1.3.6.1.4.1.232.14";
-      my $cpqFcaComponent =  "1.3.6.1.4.1.232.16.2";
-      my $cpqSiComponent =  "1.3.6.1.4.1.232.2.2";
-      my $cpqHeAsr = "1.3.6.1.4.1.232.6.2.5";
-      my $cpqNic = "1.3.6.1.4.1.232.18.2";
-      my $cpqHeEventLog = "1.3.6.1.4.1.232.6.2.11";
       $session->translate;
       my $response = {}; #break the walk up in smaller pieces
-      my $tic = time; my $tac = $tic;
-      my $response1 = $session->get_table(
-          -baseoid => $cpqSeProcessor);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqSeProcessor (%d oids)",
-          $tac - $tic, scalar(keys %{$response1}));
-      # Walk for PowerSupply
-      $tic = time;
-      my $response2p = $session->get_table(
-          -maxrepetitions => 1,
-          -baseoid => $cpqHePWSComponent);
-      if (scalar (keys %{$response2p}) == 0) {
-        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-        $response2p = $session->get_table(
-            -baseoid => $cpqHePWSComponent);
+      foreach my $table (keys %oidtables) {
+        my $oid = $oidtables{$table};
+        my $tic = time;
+        my $tmpresponse = $session->get_table(
+            -maxrepetitions => 1,
+            -baseoid => $oid);
+        if (scalar (keys %{$tmpresponse}) == 0) {
+          $self->trace(2, sprintf "maxrepetitions failed. fallback");
+          $tmpresponse = $session->get_table(
+              -baseoid => $oid);
+        }
+        my $tac = time;
+        $self->trace(2, sprintf "%03d seconds for walk %s (%d oids)",
+            $tac - $tic, $table, scalar(keys %{$tmpresponse}));
+        map { $response->{$_} = $tmpresponse->{$_} } keys %{$tmpresponse};
       }
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHePWSComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response2p}));
-
-      # Walk for Fans/Temp/Overall
-      $tic = time;
-      my $response2f = $session->get_table(
-          -maxrepetitions => 1,
-          -baseoid => $cpqHeThermal);
-      if (scalar (keys %{$response2f}) == 0) {
-        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-        $response2f = $session->get_table(
-            -baseoid => $cpqHeThermal);
-      }
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHeThermal (%d oids)",
-          $tac - $tic, scalar(keys %{$response2f}));
-
-#      # Walk for Fans
-#      $tic = time;
-#      my $response2f = $session->get_table(
-#          -maxrepetitions => 1,
-#          -baseoid => $cpqHeFComponent);
-#      if (scalar (keys %{$response2f}) == 0) {
-#        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-#        $response2f = $session->get_table(
-#            -baseoid => $cpqHeFComponent);
-#      }
-#      $tac = time;
-#      $self->trace(2, sprintf "%03d seconds for walk cpqHeFComponent (%d oids)",
-#          $tac - $tic, scalar(keys %{$response2f}));
-#      # Walk for Temp
-#      $tic = time;
-#      my $response2t = $session->get_table(
-#          -maxrepetitions => 1,
-#          -baseoid => $cpqHeTComponent);
-#      if (scalar (keys %{$response2t}) == 0) {
-#        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-#        $response2t = $session->get_table(
-#            -baseoid => $cpqHeTComponent);
-#      }
-#      $tac = time;
-#      $self->trace(2, sprintf "%03d seconds for walk cpqHeTComponent (%d oids)",
-#          $tac - $tic, scalar(keys %{$response2t}));
-      # Walk for Mem
-      $tic = time;
-      my $response2m = $session->get_table(
-          -maxrepetitions => 1,
-          -baseoid => $cpqHeMComponent);
-      if (scalar (keys %{$response2m}) == 0) {
-        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-        $response2m = $session->get_table(
-            -baseoid => $cpqHeMComponent);
-      }
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHeMComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response2m}));
-      #
-      $tic = time;
-      my $response3 = $session->get_table(
-          -baseoid => $cpqDaComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqDaComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response3}));
-      $tic = time;
-      my $response4 = $session->get_table(
-          -baseoid => $cpqSiComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqSiComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response4}));
-      $tic = time;
-      my $response5 = $session->get_table(
-          -baseoid => $cpqSeRom);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqSeRom (%d oids)",
-          $tac - $tic, scalar(keys %{$response5}));
-      $tic = time;
-      my $response6 = $session->get_table(
-          -baseoid => $cpqSasComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqSasComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response6}));
-      $tic = time;
-      my $response7 = $session->get_table(
-          -baseoid => $cpqIdeComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqIdeComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response7}));
-      $tic = time;
-      my $response8 = $session->get_table(
-          -baseoid => $cpqFcaComponent);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqFcaComponent (%d oids)",
-          $tac - $tic, scalar(keys %{$response8}));
-      $tic = time;
-
-      # Walk for ASR
-      $tic = time;
-      my $response9 = $session->get_table(
-          -maxrepetitions => 1,
-          -baseoid => $cpqHeAsr);
-      if (scalar (keys %{$response9}) == 0) {
-        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-        $response9 = $session->get_table(
-            -baseoid => $cpqHeAsr);
-      }
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqHeAsr (%d oids)",
-          $tac - $tic, scalar(keys %{$response9}));
-      $tic = time;
-      my $response10 = $session->get_table(
-          -baseoid => $cpqNic);
-      $tac = time;
-      $self->trace(2, sprintf "%03d seconds for walk cpqNic (%d oids)",
-          $tac - $tic, scalar(keys %{$response10}));
-      
-      $tic = time;
-      my $response11 = $session->get_table(
-          -maxrepetitions => 1,
-          -baseoid => $cpqHeEventLog);
-      $tac = time;
-      if (scalar (keys %{$response11}) == 0) {
-        $self->trace(2, sprintf "maxrepetitions failed. fallback");
-        $response11 = $session->get_table(
-            -baseoid => $cpqHeEventLog);
-      }
-      $self->trace(2, sprintf "%03d seconds for walk cpqHeEventlog (%d oids)",
-          $tac - $tic, scalar(keys %{$response11}));
       $session->close();
-
-      map { $response->{$_} = $response1->{$_} } keys %{$response1};
-      map { $response->{$_} = $response2p->{$_} } keys %{$response2p};
-      map { $response->{$_} = $response2f->{$_} } keys %{$response2f};
-#      map { $response->{$_} = $response2t->{$_} } keys %{$response2t};
-      map { $response->{$_} = $response2m->{$_} } keys %{$response2m};
-      map { $response->{$_} = $response3->{$_} } keys %{$response3};
-      map { $response->{$_} = $response4->{$_} } keys %{$response4};
-      map { $response->{$_} = $response5->{$_} } keys %{$response5};
-      map { $response->{$_} = $response6->{$_} } keys %{$response6};
-      map { $response->{$_} = $response7->{$_} } keys %{$response7};
-      map { $response->{$_} = $response8->{$_} } keys %{$response8};
-      map { $response->{$_} = $response9->{$_} } keys %{$response9};
-      map { $response->{$_} = $response10->{$_} } keys %{$response10};
-      map { $response->{$_} = $response11->{$_} } keys %{$response11};
-      map { $response->{$_} =~ s/^\s+//; $response->{$_} =~ s/\s+$//; }
-          keys %$response;
       $self->{rawdata} = $response;
     }
   }

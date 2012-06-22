@@ -21,14 +21,15 @@ sub new {
   };
   bless $self, $class;
   if ($self->{method} eq 'snmp') {
-    $self->{boottime} = time - SNMP::Utils::get_object(
-        $self->{rawdata}, '1.3.6.1.2.1.25.1.1.0') / 100;
     $self = HP::Proliant::Component::EventSubsystem::SNMP->new(%params);
+    my $hrSystemUptime = SNMP::Utils::get_object(
+        $self->{rawdata}, '1.3.6.1.2.1.25.1.1.0');
+    $self->{boottime} = int(time - $hrSystemUptime / 100);
   } elsif ($self->{method} eq 'cli') {
+    $self = HP::Proliant::Component::EventSubsystem::CLI->new(%params);
     my $uptime = do { local (@ARGV, $/) = "/proc/uptime"; my $x = <>; close ARGV; $x };
     # also watch 10 minutes of booting before the operating system starts ticking
     $self->{boottime} = time - int((split(/\s+/, $uptime))[0]) - 600;
-    $self = HP::Proliant::Component::EventSubsystem::CLI->new(%params);
   } else {
     die "unknown method";
   }
