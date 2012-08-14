@@ -537,7 +537,7 @@ our @ISA = qw(HP::Proliant);
 sub collect {
   my $self = shift;
   my %oidtables = (
-      hostresources =>     "1.3.6.1.2.1.25.1",
+      system =>            "1.3.6.1.2.1.1",
       cpqSeProcessor =>    "1.3.6.1.4.1.232.1.2.2",
       cpqHePWSComponent => "1.3.6.1.4.1.232.6.2.9",
       cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
