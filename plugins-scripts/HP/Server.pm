@@ -147,9 +147,9 @@ sub check_snmp_and_model {
     if (eval "require Net::SNMP") {
       my %params = ();
       my $net_snmp_version = Net::SNMP->VERSION(); # 5.002000 or 6.000000
-      #$params{'-translate'} = [
-      #  -all => 0x0
-      #];
+      $params{'-translate'} = [
+        -timeticks => 0x0
+      ];
       $params{'-hostname'} = $self->{runtime}->{plugin}->opts->hostname;
       $params{'-version'} = $self->{runtime}->{plugin}->opts->protocol;
       if ($self->{runtime}->{plugin}->opts->port) {

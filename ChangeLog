@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.6.1 2012-08-14
+- fix a small bug in boottime
+
 4.6 2012-06-07
 - output power consumption as performance data (only newer proliant models)
 - support older <=7 versions of hpacucli
