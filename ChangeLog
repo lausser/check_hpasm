@@ -5,6 +5,7 @@
 4.6.1 2012-08-14
 - fix a small bug in boottime
 - skip pagination in long "show iml" lists
+- make bulk requests if possible
 
 4.6 2012-06-07
 - output power consumption as performance data (only newer proliant models)

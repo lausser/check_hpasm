@@ -200,11 +200,11 @@ sub collect {
       foreach my $subtree (@{$oidtrees}) {
           my $tic = time; my $tac = $tic;
           my $response0 = $session->get_table(
-              -maxrepetitions => 1,
               -baseoid => $subtree->[1]);
           if (scalar (keys %{$response0}) == 0) {
             $self->trace(2, sprintf "maxrepetitions failed. fallback");
             $response0 = $session->get_table(
+                -maxrepetitions => 1,
                 -baseoid => $subtree->[1]);
           }
           $tac = time;

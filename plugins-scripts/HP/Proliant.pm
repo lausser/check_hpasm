@@ -634,11 +634,11 @@ sub collect {
         my $oid = $oidtables{$table};
         my $tic = time;
         my $tmpresponse = $session->get_table(
-            -maxrepetitions => 1,
             -baseoid => $oid);
         if (scalar (keys %{$tmpresponse}) == 0) {
           $self->trace(2, sprintf "maxrepetitions failed. fallback");
           $tmpresponse = $session->get_table(
+              -maxrepetitions => 1,
               -baseoid => $oid);
         }
         my $tac = time;
