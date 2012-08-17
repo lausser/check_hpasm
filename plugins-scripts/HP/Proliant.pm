@@ -321,7 +321,7 @@ EOEO
         $self->check_hpasm_client($hpasmcli);
         if (! $self->{runtime}->{plugin}->check_messages()) {
           foreach my $component (qw(server fans temp dimm powersupply iml)) {
-            if (open HPASMCLI, "$hpasmcli -s \"show $component\"|") {
+            if (open HPASMCLI, "$hpasmcli -s \"show $component\" </dev/null |") {
               my @output = <HPASMCLI>;
               close HPASMCLI;
               $self->{rawdata} .= join("\n", map {
