@@ -44,12 +44,14 @@ sub overall_init {
     2 => 'ok',
     4 => 'failed', # shutdown
   };
-  $self->{sysstatus} = lc SNMP::Utils::get_object_value(
+  $self->{sysstatus} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeThermalSystemFanStatus,
       $cpqHeThermalSystemFanStatusValue);
-  $self->{cpustatus} = lc SNMP::Utils::get_object_value(
+  $self->{cpustatus} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeThermalCpuFanStatus,
       $cpqHeThermalCpuFanStatusValue);
+  $self->{sysstatus} |= lc $self->{sysstatus};
+  $self->{cpustatus} |= lc $self->{cpustatus};
 }
 
 sub te_init {

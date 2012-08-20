@@ -51,6 +51,10 @@ sub init {
 
 sub identify {
   my $self = shift;
+  foreach (qw(product serial romversion)) {
+    $self->{$_} =~ s/^\s+//;
+    $self->{$_} =~ s/\s+$//;
+  }
   return sprintf "System: '%s', S/N: '%s', ROM: '%s'", 
       $self->{product}, $self->{serial}, $self->{romversion};
 }
@@ -556,6 +560,16 @@ sub collect {
       #    cpqHeFComponent => "1.3.6.1.4.1.232.6.2.6.7",
       #    cpqHeTComponent => "1.3.6.1.4.1.232.6.2.6.8",
   );
+  my %oidvalues = (
+      cpqHeEventLogSupported => "1.3.6.1.4.1.232.6.2.11.1.0",
+      cpqHeEventLogCondition => "1.3.6.1.4.1.232.6.2.11.2.0",
+      cpqNicIfLogMapOverallCondition => "1.3.6.1.4.1.232.18.2.2.2.0",
+      cpqHeThermalTempStatus => "1.3.6.1.4.1.232.6.2.6.3.0",
+      cpqHeThermalSystemFanStatus => "1.3.6.1.4.1.232.6.2.6.4.0",
+      cpqHeThermalCpuFanStatus => "1.3.6.1.4.1.232.6.2.6.5.0",
+      cpqHeAsrStatus => "1.3.6.1.4.1.232.6.2.5.1.0",
+      cpqHeAsrCondition => "1.3.6.1.4.1.232.6.2.5.17.0",
+  );
   if ($self->{runtime}->{plugin}->opts->snmpwalk) {
     my $cpqSeMibCondition = '1.3.6.1.4.1.232.1.1.3.0'; # 2=ok
     my $cpqHeMibCondition = '1.3.6.1.4.1.232.6.1.3.0'; # hat nicht jeder
@@ -586,6 +600,8 @@ sub collect {
             $tac - $tic, $table, scalar(keys %{$tmpoids}));
         map { $self->{rawdata}->{$_} = $tmpoids->{$_} } keys %{$tmpoids};
       }
+      my @oids = values %oidvalues;
+      map { $rawdata->{$_} = $fullrawdata->{$_} } @oids;
     }
   } else {
     my $net_snmp_version = Net::SNMP->VERSION(); # 5.002000 or 6.000000
@@ -646,6 +662,15 @@ sub collect {
             $tac - $tic, $table, scalar(keys %{$tmpresponse}));
         map { $response->{$_} = $tmpresponse->{$_} } keys %{$tmpresponse};
       }
+      my @oids = values %oidvalues;
+      my $tic = time;
+      my $tmpresponse = $session->get_request(
+          -varbindlist => \@oids,
+      );
+      my $tac = time;
+      $self->trace(2, sprintf "%03d seconds for get various (%d oids)",
+          $tac - $tic, scalar(keys %{$tmpresponse}));
+      map { $response->{$_} = $tmpresponse->{$_} } keys %{$tmpresponse};
       $session->close();
       $self->{rawdata} = $response;
     }

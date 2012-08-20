@@ -28,26 +28,28 @@ sub overall_init {
   my %params = @_;
   my $snmpwalk = $params{rawdata};
   # overall
-  my $cpqHeEventLogSupported  = '1.3.6.1.4.1.232.6.2.11.1';
+  my $cpqHeEventLogSupported  = '1.3.6.1.4.1.232.6.2.11.1.0';
   my $cpqHeEventLogSupportedValue = {
     1 => 'other',
     2 => 'notSupported',
     3 => 'supported',
     4 => 'clear',
   };
-  my $cpqHeEventLogCondition  = '1.3.6.1.4.1.232.6.2.11.2';
+  my $cpqHeEventLogCondition  = '1.3.6.1.4.1.232.6.2.11.2.0';
   my $cpqHeEventLogConditionValue = {
     1 => 'other',
     2 => 'ok',
     3 => 'degraded',
     4 => 'failed',
   };
-  $self->{eventsupp} = lc SNMP::Utils::get_object_value(
+  $self->{eventsupp} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeEventLogSupported,
       $cpqHeEventLogSupportedValue);
-  $self->{eventstatus} = lc SNMP::Utils::get_object_value(
+  $self->{eventstatus} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeEventLogCondition,
       $cpqHeEventLogConditionValue);
+  $self->{eventsupp} |= lc $self->{eventsupp};
+  $self->{eventstatus} |= lc $self->{eventstatus};
 }
 
 sub init {

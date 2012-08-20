@@ -37,6 +37,7 @@ sub overall_init {
   $self->{tempstatus} = lc SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeThermalTempStatus,
       $cpqHeThermalTempStatusValue);
+  $self->{tempstatus} |= lc $self->{tempstatus};
 }
 
 sub init {

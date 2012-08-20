@@ -38,12 +38,14 @@ sub overall_init {
     3 => "degraded",
     4 => "failed",
   };
-  $self->{asrcondition} = lc SNMP::Utils::get_object_value(
+  $self->{asrcondition} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeAsrCondition,
       $cpqHeAsrConditionValue);
-  $self->{asrstatus} = lc SNMP::Utils::get_object_value(
+  $self->{asrstatus} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqHeAsrStatus,
       $cpqHeAsrStatusValue);
+  $self->{asrcondition} |= lc $self->{asrcondition};
+  $self->{asrstatus} |= lc $self->{asrstatus};
 }
 
 sub overall_check {
