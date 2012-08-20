@@ -601,7 +601,7 @@ sub collect {
         map { $self->{rawdata}->{$_} = $tmpoids->{$_} } keys %{$tmpoids};
       }
       my @oids = values %oidvalues;
-      map { $rawdata->{$_} = $fullrawdata->{$_} } @oids;
+      map { $self->{rawdata}->{$_} = $self->{fullrawdata}->{$_} } @oids;
     }
   } else {
     my $net_snmp_version = Net::SNMP->VERSION(); # 5.002000 or 6.000000
