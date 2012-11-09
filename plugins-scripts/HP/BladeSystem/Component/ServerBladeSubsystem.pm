@@ -121,6 +121,7 @@ sub new {
       ':'.$self->{cpqRackServerBladeIndex};
   bless $self, $class;
   $self->init();
+#printf "%s\n", Data::Dumper::Dumper(\%params);
   return $self;
 }
 
@@ -132,11 +133,11 @@ sub check {
       $self->{cpqRackServerBladeStatus}, $self->{cpqRackServerBladePowered};
   $self->add_info($info);
   if ($self->{cpqRackServerBladePowered} eq 'on') {
-    if ($self->{cpqRackServerBladeCondition} eq 'degraded') {
+    if ($self->{cpqRackServerBladeStatus} eq 'degraded') {
       $self->add_message(WARNING, sprintf 'server blade %s diag is \'%s\', post status is %s',
           $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladeDiagnosticString},
           $self->{cpqRackServerBladePOSTStatus});
-    } elsif ($self->{cpqRackServerBladeCondition} eq 'failed') {
+    } elsif ($self->{cpqRackServerBladeStatus} eq 'failed') {
       $self->add_message(CRITICAL, sprintf 'server blade %s diag is \'%s\', post status is %s',
           $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladeDiagnosticString},
           $self->{cpqRackServerBladePOSTStatus});

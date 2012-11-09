@@ -50,7 +50,7 @@ sub init {
       cpqRackCommonEnclosureTempSensorIndex => '1.3.6.1.4.1.232.22.2.3.1.2.1.3',
       cpqRackCommonEnclosureTempSensorEnclosureName => '1.3.6.1.4.1.232.22.2.3.1.2.1.4',
       cpqRackCommonEnclosureTempLocation => '1.3.6.1.4.1.232.22.2.3.1.2.1.5',
-      cpqRackCommonEnclosureTempCurrent => '1.3.6.1.4.1.232.22.2.3.2.1.6',
+      cpqRackCommonEnclosureTempCurrent => '1.3.6.1.4.1.232.22.2.3.1.2.1.6',
       cpqRackCommonEnclosureTempThreshold => '1.3.6.1.4.1.232.22.2.3.1.2.1.7',
       cpqRackCommonEnclosureTempCondition => '1.3.6.1.4.1.232.22.2.3.1.2.1.8',
       cpqRackCommonEnclosureTempType => '1.3.6.1.4.1.232.22.2.3.1.2.1.9',
@@ -71,7 +71,7 @@ sub init {
   #         cpqRackCommonEnclosureTempSensorIndex }
   foreach ($self->get_entries($oids, 'cpqRackCommonEnclosureTempEntry')) {
     push(@{$self->{temperatures}},
-       HP::BladeSystem::Component::CommonEnclosureSubsystem::TemperatureSubsystem::Temperature->new(%{$_}));
+       HP::BladeSystem::Component::CommonEnclosureSubsystem::TempSubsystem::Temp->new(%{$_}))  if (($_->{cpqRackCommonEnclosureTempCurrent} != -1 && $_->{cpqRackCommonEnclosureTempThreshold} != -1) && ($_->{cpqRackCommonEnclosureTempThreshold} != 0));
   }
 
 }
@@ -107,6 +107,9 @@ sub new {
   my $class = shift;
   my %params = @_;
   my $self = {
+    runtime => $params{runtime},
+    rawdata => $params{rawdata},
+    method => $params{method},
     blacklisted => 0,
     info => undef,
     extendedinfo => undef,
@@ -124,13 +127,16 @@ sub check {
   $self->blacklist('t', $self->{name});
   if ($self->{cpqRackCommonEnclosureTempCurrent} > $self->{cpqRackCommonEnclosureTempThreshold}) {
     $self->add_info(sprintf "%s temperature too high (%d%s)",
-        $self->{cpqRackCommonEnclosureTempLocation}, $self->{cpqRackCommonEnclosureTempCurrent},
+        $self->{cpqRackCommonEnclosureTempLocation},
+        $self->{cpqRackCommonEnclosureTempCurrent},
         $self->{runtime}->{options}->{celsius} ? "C" : "F");
     $self->add_message(CRITICAL, $self->{info});
   } else {
-    $self->add_info(sprintf "%d %s temperature is %d (%d max)",
-        $self->{name}, $self->{    cpqRackCommonEnclosureTempLocation},
-        $self->{cpqRackCommonEnclosureTempCurrent}, $self->{cpqRackCommonEnclosureTempThreshold});
+    $self->add_info(sprintf "%s temperature is %d%s (%d max)",
+        $self->{cpqRackCommonEnclosureTempLocation},
+        $self->{cpqRackCommonEnclosureTempCurrent},
+        $self->{runtime}->{options}->{celsius} ? "C" : "F",
+        $self->{cpqRackCommonEnclosureTempThreshold});
   }
   if ($self->{runtime}->{options}->{perfdata} == 2) {
     $self->{runtime}->{plugin}->add_perfdata(
