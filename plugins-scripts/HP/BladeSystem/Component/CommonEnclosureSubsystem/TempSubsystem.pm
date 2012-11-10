@@ -147,10 +147,11 @@ sub check {
     );
   } elsif ($self->{runtime}->{options}->{perfdata} == 1) {
     $self->{runtime}->{plugin}->add_perfdata(
-        label => sprintf('temp_%s_%s', $self->{name}, $self->{location}),
-        value => $self->{degrees},
-        warning => $self->{threshold},
-        critical => $self->{threshold}
+        label => sprintf('temp_%s_%s', $self->{name},
+            $self->{cpqRackCommonEnclosureTempLocation}),
+        value => $self->{cpqRackCommonEnclosureTempCurrent},
+        warning => $self->{cpqRackCommonEnclosureTempThreshold},
+        critical => $self->{cpqRackCommonEnclosureTempThreshold}
     );
   }
   $self->add_extendedinfo(sprintf "temp_%s=%d", 
