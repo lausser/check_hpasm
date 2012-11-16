@@ -101,17 +101,21 @@ sub check {
         $self->{cpqHeFltTolPowerSupplyCondition});
     if ($self->{cpqHeFltTolPowerSupplyCapacityUsed} &&
         $self->{cpqHeFltTolPowerSupplyCapacityMaximum}) {
-      $self->{runtime}->{plugin}->add_perfdata(
-          label => sprintf("pc_%s", $self->{cpqHeFltTolPowerSupplyBay}),
-          value => $self->{cpqHeFltTolPowerSupplyCapacityUsed},
-          warning => $self->{cpqHeFltTolPowerSupplyCapacityMaximum},
-          critical => $self->{cpqHeFltTolPowerSupplyCapacityMaximum}
-      );
+      if ($self->{runtime}->{options}->{perfdata}) {
+        $self->{runtime}->{plugin}->add_perfdata(
+            label => sprintf("pc_%s", $self->{cpqHeFltTolPowerSupplyBay}),
+            value => $self->{cpqHeFltTolPowerSupplyCapacityUsed},
+            warning => $self->{cpqHeFltTolPowerSupplyCapacityMaximum},
+            critical => $self->{cpqHeFltTolPowerSupplyCapacityMaximum}
+        );
+      }
     } elsif ($self->{cpqHeFltTolPowerSupplyCapacityUsed}) {
-      $self->{runtime}->{plugin}->add_perfdata(
-          label => sprintf("pc_%s", $self->{cpqHeFltTolPowerSupplyBay}),
-          value => $self->{cpqHeFltTolPowerSupplyCapacityUsed}
-      );
+      if ($self->{runtime}->{options}->{perfdata}) {
+        $self->{runtime}->{plugin}->add_perfdata(
+            label => sprintf("pc_%s", $self->{cpqHeFltTolPowerSupplyBay}),
+            value => $self->{cpqHeFltTolPowerSupplyCapacityUsed}
+        );
+      }
     }
   } else {
     $self->add_info(sprintf "powersupply %d is %s",

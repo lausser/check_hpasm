@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.6.x -
+- fix the problem with -99 degrees
+
 4.6.2.1 2012-11-09
 - some bugfixes in bladecenter temperatures (Thanks Thomas Reichel)
 

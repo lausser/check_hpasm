@@ -109,6 +109,9 @@ sub new {
         $params{runtime}->{options}->{thresholds}->{$index};
         
   }
+  if ($self->{cpqHeTemperatureThresholdCelsius} == -99) {
+    bless $self, 'HP::Proliant::Component::TemperatureSubsystem::SoSTemperature';
+  }
   return $self;
 }
 
@@ -163,6 +166,36 @@ sub dump {
     printf "%s: %s\n", $_, $self->{$_};
   }
   printf "info: %s\n\n", $self->{info};
+}
+
+
+package HP::Proliant::Component::TemperatureSubsystem::SoSTemperature;
+our @ISA = qw(HP::Proliant::Component::TemperatureSubsystem::Temperature);
+
+use strict;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
+
+sub check {
+  my $self = shift;
+  $self->blacklist('t', $self->{cpqHeTemperatureIndex});
+  $self->add_info(sprintf "%d %s temperature is %d%s (no thresh.)",
+      $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale}, 
+      $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits});
+  if ($self->{runtime}->{options}->{perfdata} == 2) {
+    $self->{runtime}->{plugin}->add_perfdata(
+        label => sprintf('temp_%s', $self->{cpqHeTemperatureIndex}),
+        value => $self->{cpqHeTemperature},
+    );
+  } elsif ($self->{runtime}->{options}->{perfdata} == 1) {
+    $self->{runtime}->{plugin}->add_perfdata(
+        label => sprintf('temp_%s_%s', $self->{cpqHeTemperatureIndex},
+            $self->{cpqHeTemperatureLocale}),
+        value => $self->{cpqHeTemperature},
+    );
+  } 
+  $self->add_extendedinfo(sprintf "temp_%s=%d",
+      $self->{cpqHeTemperatureIndex},
+      $self->{cpqHeTemperature});
 }
 
 1;
