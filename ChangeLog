@@ -4,6 +4,7 @@
 
 4.6.x -
 - fix the problem with -99 degrees
+- fix the problem with binary zero EventUpdateTime
 
 4.6.2.1 2012-11-09
 - some bugfixes in bladecenter temperatures (Thanks Thomas Reichel)

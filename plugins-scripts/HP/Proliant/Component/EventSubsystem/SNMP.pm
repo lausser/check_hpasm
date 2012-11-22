@@ -161,6 +161,8 @@ sub init {
           $_->{cpqHeEventLogInitialTime} = 0;
         }
       }
+    } elsif ($_->{cpqHeEventLogInitialTime} =~ /^\0\0\0\0\0\0/) {
+      $_->{cpqHeEventLogInitialTime} = 0;
     }
     if ($_->{cpqHeEventLogUpdateTime} =~ /^(([0-9a-fA-F]{2})( [0-9a-fA-F]{2})*)\s*$/) {
       $_->{cpqHeEventLogUpdateTime} =~ s/ //;
@@ -187,6 +189,8 @@ sub init {
           $_->{cpqHeEventLogUpdateTime} = 0;
         }
       }
+    } elsif ($_->{cpqHeEventLogUpdateTime} =~ /^\0\0\0\0\0\0/) {
+      $_->{cpqHeEventLogUpdateTime} = 0;
     }
     if ($_->{cpqHeEventLogErrorDesc} =~ /^(([0-9a-fA-F]{2})(\s+[0-9a-fA-F]{2})*)\s*$/) {
       $_->{cpqHeEventLogErrorDesc} = join "", map { chr($_) } map { if (hex($_) > 127) { 20; } else { hex($_) } } split(/\s+/, $_->{cpqHeEventLogErrorDesc});
