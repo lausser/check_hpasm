@@ -2,7 +2,8 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
-4.6.x -
+4.6.3 2012-11-25
+- gen8 should work now
 - fix the problem with -99 degrees
 - fix the problem with binary zero EventUpdateTime
 
