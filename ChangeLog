@@ -2,6 +2,8 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+- fix a bug in da disk in local mode
+
 4.6.3 2012-11-25
 - gen8 should work now
 - fix the problem with -99 degrees
