@@ -97,7 +97,7 @@ sub init {
       $cntlindex++;
       $pdriveindex = 1;
     } elsif (/([\s\w]+) in Slot\s+(\d+)/) {
-      #if ($slot != $2 || ! $slot) {
+      #if ($slot ne $2 || ! $slot) {
         $cntlindex++;
         # 2012-12-15 das passt nicht zur oberen schleife
         # ich habe keine ahnung, was der hintergrund fuer dieses if ist
