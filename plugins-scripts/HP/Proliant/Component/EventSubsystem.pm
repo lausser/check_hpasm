@@ -75,7 +75,7 @@ sub check {
 
 sub dump {
   my $self = shift;
-  foreach (@{$self->{events}}) {
+  foreach (sort { $a->{cpqHeEventLogEntryNumber} <=> $b->{cpqHeEventLogEntryNumber} } @{$self->{events}}) {
     $_->dump();
   }
 }
