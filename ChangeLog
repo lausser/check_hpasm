@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.6.3.3 2013-04-10
+- fix a bug in snmp overall nic condition
+
 4.6.3.2 2013-03-19
 - fix a bug in proliant/gen8/ilo temperature thresholds (Thanks Kai Benninghoff and Stephane Loeuillet)
 

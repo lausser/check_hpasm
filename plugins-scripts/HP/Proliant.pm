@@ -668,6 +668,7 @@ sub collect {
           -varbindlist => \@oids,
       );
       my $tac = time;
+die;
       $self->trace(2, sprintf "%03d seconds for get various (%d oids)",
           $tac - $tic, scalar(keys %{$tmpresponse}));
       map { $response->{$_} = $tmpresponse->{$_} } keys %{$tmpresponse};

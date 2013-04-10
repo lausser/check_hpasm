@@ -26,7 +26,7 @@ sub new {
 sub overall_init {
   my $self = shift;
   my %params = @_;
-  my $snmpwalk = $params{rawdata};
+  my $snmpwalk = $self->{rawdata};
   # overall
   my $cpqNicIfLogMapOverallCondition  = '1.3.6.1.4.1.232.18.2.2.2.0';
   my $cpqNicIfLogMapOverallConditionValue = {
@@ -35,7 +35,7 @@ sub overall_init {
     3 => 'degraded',
     4 => 'failed',
   };
-  $self->{lognicstatus} = lc SNMP::Utils::get_object_value(
+  $self->{lognicstatus} = SNMP::Utils::get_object_value(
       $snmpwalk, $cpqNicIfLogMapOverallCondition,
       $cpqNicIfLogMapOverallConditionValue);
 }
