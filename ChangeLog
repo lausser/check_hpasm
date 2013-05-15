@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.6.3.4 2013-05-15
+- fix a bug in fan perfdata (absent fans were shown with 0%)
+
 4.6.3.3 2013-04-10
 - fix a bug in snmp overall nic condition
 - sort events by id numerically 
