@@ -28,6 +28,8 @@ sub overall_init {
       $snmpwalk, $cpqHoMibStatusArray);
   if ($self->{cpqHoMibStatusArray} =~ /^(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/) {
     $self->{cpqHoMibStatusArray} = 1 * $2;
+  } elsif ($self->{cpqHoMibStatusArray} =~ /^0x.*(\d\d)(\d\d)(\d\d)(\d\d)$/) {
+    $self->{cpqHoMibStatusArray} = 1 * $2;
   }
 }
 
@@ -50,7 +52,7 @@ sub overall_check {
 
 sub identify {
   my $self = shift;
-  return "";
+  return $self->{productname};
 }
 
 sub dump {
