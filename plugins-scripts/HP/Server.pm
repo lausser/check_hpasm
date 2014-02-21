@@ -46,6 +46,9 @@ sub new {
         # HP X1600 G2 Network Storage System
         bless $self, 'HP::Proliant::SNMP';
         $self->trace(3, 'using HP::Proliant::SNMP');
+      } elsif ($self->{productname} =~ /StorageWorks/i) {
+        bless $self, 'HP::StorageWorks';
+        $self->trace(3, 'using HP::StorageWorks');
       } elsif ($self->{productname} =~ /Storage/) { # fake
         bless $self, 'HP::Storage';
         $self->trace(3, 'using HP::Storage');
