@@ -296,7 +296,7 @@ sub is_blacklisted {
   my $blacklisted = 0;
 #  $name =~ s/\:/-/g;
   foreach my $bl_items (split(/\//, $self->{runtime}->{options}->{blacklist})) {
-    if ($bl_items =~ /^(\w+):([\:\d\-,]+)$/) {
+    if ($bl_items =~ /^(\w+):([\:\w\-,]+)$/) {
       my $bl_type = $1;
       my $bl_names = $2;
       foreach my $bl_name (split(/,/, $bl_names)) {
