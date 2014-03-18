@@ -209,6 +209,7 @@ sub whoami {
     my $cpqSiProductName = '1.3.6.1.4.1.232.2.2.4.2.0';
     my $cpqSsMibRevMajor = '1.3.6.1.4.1.232.8.1.1.0';
     my $cpqSsBackplaneModel = '1.3.6.1.4.1.232.8.2.2.6.1.9'.'.1.1';
+    my $cpqHoMibStatusArray = '1.3.6.1.4.1.232.11.2.10.1.0';
     if ($productname = $self->{rawdata}->{$cpqSiProductName}) {
       if (! $productname) {
         $self->{productname} = 'ProLiant';
@@ -228,6 +229,7 @@ sub whoami {
     my $cpqSiProductName = '1.3.6.1.4.1.232.2.2.4.2.0';
     my $cpqSsMibRevMajor = '1.3.6.1.4.1.232.8.1.1.0';
     my $cpqSsBackplaneModel = '1.3.6.1.4.1.232.8.2.2.6.1.9'.'.1.1';
+    my $cpqHoMibStatusArray = '1.3.6.1.4.1.232.11.2.10.1.0';
     my $dummy = '1.3.6.1.2.1.1.5.0';
     if ($productname = $self->valid_response($cpqSiProductName)) {
       if ($productname eq '') {
@@ -240,6 +242,8 @@ sub whoami {
     } elsif ($self->valid_response($cpqSsMibRevMajor)) {
       # at least there is a CPQSTSYS-MIB
       $self->{productname} = 'Storage'
+    } elsif ($self->valid_response($cpqHoMibStatusArray)) {
+      $self->{productname} = 'StorageWorks'
     } else {
       $self->add_message(CRITICAL,
           'snmpwalk returns no product name (cpqsinfo-mib)');
