@@ -189,7 +189,7 @@ sub check {
     $self->add_message(WARNING, "controller accelerator battery recharging");
   } elsif ($self->{cpqDaAccelBattery} eq "failed" &&
       $self->{cpqDaAccelStatus} eq "tmpDisabled") {
-    $self->add_message(WARNING, "controller accelerator battery needs attention");
+    $self->add_message(CRITICAL, "controller accelerator battery needs attention");
   } elsif ($self->{cpqDaAccelBattery} ne "ok") {
     # (other) failed degraded
     $self->add_message(CRITICAL, "controller accelerator battery needs attention");
