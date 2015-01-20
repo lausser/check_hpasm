@@ -195,6 +195,7 @@ sub init {
       cpqDaPhyDrvSize => "1.3.6.1.4.1.232.3.2.5.1.1.9",
       cpqDaPhyDrvCondition => "1.3.6.1.4.1.232.3.2.5.1.1.37",
       cpqDaPhyDrvBusNumber => "1.3.6.1.4.1.232.3.2.5.1.1.50",
+      cpqDaPhyDrvModel => "1.3.6.1.4.1.232.3.2.5.1.1.3",
       cpqDaPhyDrvConditionValue => {
           1 => "other",
           2 => "ok",

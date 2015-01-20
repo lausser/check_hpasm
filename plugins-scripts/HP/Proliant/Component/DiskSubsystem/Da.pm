@@ -300,6 +300,7 @@ sub new {
     cpqDaPhyDrvSize => $params{cpqDaPhyDrvSize},
     cpqDaPhyDrvStatus => $params{cpqDaPhyDrvStatus},
     cpqDaPhyDrvCondition => $params{cpqDaPhyDrvCondition},
+    cpqDaPhyDrvModel => $params{cpqDaPhyDrvModel},
     blacklisted => 0,
   };
   bless $self, $class;
@@ -313,19 +314,19 @@ sub check {
   my $self = shift;
   $self->blacklist('dapd', $self->{name});
   $self->add_info(
-      sprintf "physical drive %s is %s",
-          $self->{name}, $self->{cpqDaPhyDrvCondition});
+      sprintf "physical drive %s (%s) is %s",
+          $self->{name}, $self->{cpqDaPhyDrvModel}, $self->{cpqDaPhyDrvCondition});
   if ($self->{cpqDaPhyDrvCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqDaPhyDrvCondition});
+        sprintf "physical drive %s (%s) is %s", 
+            $self->{name}, $self->{cpqDaPhyDrvModel}, $self->{cpqDaPhyDrvCondition});
   }
 }
 
 sub dump {
   my $self = shift;
   printf "[PHYSICAL_DRIVE]\n";
-  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvBay
+  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvModel cpqDaPhyDrvBay
       cpqDaPhyDrvBusNumber cpqDaPhyDrvSize cpqDaPhyDrvStatus
       cpqDaPhyDrvCondition)) {
     printf "%s: %s\n", $_, $self->{$_};
@@ -343,7 +344,7 @@ use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 sub dump {
   my $self = shift;
   printf "[SPARE_DRIVE]\n";
-  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvBay
+  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvModel cpqDaPhyDrvBay
       cpqDaPhyDrvBusNumber cpqDaPhyDrvSize cpqDaPhyDrvStatus
       cpqDaPhyDrvCondition)) {
     printf "%s: %s\n", $_, $self->{$_};

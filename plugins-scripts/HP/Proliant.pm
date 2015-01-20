@@ -361,7 +361,7 @@ EOEO
                       'status '.$_;
                   } @output);
                 }
-                if (open HPACUCLI, "$hpacucli ctrl all show config 2>&1|") {
+                if (open HPACUCLI, "$hpacucli ctrl all show config detail 2>&1|") {
                   my @output = <HPACUCLI>;
                   close HPACUCLI;
                   $self->{rawdata} .= join("\n", map {
@@ -377,7 +377,7 @@ EOEO
                             'config '.$_;
                         } @output);
                       }
-                      if (open HPACUCLI, "$hpacucli ctrl slot=$slot physicaldrive all show 2>&1|") {
+                      if (open HPACUCLI, "$hpacucli ctrl slot=$slot physicaldrive all show detail 2>&1|") {
                         my @output = <HPACUCLI>;
                         close HPACUCLI;
                         $self->{rawdata} .= join("\n", map {
