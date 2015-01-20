@@ -110,8 +110,8 @@ sub new {
 
 sub check {
   my $self = shift;
-  # check dient nur dazu, info und extended_info zu füllen
-  # die eigentliche bewertung findet eins höher statt
+  # check dient nur dazu, info und extended_info zu fï¿½llen
+  # die eigentliche bewertung findet eins hï¿½her statt
   $self->blacklist('d', $self->{name});
   if (($self->{status} eq 'present') || ($self->{status} eq 'good')) {
     if ($self->{condition} eq 'other') {
@@ -119,19 +119,19 @@ sub check {
           $self->{name}, $self->{location});
     } elsif ($self->{condition} ne 'ok') {
       $self->add_info(
-        sprintf "dimm module %s (%s) needs attention (%s)",
-        $self->{name}, $self->{location}, $self->{condition});
+        sprintf "dimm module %s (%s - Size: %s MB) needs attention (%s)",
+        $self->{name}, $self->{location}, $self->{size} / 1024, $self->{condition});
     } else {
-      $self->add_info(sprintf 'dimm module %s (%s) is %s',
-          $self->{name}, $self->{location}, $self->{condition});
+      $self->add_info(sprintf 'dimm module %s (%s - Size: %s MB) is %s',
+          $self->{name}, $self->{location}, $self->{size} / 1024, $self->{condition});
     }
   } elsif ($self->{status} eq 'notPresent') {
     $self->add_info(sprintf 'dimm module %s (%s) is not present',
         $self->{name}, $self->{location});
   } else {
     $self->add_info(
-      sprintf "dimm module %s (%s) needs attention (%s)",
-      $self->{name}, $self->{location}, $self->{condition});
+      sprintf "dimm module %s (%s - Size: %s MB) needs attention (%s)",
+      $self->{name}, $self->{location}, $self->{size} / 1024, $self->{condition});
   }
 }
 
