@@ -133,6 +133,17 @@ sub init {
     
   # INDEX { cpqDaAccelCntlrIndex }
   foreach ($self->get_entries($oids, 'cpqDaAccelEntry')) {
+    # we need controller details in case accelerator battery is failed
+    for (my $controller=0;$controller<=$#{ $self->{controllers} };$controller++){
+      if ($self->{controllers}->[$controller]->{cpqDaCntlrIndex} == $_->{cpqDaAccelCntlrIndex}){
+        $_->{cpqDaCntlrSlot} = $self->{controllers}->[$controller]->{cpqDaCntlrSlot};
+        if (! defined $self->{controllers}->[$controller]->{cpqDaCntlrModel}){
+          $_->{cpqDaCntlrModel} = "unknown";
+        }else{
+          $_->{cpqDaCntlrModel} = $self->{controllers}->[$controller]->{cpqDaCntlrModel};
+        }
+      }
+    }
     push(@{$self->{accelerators}},
         HP::Proliant::Component::DiskSubsystem::Da::Accelerator->new(%{$_}));
   }

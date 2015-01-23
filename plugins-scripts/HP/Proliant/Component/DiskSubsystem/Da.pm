@@ -159,6 +159,9 @@ sub new {
     cpqDaAccelBattery => $params{cpqDaAccelBattery} || 'notPresent',
     cpqDaAccelCondition => $params{cpqDaAccelCondition},
     cpqDaAccelStatus => $params{cpqDaAccelStatus},
+    cpqDaCntlrSlot => $params{cpqDaCntlrSlot},
+    cpqDaCntlrModel => $params{cpqDaCntlrModel},
+
     blacklisted => 0,
     failed => 0,
   };
@@ -178,7 +181,7 @@ sub check {
         $self->{cpqDaAccelStatus} eq "tmpDisabled") {
       # handled later
     } else {
-      $self->add_message(CRITICAL, "controller accelerator needs attention");
+      $self->add_message(CRITICAL, "controller accelerator needs attention (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
     }
   }
   $self->blacklist('daacb', $self->{cpqDaAccelCntlrIndex});
@@ -186,13 +189,13 @@ sub check {
       $self->{cpqDaAccelBattery});
   if ($self->{cpqDaAccelBattery} eq "notPresent") {
   } elsif ($self->{cpqDaAccelBattery} eq "recharging") {
-    $self->add_message(WARNING, "controller accelerator battery recharging");
+    $self->add_message(WARNING, "controller accelerator battery recharging (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
   } elsif ($self->{cpqDaAccelBattery} eq "failed" &&
       $self->{cpqDaAccelStatus} eq "tmpDisabled") {
-    $self->add_message(CRITICAL, "controller accelerator battery needs attention");
+    $self->add_message(CRITICAL, "controller accelerator battery needs attention (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
   } elsif ($self->{cpqDaAccelBattery} ne "ok") {
     # (other) failed degraded
-    $self->add_message(CRITICAL, "controller accelerator battery needs attention");
+    $self->add_message(CRITICAL, "controller accelerator battery needs attention (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
   } 
 }
 
