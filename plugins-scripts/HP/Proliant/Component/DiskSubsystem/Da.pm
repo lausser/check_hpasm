@@ -87,13 +87,13 @@ sub check {
   if ($self->{cpqDaCntlrCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
       $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+          sprintf 'da controller %s in slot %s (%s) needs attention', 
+              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
+      $self->add_info(sprintf 'da controller %s in slot %s (%s) needs attention',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
     } else {
-      $self->add_info(sprintf 'da controller %s in slot %s is ok and unused',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+      $self->add_info(sprintf 'da controller %s in slot %s (%s) is ok and unused',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqDaCntlrCondition} eq 'degraded') {
@@ -104,20 +104,20 @@ sub check {
       # message was already written in the accel code
     } else {
       $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+          sprintf 'da controller %s in slot %s (%s) needs attention', 
+              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
+      $self->add_info(sprintf 'da controller %s in slot %s (%s) needs attention',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
     }
   } elsif ($self->{cpqDaCntlrCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf 'da controller %s in slot %s needs attention', 
-            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-    $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+        sprintf 'da controller %s in slot %s (%s) needs attention', 
+            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
+    $self->add_info(sprintf 'da controller %s in slot %s (%s) needs attention',
+        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
   } else {
-    $self->add_info(sprintf 'da controller %s in slot %s is ok', 
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+    $self->add_info(sprintf 'da controller %s in slot %s (%s) is ok', 
+        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
   }
 } 
 
