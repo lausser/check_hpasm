@@ -13,6 +13,7 @@ sub new {
     method => $params{method},
     controllers => [],
     accelerators => [],
+    enclosures => [],
     physical_drives => [],
     logical_drives => [],
     spare_drives => [],
@@ -74,6 +75,9 @@ sub check {
   $self->blacklist('daco', $self->{cpqDaCntlrIndex});
   foreach (@{$self->{accelerators}}) {
     $_->check();
+  }
+  foreach (@{$self->{enclosures}}) {
+    $_->check();
   } 
   foreach (@{$self->{logical_drives}}) {
     $_->check();
@@ -130,6 +134,9 @@ sub dump {
   }
   printf "\n";
   foreach (@{$self->{accelerators}}) {
+    $_->dump();
+  }
+  foreach (@{$self->{enclosures}}) {
     $_->dump();
   }
   foreach (@{$self->{logical_drives}}) {
@@ -216,6 +223,54 @@ sub dump {
   printf "\n";
 }
 
+package HP::Proliant::Component::DiskSubsystem::Da::Enclosure;
+our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Da);
+
+use strict;
+use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
+
+sub new {
+  my $class = shift;
+  my %params = @_;
+  my $self = {
+    runtime => $params{runtime},
+    name => $params{name},
+    cpqDaEnclCntlrIndex => $params{cpqDaEnclCntlrIndex},
+    cpqDaEnclIndex => $params{cpqDaEnclIndex},
+    cpqDaEnclPort => $params{cpqDaEnclPort},
+    cpqDaEnclBox => $params{cpqDaEnclBox},
+    cpqDaEnclCondition => $params{cpqDaEnclCondition},
+    blacklisted => 0,
+  };
+  bless $self, $class;
+  $self->{name} = $params{name} ||
+      $self->{cpqDaEnclPort}.':'.$self->{cpqDaEnclBox}; ##vorerst
+  $self->{controllerindex} = $self->{cpqDaEnclCntlrIndex};
+  return $self;
+}
+
+sub check {
+  my $self = shift;
+  $self->blacklist('dae', $self->{name});
+  $self->add_info(
+      sprintf "disk enclosure %s is %s",
+          $self->{name}, $self->{cpqDaEnclCondition});
+  if ($self->{cpqDaEnclCondition} !~ /^OK/) {
+    $self->add_message(CRITICAL,
+        sprintf "disk enclosure %s is %s",
+            $self->{name}, $self->{cpqDaEnclCondition});
+  }
+}
+
+sub dump {
+  my $self = shift;
+  printf "[Disk Enclosure]\n";
+  foreach (qw(cpqDaEnclCntlrIndex cpqDaEnclIndex cpqDaEnclPort
+		   cpqDaEnclBox cpqDaEnclCondition)) {
+    printf "%s: %s\n", $_, $self->{$_};
+  }
+  printf "\n";
+}
 
 package HP::Proliant::Component::DiskSubsystem::Da::LogicalDrive;
 our @ISA = qw(HP::Proliant::Component::DiskSubsystem::Da);
