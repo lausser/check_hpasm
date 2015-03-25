@@ -108,7 +108,7 @@ sub init {
       #}
       $slot = $2;
       $pdriveindex = 1;
-    } elsif (/([\s\w]+) Enclosure at Port ([\w]+), Box (\d+), (.*)/) {
+    } elsif (/([\s\w]+) at Port ([\w]+), Box (\d+), (.*)/) {
       $enclosureindex++;
       $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclCntlrIndex} = $cntlindex;
       $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclIndex} = $enclosureindex;
