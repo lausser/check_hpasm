@@ -10,6 +10,7 @@ sub new {
   my $self = {
     controllers => [],
     accelerators => [],
+    enclosures => [],
     physical_drives => [],
     logical_drives => [],
     spare_drives => [],
