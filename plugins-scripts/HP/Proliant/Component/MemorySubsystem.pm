@@ -110,8 +110,8 @@ sub new {
 
 sub check {
   my $self = shift;
-  # check dient nur dazu, info und extended_info zu füllen
-  # die eigentliche bewertung findet eins höher statt
+  # check dient nur dazu, info und extended_info zu fuellen
+  # die eigentliche bewertung findet eins hoeher statt
   $self->blacklist('d', $self->{name});
   if (($self->{status} eq 'present') || ($self->{status} eq 'good')) {
     if ($self->{condition} eq 'other') {
