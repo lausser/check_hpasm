@@ -336,7 +336,11 @@ EOEO
           if ($self->{runtime}->{options}->{hpacucli}) {
             #1 oder 0. pfad selber finden
             my $hpacucli = undef;
-            if (-e '/usr/sbin/hpacucli') {
+            if (-e '/usr/sbin/hpssacli') {
+              $hpacucli = '/usr/sbin/hpssacli';
+            } elsif (-e '/usr/local/sbin/hpssacli') {
+              $hpacucli = '/usr/local/sbin/hpssacli';
+            } elsif (-e '/usr/sbin/hpacucli') {
               $hpacucli = '/usr/sbin/hpacucli';
             } elsif (-e '/usr/local/sbin/hpacucli') {
               $hpacucli = '/usr/local/sbin/hpacucli';
