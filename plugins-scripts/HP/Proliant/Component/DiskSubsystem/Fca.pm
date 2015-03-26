@@ -110,7 +110,10 @@ sub new {
 
 sub check {
   my $self = shift;
-  if ($self->{cpqFcaMibCondition} ne 'ok') {
+  if ($self->{cpqFcaMibCondition} eq 'other') {
+    $self->add_message(OK,
+        sprintf 'fcal overall condition is other, update your drivers, please');
+  } elsif ($self->{cpqFcaMibCondition} ne 'ok') {
     $self->add_message(CRITICAL, 
         sprintf 'fcal overall condition is %s', $self->{cpqFcaMibCondition});
   }
@@ -156,8 +159,9 @@ sub check {
   my $info = sprintf 'fcal host controller %s in slot %s is %s',
       $self->{name}, $self->{cpqFcaHostCntlrSlot}, $self->{cpqFcaHostCntlrCondition};
   if ($self->{cpqFcaHostCntlrCondition} eq 'other') {
-    $info .= sprintf ' and needs attention (%s)', $self->{cpqFcaHostCntlrStatus};
-    $self->add_message(CRITICAL, $info);
+    #$info .= sprintf ' and needs attention (%s)', $self->{cpqFcaHostCntlrStatus};
+    # let's assume other=ok
+    $self->add_message(OK, $info);
     $self->add_info($info);
   } elsif ($self->{cpqFcaHostCntlrCondition} ne 'ok') {
     $self->add_message(CRITICAL, $info);
@@ -168,7 +172,9 @@ sub check {
   $self->blacklist('fcahco', $self->{name});
   $info = sprintf 'fcal host controller %s overall condition is %s',
       $self->{name}, $self->{cpqFcaHostCntlrOverallCondition};
-  if ($self->{cpqFcaHostCntlrOverallCondition} ne 'ok') {
+  if ($self->{cpqFcaHostCntlrOverallCondition} eq 'other') {
+    $self->add_message(OK, $info);
+  } elsif ($self->{cpqFcaHostCntlrOverallCondition} ne 'ok') {
     $self->add_message(WARNING, $info);
   }
   $self->add_info($info);
