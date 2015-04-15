@@ -321,7 +321,7 @@ sub check {
           $self->{name}, $self->{cpqDaPhyDrvModel}, $self->{cpqDaPhyDrvCondition});
   if ($self->{cpqDaPhyDrvCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf "physical drive %s (%s) is %s", 
+        sprintf "physical drive %s (%s) is %s",
             $self->{name}, $self->{cpqDaPhyDrvModel}, $self->{cpqDaPhyDrvCondition});
   }
 }
