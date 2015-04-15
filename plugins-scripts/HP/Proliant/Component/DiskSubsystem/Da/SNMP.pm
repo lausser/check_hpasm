@@ -59,6 +59,27 @@ sub init {
         24 => 'sa-6400',
         25 => 'sa-6400em',
         26 => 'sa-6i',
+        27 => 'sa-generic',
+        29 => 'sa-p600',
+        30 => 'sa-p400',
+        31 => 'sa-e200',
+        32 => 'sa-e200i',
+        33 => 'sa-p400i',
+        34 => 'sa-p800',
+        35 => 'sa-e500' ,
+        36 => 'sa-p700m',
+        37 => 'sa-p212',
+        38 => 'sa-p410',
+        39 => 'sa-p410i',
+        40 => 'sa-p411',
+        41 => 'sa-b110i',
+        42 => 'sa-p712m',
+        43 => 'sa-p711m',
+        44 => 'sa-p812',
+        45 => 'sw-1210m',
+        49 => 'sa-p420i',
+        52 => 'sa-p822'
+        
     },
     cpqDaCntlrConditionValue => {
         1 => "other",
@@ -112,6 +133,17 @@ sub init {
     
   # INDEX { cpqDaAccelCntlrIndex }
   foreach ($self->get_entries($oids, 'cpqDaAccelEntry')) {
+    # we need controller details in case accelerator battery is failed
+    for (my $controller=0;$controller<=$#{ $self->{controllers} };$controller++){
+      if ($self->{controllers}->[$controller]->{cpqDaCntlrIndex} == $_->{cpqDaAccelCntlrIndex}){
+        $_->{cpqDaCntlrSlot} = $self->{controllers}->[$controller]->{cpqDaCntlrSlot};
+        if (! defined $self->{controllers}->[$controller]->{cpqDaCntlrModel}){
+          $_->{cpqDaCntlrModel} = "unknown";
+        }else{
+          $_->{cpqDaCntlrModel} = $self->{controllers}->[$controller]->{cpqDaCntlrModel};
+        }
+      }
+    }
     push(@{$self->{accelerators}},
         HP::Proliant::Component::DiskSubsystem::Da::Accelerator->new(%{$_}));
   }
@@ -174,6 +206,7 @@ sub init {
       cpqDaPhyDrvSize => "1.3.6.1.4.1.232.3.2.5.1.1.9",
       cpqDaPhyDrvCondition => "1.3.6.1.4.1.232.3.2.5.1.1.37",
       cpqDaPhyDrvBusNumber => "1.3.6.1.4.1.232.3.2.5.1.1.50",
+      cpqDaPhyDrvModel => "1.3.6.1.4.1.232.3.2.5.1.1.3",
       cpqDaPhyDrvConditionValue => {
           1 => "other",
           2 => "ok",

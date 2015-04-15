@@ -87,13 +87,13 @@ sub check {
   if ($self->{cpqDaCntlrCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
       $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+          sprintf 'da controller %s in slot %s (%s) needs attention', 
+              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
+      $self->add_info(sprintf 'da controller %s in slot %s (%s) needs attention',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
     } else {
-      $self->add_info(sprintf 'da controller %s in slot %s is ok and unused',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+      $self->add_info(sprintf 'da controller %s in slot %s (%s) is ok and unused',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqDaCntlrCondition} eq 'degraded') {
@@ -104,20 +104,20 @@ sub check {
       # message was already written in the accel code
     } else {
       $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+          sprintf 'da controller %s in slot %s (%s) needs attention', 
+              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
+      $self->add_info(sprintf 'da controller %s in slot %s (%s) needs attention',
+          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
     }
   } elsif ($self->{cpqDaCntlrCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf 'da controller %s in slot %s needs attention', 
-            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-    $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+        sprintf 'da controller %s in slot %s (%s) needs attention', 
+            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
+    $self->add_info(sprintf 'da controller %s in slot %s (%s) needs attention',
+        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
   } else {
-    $self->add_info(sprintf 'da controller %s in slot %s is ok', 
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+    $self->add_info(sprintf 'da controller %s in slot %s (%s) is ok', 
+        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot}, $self->{cpqDaCntlrModel});
   }
 } 
 
@@ -159,6 +159,9 @@ sub new {
     cpqDaAccelBattery => $params{cpqDaAccelBattery} || 'notPresent',
     cpqDaAccelCondition => $params{cpqDaAccelCondition},
     cpqDaAccelStatus => $params{cpqDaAccelStatus},
+    cpqDaCntlrSlot => $params{cpqDaCntlrSlot},
+    cpqDaCntlrModel => $params{cpqDaCntlrModel},
+
     blacklisted => 0,
     failed => 0,
   };
@@ -178,7 +181,7 @@ sub check {
         $self->{cpqDaAccelStatus} eq "tmpDisabled") {
       # handled later
     } else {
-      $self->add_message(CRITICAL, "controller accelerator needs attention");
+      $self->add_message(CRITICAL, "controller accelerator needs attention (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
     }
   }
   $self->blacklist('daacb', $self->{cpqDaAccelCntlrIndex});
@@ -186,13 +189,13 @@ sub check {
       $self->{cpqDaAccelBattery});
   if ($self->{cpqDaAccelBattery} eq "notPresent") {
   } elsif ($self->{cpqDaAccelBattery} eq "recharging") {
-    $self->add_message(WARNING, "controller accelerator battery recharging");
+    $self->add_message(WARNING, "controller accelerator battery recharging (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
   } elsif ($self->{cpqDaAccelBattery} eq "failed" &&
       $self->{cpqDaAccelStatus} eq "tmpDisabled") {
-    $self->add_message(WARNING, "controller accelerator battery needs attention");
+    $self->add_message(CRITICAL, "controller accelerator battery needs attention (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
   } elsif ($self->{cpqDaAccelBattery} ne "ok") {
     # (other) failed degraded
-    $self->add_message(CRITICAL, "controller accelerator battery needs attention");
+    $self->add_message(CRITICAL, "controller accelerator battery needs attention (" . $self->{cpqDaCntlrModel} . "/slot" . $self->{cpqDaCntlrSlot} . ")");
   } 
 }
 
@@ -300,6 +303,7 @@ sub new {
     cpqDaPhyDrvSize => $params{cpqDaPhyDrvSize},
     cpqDaPhyDrvStatus => $params{cpqDaPhyDrvStatus},
     cpqDaPhyDrvCondition => $params{cpqDaPhyDrvCondition},
+    cpqDaPhyDrvModel => $params{cpqDaPhyDrvModel},
     blacklisted => 0,
   };
   bless $self, $class;
@@ -313,19 +317,19 @@ sub check {
   my $self = shift;
   $self->blacklist('dapd', $self->{name});
   $self->add_info(
-      sprintf "physical drive %s is %s",
-          $self->{name}, $self->{cpqDaPhyDrvCondition});
+      sprintf "physical drive %s (%s) is %s",
+          $self->{name}, $self->{cpqDaPhyDrvModel}, $self->{cpqDaPhyDrvCondition});
   if ($self->{cpqDaPhyDrvCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqDaPhyDrvCondition});
+        sprintf "physical drive %s (%s) is %s",
+            $self->{name}, $self->{cpqDaPhyDrvModel}, $self->{cpqDaPhyDrvCondition});
   }
 }
 
 sub dump {
   my $self = shift;
   printf "[PHYSICAL_DRIVE]\n";
-  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvBay
+  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvModel cpqDaPhyDrvBay
       cpqDaPhyDrvBusNumber cpqDaPhyDrvSize cpqDaPhyDrvStatus
       cpqDaPhyDrvCondition)) {
     printf "%s: %s\n", $_, $self->{$_};
@@ -343,7 +347,7 @@ use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 sub dump {
   my $self = shift;
   printf "[SPARE_DRIVE]\n";
-  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvBay
+  foreach (qw(cpqDaPhyDrvCntlrIndex cpqDaPhyDrvIndex cpqDaPhyDrvModel cpqDaPhyDrvBay
       cpqDaPhyDrvBusNumber cpqDaPhyDrvSize cpqDaPhyDrvStatus
       cpqDaPhyDrvCondition)) {
     printf "%s: %s\n", $_, $self->{$_};

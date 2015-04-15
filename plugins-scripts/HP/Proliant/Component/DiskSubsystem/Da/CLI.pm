@@ -23,6 +23,7 @@ sub init {
   my $self = shift;
   my $hpacucli = $self->{rawdata};
   my $slot = 0;
+  my $model = "unkn";
   my $type = "unkn";
   my @lines = ();
   my $thistype = 0;
@@ -34,12 +35,15 @@ sub init {
   my $ldriveindex = 0;
   my $pdriveindex = 0;
   my $incontroller = 0;
+  my $pdrivename = "";
+  my $parsestate = "";
   foreach (split(/\n/, $hpacucli)) {
     next unless /^status/;
     next if /^status\s*$/;
     s/^status\s*//;
     if (/(MSA[\s\w]+)\s+in\s+(\w+)/) { 
       $incontroller = 1;
+      $model = $1;
       $slot = $2;
       $cntlindex++;
       $tmpcntl->{$slot}->{cpqDaCntlrIndex} = $cntlindex;
@@ -47,6 +51,7 @@ sub init {
       $tmpcntl->{$slot}->{cpqDaCntlrSlot} = $slot;
     } elsif (/([\s\w]+) in Slot\s+(\d+)/) {
       $incontroller = 1;
+      $model = $1;
       $slot = $2;
       $cntlindex++;
       $tmpcntl->{$slot}->{cpqDaCntlrIndex} = $cntlindex;
@@ -61,6 +66,8 @@ sub init {
       # Cache Status: Temporarily Disabled
       $tmpaccel->{$slot}->{cpqDaAccelCntlrIndex} = $cntlindex;
       $tmpaccel->{$slot}->{cpqDaAccelSlot} = $slot;
+      $tmpaccel->{$slot}->{cpqDaCntlrSlot} = $slot;
+      $tmpaccel->{$slot}->{cpqDaCntlrModel} = $model;
       #condition: other,ok,degraded,failed
       #status: other,invalid,enabled,tmpDisabled,permDisabled
       $tmpaccel->{$slot}->{cpqDaAccelCondition} = lc $1; 
@@ -90,7 +97,23 @@ sub init {
   $pdriveindex = 0;
   foreach (split(/\n/, $hpacucli)) {
     next unless /^config/;
-    next if /^config\s*$/;
+#    next if /^config\s*$/;
+    if (/^config\s*$/) {
+       # Ende der Stanza - verarbeite die drivedaten und setze parsestate auf None
+       if ($parsestate eq "physicaldrive") {
+         foreach (keys %{$tmppd->{$slot}->{$pdrivename}}) {
+           $tmppd->{$slot}->{$pdrivename}->{$_} =~ s/^\s+//g;
+           $tmppd->{$slot}->{$pdrivename}->{$_} =~ s/\s+$//g;
+           $tmppd->{$slot}->{$pdrivename}->{$_} =~ s/\s+/ /g;
+           next if /cpqDaPhyDrvModel/;
+           $tmppd->{$slot}->{$pdrivename}->{$_} = lc $tmppd->{$slot}->{$pdrivename}->{$_};
+         }
+         $pdriveindex++;
+         $pdrivename = "";
+       }
+       $parsestate = "None";
+       next;
+    }
     s/^config\s*//;
     if (/(MSA[\s\w]+)\s+in\s+(\w+)/) {
       $slot = $2;
@@ -150,6 +173,53 @@ sub init {
         $tmppd->{$slot}->{$name}->{$_} = lc $tmppd->{$slot}->{$name}->{$_};
       }
       $pdriveindex++;
+    } elsif (/Logical Drive:\s+(.+?)$/) {
+      $ldriveindex = $1;
+      $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvCntlrIndex} = $cntlindex;
+      $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvIndex} = $ldriveindex;
+      $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvPhyDrvIDs} = 'unknown';
+      $parsestate = "logicaldrive";
+    } elsif (/physicaldrive\s+(.+?)$/) {
+      $pdrivename = $1;
+      $tmppd->{$slot}->{$pdrivename}->{name} = lc $pdrivename;
+      $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvIndex} = $pdriveindex;
+      $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvCntlrIndex} = $cntlindex;
+      $tmppd->{$slot}->{$pdrivename}->{ldriveindex} = $ldriveindex || -1;
+      $parsestate = "physicaldrive";
+    } elsif (/^Model:\s+(.+?)\s*$/){
+      if ($parsestate eq "physicaldrive") {
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvModel} = $1;
+      }
+    } elsif (/^Port:\s+(.+?)$/){
+      if ($parsestate eq "physicaldrive") {
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvBusNumber} = $1;
+      }
+    } elsif (/^Box:\s+(.+?)$/){
+      if ($parsestate eq "physicaldrive") {
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvBox} = $1;
+      }
+    } elsif (/^Bay:\s+(.+?)$/){
+      if ($parsestate eq "physicaldrive") {
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvBay} = $1;
+      }
+    } elsif (/^Size:\s+(.+?)$/){
+      if ($parsestate eq "logicaldrive") {
+        $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvSize} = $1;
+      } elsif ($parsestate eq "physicaldrive") {
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvSize} = $1;
+      }
+    } elsif (/^Fault Tolerance:\s+(.+?)$/){
+      if ($parsestate eq "logicaldrive") {
+        $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvFaultTol} = $1;
+      }
+    } elsif (/^Status:\s+(.+?)$/){
+      if ($parsestate eq "logicaldrive") {
+        $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvCondition} = lc $1;
+        $tmpld->{$slot}->{$ldriveindex}->{cpqDaLogDrvStatus} = lc $1;
+      } elsif ($parsestate eq "physicaldrive") {
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvStatus} = lc $1;
+        $tmppd->{$slot}->{$pdrivename}->{cpqDaPhyDrvCondition} = lc $1;
+      }
     }
   }
 
