@@ -2,6 +2,9 @@
 # Changelog of the check_hpasm plugin #
 #######################################
 
+4.7.1.1 2015-06-08
+- bugfix for gen9 with broken SysRomVer string
+
 4.7.1 2015-03-23
 - interpret other status for fcal as ok
 

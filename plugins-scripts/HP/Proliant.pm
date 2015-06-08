@@ -68,8 +68,13 @@ sub check_for_buggy_firmware {
       "D13 09/15/2004",
       "P20 12/17/2002"
   );
-  $self->{runtime}->{options}->{buggy_firmware} =
-      grep /^$self->{romversion}/, @buggyfirmwares;
+  if ($self->{romversion} =~ /^\w+ \d+\/\d+\/\d+$/) {
+    $self->{runtime}->{options}->{buggy_firmware} =
+        grep /^$self->{romversion}/, @buggyfirmwares;
+  } else {
+    # nicht parsbarer schrott in cpqSeSysRomVer, gesehen bei Gen9
+    $self->{runtime}->{options}->{buggy_firmware} = undef;
+  }
 }
 
 sub dump {
@@ -684,6 +689,7 @@ sub set_serial {
   my $cpqSiSysSerialNum = "1.3.6.1.4.1.232.2.2.2.1.0";
   my $cpqSiProductName = "1.3.6.1.4.1.232.2.2.4.2.0";
   my $cpqSeSysRomVer = "1.3.6.1.4.1.232.1.2.6.1.0";
+  my $cpqSeRedundantSysRomVer = "1.3.6.1.4.1.232.1.2.6.4.0";
 
   $self->{serial} = 
       SNMP::Utils::get_object($self->{rawdata}, $cpqSiSysSerialNum);
@@ -691,6 +697,8 @@ sub set_serial {
       SNMP::Utils::get_object($self->{rawdata}, $cpqSiProductName);
   $self->{romversion} =
       SNMP::Utils::get_object($self->{rawdata}, $cpqSeSysRomVer);
+  $self->{redundantromversion} =
+      SNMP::Utils::get_object($self->{rawdata}, $cpqSeRedundantSysRomVer);
   if ($self->{romversion} && $self->{romversion} =~
       #/(\d{2}\/\d{2}\/\d{4}).*?([ADP]{1}\d{2}).*/) {
       /(\d{2}\/\d{2}\/\d{4}).*?Family.*?([A-Z]{1})(\d+).*/) {
@@ -698,6 +706,18 @@ sub set_serial {
   } elsif ($self->{romversion} && $self->{romversion} =~
       /([ADP]{1}\d{2})\-(\d{2}\/\d{2}\/\d{4})/) {
     $self->{romversion} = sprintf("%s %s", $1, $2);
+  } else {
+    # fallback if romversion is broken, redundantromversion not
+    #.1.3.6.1.4.1.232.1.2.6.1.0 = STRING: "4), Family "
+    #.1.3.6.1.4.1.232.1.2.6.3.0 = ""
+    #.1.3.6.1.4.1.232.1.2.6.4.0 = STRING: "v1.20 (08/26/2014), Family "
+    if ($self->{redundantromversion} && $self->{redundantromversion} =~
+        /(\d{2}\/\d{2}\/\d{4}).*?Family.*?([A-Z]{1})(\d+).*/) {
+      $self->{romversion} = sprintf("%s%02d %s", $2, $3, $1);
+    } elsif ($self->{redundantromversion} && $self->{redundantromversion} =~
+        /([ADP]{1}\d{2})\-(\d{2}\/\d{2}\/\d{4})/) {
+      $self->{romversion} = sprintf("%s %s", $1, $2);
+    }
   }
   if (!$self->{serial} && $self->{romversion}) {
     # this probably is a very, very old server.
