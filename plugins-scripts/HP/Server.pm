@@ -164,19 +164,19 @@ sub check_snmp_and_model {
       if ($self->{runtime}->{plugin}->opts->protocol eq '3') {
         $params{'-username'} = $self->{runtime}->{plugin}->opts->username;
         if ($self->{runtime}->{plugin}->opts->authpassword) {
-          $params{'-authpassword'} = $self->{runtime}->{plugin}->opts->authpassword;
+          $params{'-authpassword'} = $self->decode_password($self->{runtime}->{plugin}->opts->authpassword);
         }
         if ($self->{runtime}->{plugin}->opts->authprotocol) {
           $params{'-authprotocol'} = $self->{runtime}->{plugin}->opts->authprotocol;
         }
         if ($self->{runtime}->{plugin}->opts->privpassword) {
-          $params{'-privpassword'} = $self->{runtime}->{plugin}->opts->privpassword;
+          $params{'-privpassword'} = $self->decode_password($self->{runtime}->{plugin}->opts->privpassword);
         }
         if ($self->{runtime}->{plugin}->opts->privprotocol) {
           $params{'-privprotocol'} = $self->{runtime}->{plugin}->opts->privprotocol;
         }
       } else {
-        $params{'-community'} = $self->{runtime}->{plugin}->opts->community;
+        $params{'-community'} = $self->decode_password($self->{runtime}->{plugin}->opts->community);
       }
       $self->{runtime}->{snmpparams} = \%params;
       my ($session, $error) = Net::SNMP->session(%params);
@@ -411,3 +411,14 @@ sub dumper {
   printf STDERR "%s\n", Data::Dumper::Dumper($object);
   $object->{runtime} = $run;
 }
+
+sub decode_password {
+  my $self = shift;
+  my $password = shift;
+  if ($password && $password =~ /^rfc3986:\/\/(.*)/) {
+    $password = $1;
+    $password =~ s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+  }
+  return $password;
+}
+
