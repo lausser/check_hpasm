@@ -46,6 +46,13 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
+    spec => 'skipped|s=s',
+    help => '--skipped=memory,eventlog
+   Skip checking the given subsystems. Possible values: powersupply,
+   fan, temperature, cpu, memory, nic, disk, asr, event',
+    required => 0,
+);
+$plugin->add_arg(
     spec => 'customthresholds|c=s',
     help => '--customthresholds
    Use custom thresholds for certain temperatures',

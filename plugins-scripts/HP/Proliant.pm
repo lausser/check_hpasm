@@ -19,6 +19,56 @@ sub init {
       asr_subsystem => undef,
       event_subsystem => undef,
   };
+  $self->{subsystem_oidtables} = {
+      powersupply => {
+          cpqHePWSComponent => "1.3.6.1.4.1.232.6.2.9",
+      },
+      temperature => {
+          cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
+      },
+      cpu => {
+          cpqSeProcessor =>    "1.3.6.1.4.1.232.1.2.2",
+      },
+      memory => {
+          cpqHeMComponent =>   "1.3.6.1.4.1.232.6.2.14",
+      },
+      nic => {
+          cpqNic =>            "1.3.6.1.4.1.232.18.2",
+      },
+      disk => {
+          cpqDaComponent =>    "1.3.6.1.4.1.232.3.2",
+          cpqSiComponent =>    "1.3.6.1.4.1.232.2.2",
+          cpqSasComponent =>   "1.3.6.1.4.1.232.5",
+          cpqIdeComponent =>   "1.3.6.1.4.1.232.14",
+          cpqFcaComponent =>   "1.3.6.1.4.1.232.16.2",
+      },
+      asr => {
+          cpqHeAsr =>          "1.3.6.1.4.1.232.6.2.5",
+      },
+      event => {
+          cpqHeEventLog =>     "1.3.6.1.4.1.232.6.2.11",
+      },
+  };
+  $self->{subsystem_oidvalues} = {
+      fan => {
+          cpqHeThermalSystemFanStatus => "1.3.6.1.4.1.232.6.2.6.4.0",
+          cpqHeThermalCpuFanStatus => "1.3.6.1.4.1.232.6.2.6.5.0",
+      },
+      temperature => {
+          cpqHeThermalTempStatus => "1.3.6.1.4.1.232.6.2.6.3.0",
+      },
+      nic => {
+          cpqNicIfLogMapOverallCondition => "1.3.6.1.4.1.232.18.2.2.2.0",
+      },
+      asr => {
+          cpqHeAsrStatus => "1.3.6.1.4.1.232.6.2.5.1.0",
+          cpqHeAsrCondition => "1.3.6.1.4.1.232.6.2.5.17.0",
+      },
+      event => {
+          cpqHeEventLogSupported => "1.3.6.1.4.1.232.6.2.11.1.0",
+          cpqHeEventLogCondition => "1.3.6.1.4.1.232.6.2.11.2.0",
+      },
+  };
   $self->{serial} = 'unknown';
   $self->{product} = 'unknown';
   $self->{romversion} = 'unknown';
@@ -87,6 +137,7 @@ sub dump {
 
 sub analyze_powersupplies {
   my $self = shift;
+  return if grep /^powersupply$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{powersupply_subsystem} =
       HP::Proliant::Component::PowersupplySubsystem->new(
     rawdata => $self->{rawdata},
@@ -97,6 +148,7 @@ sub analyze_powersupplies {
 
 sub analyze_fan_subsystem {
   my $self = shift;
+  return if grep /^fan$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{fan_subsystem} = 
       HP::Proliant::Component::FanSubsystem->new(
     rawdata => $self->{rawdata},
@@ -107,6 +159,7 @@ sub analyze_fan_subsystem {
 
 sub analyze_temperatures {
   my $self = shift;
+  return if grep /^temperature$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{temperature_subsystem} = 
       HP::Proliant::Component::TemperatureSubsystem->new(
     rawdata => $self->{rawdata},
@@ -117,6 +170,7 @@ sub analyze_temperatures {
 
 sub analyze_cpus {
   my $self = shift;
+  return if grep /^cpu$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{cpu_subsystem} =
       HP::Proliant::Component::CpuSubsystem->new(
     rawdata => $self->{rawdata},
@@ -127,6 +181,7 @@ sub analyze_cpus {
 
 sub analyze_memory_subsystem {
   my $self = shift;
+  return if grep /^memory$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{memory_subsystem} = 
       HP::Proliant::Component::MemorySubsystem->new(
     rawdata => $self->{rawdata},
@@ -137,6 +192,7 @@ sub analyze_memory_subsystem {
 
 sub analyze_nic_subsystem {
   my $self = shift;
+  return if grep /^nic$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   return if $self->{method} ne "snmp";
   $self->{components}->{nic_subsystem} = 
       HP::Proliant::Component::NicSubsystem->new(
@@ -148,6 +204,7 @@ sub analyze_nic_subsystem {
 
 sub analyze_disk_subsystem {
   my $self = shift;
+  return if grep /^disk$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{disk_subsystem} =
       HP::Proliant::Component::DiskSubsystem->new(
     rawdata => $self->{rawdata},
@@ -158,6 +215,7 @@ sub analyze_disk_subsystem {
 
 sub analyze_asr_subsystem {
   my $self = shift;
+  return if grep /^asr$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{asr_subsystem} =
       HP::Proliant::Component::AsrSubsystem->new(
     rawdata => $self->{rawdata},
@@ -168,6 +226,7 @@ sub analyze_asr_subsystem {
 
 sub analyze_event_subsystem {
   my $self = shift;
+  return if grep /^event$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{event_subsystem} =
       HP::Proliant::Component::EventSubsystem->new(
     rawdata => $self->{rawdata},
@@ -178,6 +237,7 @@ sub analyze_event_subsystem {
 
 sub check_cpus {
   my $self = shift;
+  return if grep /^cpu$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{cpu_subsystem}->check();
   $self->{components}->{cpu_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -185,6 +245,7 @@ sub check_cpus {
 
 sub check_powersupplies {
   my $self = shift;
+  return if grep /^powersupply$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{powersupply_subsystem}->check();
   $self->{components}->{powersupply_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -192,6 +253,7 @@ sub check_powersupplies {
 
 sub check_fan_subsystem {
   my $self = shift;
+  return if grep /^fan$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{fan_subsystem}->check();
   $self->{components}->{fan_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -199,6 +261,7 @@ sub check_fan_subsystem {
 
 sub check_temperatures {
   my $self = shift;
+  return if grep /^temperature$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{temperature_subsystem}->check();
   $self->{components}->{temperature_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -206,6 +269,7 @@ sub check_temperatures {
 
 sub check_memory_subsystem {
   my $self = shift;
+  return if grep /^memory$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{memory_subsystem}->check();
   $self->{components}->{memory_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -213,6 +277,7 @@ sub check_memory_subsystem {
 
 sub check_nic_subsystem {
   my $self = shift;
+  return if grep /^nic$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   return if $self->{method} ne "snmp";
   if ($self->{runtime}->{plugin}->{opts}->get('eval-nics')) {
     $self->{components}->{nic_subsystem}->check();
@@ -222,6 +287,7 @@ sub check_nic_subsystem {
 }
 sub check_disk_subsystem {
   my $self = shift;
+  return if grep /^disk$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{disk_subsystem}->check();
   $self->{components}->{disk_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -233,6 +299,7 @@ sub check_disk_subsystem {
 
 sub check_asr_subsystem {
   my $self = shift;
+  return if grep /^asr$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{asr_subsystem}->check();
   $self->{components}->{asr_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -240,6 +307,7 @@ sub check_asr_subsystem {
 
 sub check_event_subsystem {
   my $self = shift;
+  return if grep /^event$/, split ",", $self->{runtime}->{plugin}->opts->skipped;
   $self->{components}->{event_subsystem}->check();
   $self->{components}->{event_subsystem}->dump()
       if $self->{runtime}->{options}->{verbose} >= 2;
@@ -547,34 +615,28 @@ sub collect {
   my $self = shift;
   my %oidtables = (
       system =>            "1.3.6.1.2.1.1",
-      cpqSeProcessor =>    "1.3.6.1.4.1.232.1.2.2",
-      cpqHePWSComponent => "1.3.6.1.4.1.232.6.2.9",
-      cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
-      cpqHeMComponent =>   "1.3.6.1.4.1.232.6.2.14",
-      cpqDaComponent =>    "1.3.6.1.4.1.232.3.2",
-      cpqSiComponent =>    "1.3.6.1.4.1.232.2.2",
       cpqSeRom =>          "1.3.6.1.4.1.232.1.2.6",
-      cpqSasComponent =>   "1.3.6.1.4.1.232.5",
-      cpqIdeComponent =>   "1.3.6.1.4.1.232.14",
-      cpqFcaComponent =>   "1.3.6.1.4.1.232.16.2",
-      cpqHeAsr =>          "1.3.6.1.4.1.232.6.2.5",
-      cpqNic =>            "1.3.6.1.4.1.232.18.2",
-      cpqHeEventLog =>     "1.3.6.1.4.1.232.6.2.11",
-
       #    cpqHeComponent =>  "1.3.6.1.4.1.232.6.2",
       #    cpqHeFComponent => "1.3.6.1.4.1.232.6.2.6.7",
       #    cpqHeTComponent => "1.3.6.1.4.1.232.6.2.6.8",
   );
+  foreach my $subsystem (keys %{$self->{subsystem_oidtables}}) {
+      if (! grep /^$subsystem$/, split ",", $self->{runtime}->{plugin}->opts->skipped) {
+          foreach my $table (keys %{$self->{subsystem_oidtables}->{$subsystem}}) {
+              $oidtables{$table} = $self->{subsystem_oidtables}->{$subsystem}->{$table};
+          }
+      }
+  }
   my %oidvalues = (
-      cpqHeEventLogSupported => "1.3.6.1.4.1.232.6.2.11.1.0",
-      cpqHeEventLogCondition => "1.3.6.1.4.1.232.6.2.11.2.0",
-      cpqNicIfLogMapOverallCondition => "1.3.6.1.4.1.232.18.2.2.2.0",
-      cpqHeThermalTempStatus => "1.3.6.1.4.1.232.6.2.6.3.0",
-      cpqHeThermalSystemFanStatus => "1.3.6.1.4.1.232.6.2.6.4.0",
-      cpqHeThermalCpuFanStatus => "1.3.6.1.4.1.232.6.2.6.5.0",
-      cpqHeAsrStatus => "1.3.6.1.4.1.232.6.2.5.1.0",
-      cpqHeAsrCondition => "1.3.6.1.4.1.232.6.2.5.17.0",
   );
+  foreach my $subsystem (keys %{$self->{subsystem_oidvalues}}) {
+      if (! grep /^$subsystem$/, split ",", $self->{runtime}->{plugin}->opts->skipped) {
+          foreach my $value (keys %{$self->{subsystem_oidvalues}->{$subsystem}}) {
+              $oidvalues{$value} = $self->{subsystem_oidvalues}->{$subsystem}->{$value};
+          }
+      }
+  }
+
   if ($self->{runtime}->{plugin}->opts->snmpwalk) {
     my $cpqSeMibCondition = '1.3.6.1.4.1.232.1.1.3.0'; # 2=ok
     my $cpqHeMibCondition = '1.3.6.1.4.1.232.6.1.3.0'; # hat nicht jeder
