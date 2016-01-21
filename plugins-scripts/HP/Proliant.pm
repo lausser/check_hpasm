@@ -48,6 +48,9 @@ sub init {
       event => {
           cpqHeEventLog =>     "1.3.6.1.4.1.232.6.2.11",
       },
+      fan => {
+          cpqHeThermal =>      "1.3.6.1.4.1.232.6.2.6",
+      },
   };
   $self->{subsystem_oidvalues} = {
       fan => {
