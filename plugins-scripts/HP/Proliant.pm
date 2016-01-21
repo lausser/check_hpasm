@@ -757,13 +757,13 @@ sub set_serial {
   my $cpqSeRedundantSysRomVer = "1.3.6.1.4.1.232.1.2.6.4.0";
 
   $self->{serial} = 
-      SNMP::Utils::get_object($self->{rawdata}, $cpqSiSysSerialNum);
+      SNMP::Utils::get_object($self->{rawdata}, $cpqSiSysSerialNum) || "";
   $self->{product} =
-      SNMP::Utils::get_object($self->{rawdata}, $cpqSiProductName);
+      SNMP::Utils::get_object($self->{rawdata}, $cpqSiProductName) || "";
   $self->{romversion} =
-      SNMP::Utils::get_object($self->{rawdata}, $cpqSeSysRomVer);
+      SNMP::Utils::get_object($self->{rawdata}, $cpqSeSysRomVer) || "";
   $self->{redundantromversion} =
-      SNMP::Utils::get_object($self->{rawdata}, $cpqSeRedundantSysRomVer);
+      SNMP::Utils::get_object($self->{rawdata}, $cpqSeRedundantSysRomVer) || "";
   if ($self->{romversion} && $self->{romversion} =~
       #/(\d{2}\/\d{2}\/\d{4}).*?([ADP]{1}\d{2}).*/) {
       /(\d{2}\/\d{2}\/\d{4}).*?Family.*?([A-Z]{1})(\d+).*/) {
