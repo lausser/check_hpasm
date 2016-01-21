@@ -74,6 +74,13 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
+    spec => 'hwinfo=s',
+    help => '--hwinfo=[0]
+   Output hardware information like model number, serial number and BIOS version',
+    default => 1,
+    required => 0,
+);
+$plugin->add_arg(
     spec => 'hostname|H=s',
     help => '--hostname
    Hostname or IP-address of the server (SNMP mode only)',
@@ -180,6 +187,8 @@ $SIG{'ALRM'} = sub {
   exit $ERRORS{UNKNOWN};
 };
 alarm($plugin->opts->get('timeout'));
+
+$HWINFO = $plugin->opts->get('hwinfo');
 
 my $server = HP::Server->new( runtime => {
     plugin => $plugin,
