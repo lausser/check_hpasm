@@ -1,3 +1,6 @@
+* 4.7.2 2016-02-01
+  search for hpssacli if hpacucli was not found
+
 * 4.7.1.1 2015-06-08
   bugfix for gen9 with broken SysRomVer string
 
