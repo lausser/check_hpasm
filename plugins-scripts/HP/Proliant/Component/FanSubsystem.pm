@@ -151,7 +151,8 @@ sub check {
       $self->add_info(sprintf 'fan %d (%s) degraded',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
       $self->add_message(WARNING, $self->{info});
-    } elsif ($self->{cpqHeFltTolFanCondition} ne 'ok') {
+    } elsif ($self->{cpqHeFltTolFanCondition} ne 'ok' &&
+        $self->{cpqHeFltTolFanCondition} ne 'other') {
       $self->add_info(sprintf 'fan %d (%s) is not ok',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
       $self->add_message(WARNING, $self->{info});

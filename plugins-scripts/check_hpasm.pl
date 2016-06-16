@@ -87,6 +87,13 @@ $plugin->add_arg(
     default => '2c',
 );
 $plugin->add_arg(
+    spec => 'domain|d=s',
+    help => '--domain
+   The transport protocol to use (default: udp, other possibilities: tcp)',
+    required => 0,
+    default => 'udp',
+);
+$plugin->add_arg(
     spec => 'community|C=s',
     help => '--community
    SNMP community of the server (SNMP v1/2 only)',
