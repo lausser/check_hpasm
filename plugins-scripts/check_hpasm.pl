@@ -46,6 +46,13 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
+    spec => 'skipped|s=s',
+    help => '--skipped=memory,eventlog
+   Skip checking the given subsystems. Possible values: powersupply,
+   fan, temperature, cpu, memory, nic, disk, asr, event',
+    required => 0,
+);
+$plugin->add_arg(
     spec => 'customthresholds|c=s',
     help => '--customthresholds
    Use custom thresholds for certain temperatures',
@@ -67,6 +74,13 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
+    spec => 'hwinfo=s',
+    help => '--hwinfo=[0]
+   Output hardware information like model number, serial number and BIOS version',
+    default => 1,
+    required => 0,
+);
+$plugin->add_arg(
     spec => 'hostname|H=s',
     help => '--hostname
    Hostname or IP-address of the server (SNMP mode only)',
@@ -85,6 +99,13 @@ $plugin->add_arg(
    The SNMP protocol to use (default: 2c, other possibilities: 1,3)',
     required => 0,
     default => '2c',
+);
+$plugin->add_arg(
+    spec => 'domain|d=s',
+    help => '--domain
+   The transport protocol to use (default: udp, other possibilities: tcp)',
+    required => 0,
+    default => 'udp',
 );
 $plugin->add_arg(
     spec => 'community|C=s',
@@ -166,6 +187,8 @@ $SIG{'ALRM'} = sub {
   exit $ERRORS{UNKNOWN};
 };
 alarm($plugin->opts->get('timeout'));
+
+$HWINFO = $plugin->opts->get('hwinfo');
 
 my $server = HP::Server->new( runtime => {
     plugin => $plugin,

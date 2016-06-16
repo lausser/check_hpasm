@@ -85,10 +85,11 @@ sub check_snmp_and_model {
           sprintf 'file %s not found',
           $self->{runtime}->{plugin}->opts->snmpwalk);
     } elsif (-x $self->{runtime}->{plugin}->opts->snmpwalk) {
-      my $cmd = sprintf "%s -On -v%s -c%s %s 1.3.6.1.4.1.232 2>&1",
+      my $cmd = sprintf "%s -On -v%s -c%s %s:%s 1.3.6.1.4.1.232 2>&1",
           $self->{runtime}->{plugin}->opts->snmpwalk,
           $self->{runtime}->{plugin}->opts->protocol,
           $self->{runtime}->{plugin}->opts->community,
+          $self->{runtime}->{plugin}->opts->domain,
           $self->{runtime}->{plugin}->opts->hostname;
       open(WALK, "$cmd |");
       while (<WALK>) {
@@ -160,6 +161,7 @@ sub check_snmp_and_model {
         -timeticks => 0x0
       ];
       $params{'-hostname'} = $self->{runtime}->{plugin}->opts->hostname;
+      $params{'-domain'} = $self->{runtime}->{plugin}->opts->domain;
       $params{'-version'} = $self->{runtime}->{plugin}->opts->protocol;
       if ($self->{runtime}->{plugin}->opts->port) {
         $params{'-port'} = $self->{runtime}->{plugin}->opts->port;
