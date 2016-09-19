@@ -159,6 +159,7 @@ sub new {
     cpqDaAccelBattery => $params{cpqDaAccelBattery} || 'notPresent',
     cpqDaAccelCondition => $params{cpqDaAccelCondition},
     cpqDaAccelStatus => $params{cpqDaAccelStatus},
+    cpqDaAccelErrCode => $params{cpqDaAccelErrCode},
     blacklisted => 0,
     failed => 0,
   };
@@ -172,14 +173,10 @@ sub check {
   $self->blacklist('daac', $self->{cpqDaAccelCntlrIndex});
   $self->add_info(sprintf 'controller accelerator is %s',
       $self->{cpqDaAccelCondition});
-  if ($self->{cpqDaAccelStatus} ne "enabled") {
-  } elsif ($self->{cpqDaAccelCondition} ne "ok") {
-    if ($self->{cpqDaAccelBattery} eq "failed" &&
-        $self->{cpqDaAccelStatus} eq "tmpDisabled") {
-      # handled later
-    } else {
-      $self->add_message(CRITICAL, "controller accelerator needs attention");
-    }
+  if ($self->{cpqDaAccelCondition} eq "failed" || $self->{cpqDaAccelCondition} eq "degraded") {
+    $self->add_message(CRITICAL, sprintf
+        "controller accelerator is %s (reason: %s) and needs attention",
+        $self->{cpqDaAccelCondition}, $self->{cpqDaAccelErrCode});
   }
   $self->blacklist('daacb', $self->{cpqDaAccelCntlrIndex});
   $self->add_info(sprintf 'controller accelerator battery is %s',
@@ -210,7 +207,7 @@ sub dump {
   my $self = shift;
   printf "[ACCELERATOR]\n";
   foreach (qw(cpqDaAccelCntlrIndex cpqDaAccelBattery
-      cpqDaAccelStatus cpqDaAccelCondition)) {
+      cpqDaAccelStatus cpqDaAccelCondition cpqDaAccelErrCode)) {
     printf "%s: %s\n", $_, $self->{$_};
   }
   printf "\n";
