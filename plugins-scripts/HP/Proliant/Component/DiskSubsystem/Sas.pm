@@ -12,6 +12,7 @@ sub new {
     rawdata => $params{rawdata},
     method => $params{method},
     controllers => [],
+    enclosures => [],
     physical_drives => [],
     logical_drives => [],
     spare_drives => [],

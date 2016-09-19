@@ -92,6 +92,8 @@ sub assemble {
       scalar(@{$self->{controllers}}));
   $self->trace(3, sprintf "has %d accelerators",
       scalar(@{$self->{accelerators}})) if exists $self->{accelerators};
+  $self->trace(3, sprintf "has %d enclosures",
+      scalar(@{$self->{enclosures}}));
   $self->trace(3, sprintf "has %d physical_drives",
       scalar(@{$self->{physical_drives}}));
   $self->trace(3, sprintf "has %d logical_drives",
@@ -100,20 +102,22 @@ sub assemble {
       scalar(@{$self->{spare_drives}}));
   my $found = {
       accelerators => {},
+      enclosures => {},
       logical_drives => {},
       physical_drives => {},
       spare_drives => {},
   };
   # found->{komponente}->{controllerindex} ist ein array
   # von teilen, die zu einem controller gehoeren
-  foreach my $item (qw(accelerators logical_drives physical_drives spare_drives)) {
+  foreach my $item (qw(accelerators enclosures logical_drives physical_drives spare_drives)) {
+    next if ($item eq "enclosures" && ! exists $self->{$item});
     foreach (@{$self->{$item}}) {
       $found->{item}->{$_->{controllerindex}} = []
           unless exists $found->{$item}->{$_->{controllerindex}};
       push(@{$found->{$item}->{$_->{controllerindex}}}, $_);
     }
   }
-  foreach my $item (qw(accelerators logical_drives physical_drives spare_drives)) {
+  foreach my $item (qw(accelerators enclosures logical_drives physical_drives spare_drives)) {
     foreach (@{$self->{controllers}}) {
       if (exists $found->{$item}->{$_->{controllerindex}}) {
         $_->{$item} = $found->{$item}->{$_->{controllerindex}};
@@ -145,6 +149,11 @@ sub has_physical_drives {
 sub has_logical_drives {
   my $self = shift;
   return scalar(@{$self->{logical_drives}});
+}
+
+sub has_enclosures {
+  my $self = shift;
+  return scalar(@{$self->{enclosures}});
 }
 
 1;

@@ -10,6 +10,7 @@ sub new {
   my $self = {
     controllers => [],
     accelerators => [],
+    enclosures => [],
     physical_drives => [],
     logical_drives => [],
     spare_drives => [],
@@ -30,7 +31,9 @@ sub init {
   my $tmpaccel = {};
   my $tmpld = {};
   my $tmppd = {};
+  my $tmpencl = {};
   my $cntlindex = 0;
+  my $enclosureindex = 0;
   my $ldriveindex = 0;
   my $pdriveindex = 0;
   my $incontroller = 0;
@@ -86,6 +89,7 @@ sub init {
   }
   $slot = 0;
   $cntlindex = 0;
+  $enclosureindex = 0;
   $ldriveindex = 0;
   $pdriveindex = 0;
   foreach (split(/\n/, $hpacucli)) {
@@ -104,6 +108,16 @@ sub init {
       #}
       $slot = $2;
       $pdriveindex = 1;
+    } elsif (/([\s\w]+) at Port ([\w]+), Box (\d+), (.*)/) {
+      $enclosureindex++;
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclCntlrIndex} = $cntlindex;
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclIndex} = $enclosureindex;
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclPort} = $2;
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclBox} = $3;
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclCondition} = $4;
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclStatus} =
+          $tmpencl->{$slot}->{$enclosureindex}->{cpqDaEnclCondition};
+      $tmpencl->{$slot}->{$enclosureindex}->{cpqDaLogDrvPhyDrvIDs} = 'unknown';
     } elsif (/logicaldrive\s+(.+?)\s+\((.*)\)/) {
       # logicaldrive 1 (683.5 GB, RAID 5, OK)
       # logicaldrive 1 (683.5 GB, RAID 5, OK)
@@ -158,6 +172,7 @@ sub init {
         ! $self->identified($tmpcntl->{$slot}->{cpqDaCntlrModel})) {
       delete $tmpcntl->{$slot};
       delete $tmpaccel->{$slot};
+      delete $tmpencl->{$slot};
       delete $tmpld->{$slot};
       delete $tmppd->{$slot};
     }
@@ -182,6 +197,14 @@ sub init {
     push(@{$self->{accelerators}},
         HP::Proliant::Component::DiskSubsystem::Da::Accelerator->new(
             %{$tmpaccel->{$slot}}));
+  }
+  foreach my $slot (keys %{$tmpencl}) {
+    foreach my $enclosureindex (keys %{$tmpencl->{$slot}}) {
+      $tmpencl->{$slot}->{$enclosureindex}->{runtime} = $self->{runtime};
+      push(@{$self->{enclosures}},
+          HP::Proliant::Component::DiskSubsystem::Da::Enclosure->new(
+              %{$tmpencl->{$slot}->{$enclosureindex}}));
+    }
   }
   foreach my $slot (keys %{$tmpld}) {
     foreach my $ldriveindex (keys %{$tmpld->{$slot}}) {

@@ -14,6 +14,7 @@ sub new {
     host_controllers => [],
     controllers => [],
     accelerators => [],
+    enclosures => [],
     physical_drives => [],
     logical_drives => [],
     spare_drives => [],
