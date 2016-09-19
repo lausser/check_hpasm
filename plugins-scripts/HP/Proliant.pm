@@ -492,6 +492,8 @@ sub check_hpasm_client {
     } elsif (grep /must have a tty/, @output) {
       $self->add_message(CRITICAL,
           'sudo must be configured with requiretty=no (man sudo)');
+    } elsif (grep /ERROR: hpasmcli only runs on HPE Proliant Servers/, @output) {
+      $self->add_message(UNKNOWN, "hpasmcli detected incompatible hardware");
     } elsif (! grep /CLEAR/, @output) {
       $self->add_message(UNKNOWN,
           sprintf "insufficient rights to call %s", $hpasmcli);

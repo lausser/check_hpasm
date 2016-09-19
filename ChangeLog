@@ -1,3 +1,5 @@
+* 4.7.5 2016-09-19
+  better error message for hpasmcli on dl160 (Thanks Matthias Bethke)
 * 4.7.4 2016-06-16
   allow tcp connects. state other for fans is like ok. (Thanks fredericve)
 * 4.7.3.1 2016-05-01
