@@ -52,6 +52,9 @@ sub new {
       } elsif ($self->{productname} =~ /StorageWorks/i) {
         bless $self, 'HP::StorageWorks';
         $self->trace(3, 'using HP::StorageWorks');
+      } elsif ($self->{productname} =~ /MSA/i) {
+        bless $self, 'HP::StorageWorks';
+        $self->trace(3, 'using HP::StorageWorks');
       } elsif ($self->{productname} =~ /StoreEasy/i) {
         bless $self, 'HP::Proliant::SNMP';
         $self->trace(3, 'using HP::Proliant::SNMP');
