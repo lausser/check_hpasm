@@ -1,6 +1,9 @@
+* 4.7.5.1 2016-11-18
+  Merge pull request # 15 Use HP::StorageWorks for HP MSA systems
 * 4.7.5 2016-09-19
   better error message for hpasmcli on dl160 (Thanks Matthias Bethke)
   better error detection for da accelerators
+  Merge pull request #6 from fredricj/master (Add support for proliant DA subsystem Disk enclosures)
 * 4.7.4 2016-06-16
   allow tcp connects. state other for fans is like ok. (Thanks fredericve)
 * 4.7.3.1 2016-05-01
