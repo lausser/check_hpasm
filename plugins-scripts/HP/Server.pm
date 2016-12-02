@@ -243,7 +243,9 @@ sub whoami {
     my $cpqHoMibStatusArray = '1.3.6.1.4.1.232.11.2.10.1.0';
     my $dummy = '1.3.6.1.2.1.1.5.0';
     if ($productname = $self->valid_response($cpqSiProductName)) {
-      if ($productname eq '') {
+      if ($productname =~ /HP P\d+ .*SAS/ && $self->valid_response($cpqHoMibStatusArray)) {
+        $self->{productname} = 'StorageWorks'
+      } elsif ($productname eq '') {
         $self->{productname} = 'ProLiant';
       } else {
         $self->{productname} = $productname;
