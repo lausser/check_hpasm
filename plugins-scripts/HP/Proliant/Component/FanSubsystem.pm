@@ -134,14 +134,27 @@ sub check {
   $self->add_extendedinfo(sprintf 'fan_%s=%d%%',
       $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanPctMax});
   if ($self->{cpqHeFltTolFanPresent} eq 'present') {
-    if ($self->{cpqHeFltTolFanSpeed} eq 'high') { 
-      $self->add_info(sprintf 'fan %d (%s) runs at high speed',
+    if($self->{runtime}{options}{customfanspeeds}) {
+      my ($warn, $crit) = split /:/, $self->{runtime}{options}{customfanspeeds};
+      if($self->{cpqHeFltTolFanPctMax} >= $warn) {
+        $self->add_info(sprintf 'fan %d (%s) runs at high speed',
+          $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale}
+        );
+        $self->add_message(
+            $self->{cpqHeFltTolFanPctMax} >= $crit ? CRITICAL : WARNING,
+            $self->{info}
+        );
+      }
+    } else {
+      if ($self->{cpqHeFltTolFanSpeed} eq 'high') { 
+        $self->add_info('fan %d (%s) runs at high speed',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
-      $self->add_message(CRITICAL, $self->{info});
-    } elsif ($self->{cpqHeFltTolFanSpeed} ne 'normal') {
-      $self->add_info(sprintf 'fan %d (%s) needs attention',
+        $self->add_message(CRITICAL, $self->{info});
+      } elsif ($self->{cpqHeFltTolFanSpeed} ne 'normal') {
+        $self->add_info('fan %d (%s) needs attention',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
-      $self->add_message(CRITICAL, $self->{info});
+        $self->add_message(CRITICAL, $self->{info});
+      }
     }
     if ($self->{cpqHeFltTolFanCondition} eq 'failed') {
       $self->add_info(sprintf 'fan %d (%s) failed',

@@ -52,6 +52,12 @@ $plugin->add_arg(
     required => 0,
 );
 $plugin->add_arg(
+    spec => 'customfanspeeds|s=s',
+    help => '--customfanspeeds
+    Use custom thresholds for fan speeds',
+    required => 0,
+);
+$plugin->add_arg(
     spec => 'eventrange=s',
     help => '--eventrange=<warningrange>/<criticalrange>
    Period of time before critical IML events respecively become warnings or vanish
@@ -165,6 +171,24 @@ if ($PERFDATA && $plugin->opts->get('perfdata') &&
 }
 $plugin->{messages}->{unknown} = []; # wg. add_message(UNKNOWN,...)
 
+my $customfanspeeds = $plugin->opts->get('customfanspeeds');
+if(defined $customfanspeeds) {
+    if($customfanspeeds =~ /^\d+:\d+$/) {
+      my ($warn, $crit) = split /:/, $customfanspeeds;
+      if($warn > $crit) {
+        print "UNKNOWN - invalid customfanspeeds option: warning > critical\n";
+        exit $ERRORS{UNKNOWN};
+      }
+      if($warn > 100 or $crit > 100) {
+        print "UNKNOWN - invalid customfanspeeds option: warning and critical must be between 0 and 100\n";
+        exit $ERRORS{UNKNOWN};
+      }
+    } else {
+        print "UNKNOWN - invalid customfanspeeds option: use <warn-percent>:<crit-percent>\n";
+        exit $ERRORS{UNKNOWN};
+    }
+}
+
 $plugin->{info} = []; # gefrickel
 
 $SIG{'ALRM'} = sub {
@@ -180,17 +204,17 @@ my $server = HP::Server->new( runtime => {
         servertype => $plugin->opts->get('servertype'),
         verbose => $plugin->opts->get('verbose'),
         scrapiron => 0,
-        ignore_fan_redundancy => $plugin->opts->get('ignore-fan-redundancy'),
-        ignore_dimms => $plugin->opts->get('ignore-dimms'),
-        customthresholds => $plugin->opts->get('customthresholds'),
-        eventrange => $plugin->opts->get('eventrange'),
-        blacklist => $plugin->opts->get('blacklist'),
         celsius => $CELSIUS,
         perfdata => $PERFDATA,
         extendedinfo => $EXTENDEDINFO,
         hwinfo => $HWINFO,
         hpacucli => $HPACUCLI,
         noinstlevel => $NOINSTLEVEL,
+        map {
+            (my $attr = $_) =~ s/-/_/g;
+            ($attr, $plugin->opts->get($_))
+        } qw/ ignore-fan-redundancy ignore-dimms customthresholds
+        customfanspeeds eventrange blacklist /,
     },
 },);
 if (! $plugin->check_messages()) {
