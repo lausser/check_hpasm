@@ -182,15 +182,15 @@ sub check {
     if ($self->{cpqRackPowerSupplyCondition} eq 'degraded') {
       $info .= sprintf " (SparePartNum %s)", $self->{cpqRackPowerSupplySparePartNumber};
       $self->add_message(WARNING, $info);
-      $self->add_info(sprintf 'power supply %s status is %s, inp.line status is %s',
-          $self->{name}, $self->{cpqRackPowerSupplyStatus},
-          $self->{cpqRackPowerSupplySupplyInputLineStatus});
+      $self->add_info('power supply %s status is %s, inp.line status is %s',
+          \'name', \'cpqRackPowerSupplyStatus',
+          \'cpqRackPowerSupplySupplyInputLineStatus');
     } elsif ($self->{cpqRackPowerSupplyCondition} eq 'failed') {
       $info .= sprintf " (SparePartNum %s)", $self->{cpqRackPowerSupplySparePartNumber};
       $self->add_message(CRITICAL, $info);
-      $self->add_info(sprintf 'power supply %s status is %s, inp.line status is %s',
-          $self->{name}, $self->{cpqRackPowerSupplyStatus},
-          $self->{cpqRackPowerSupplySupplyInputLineStatus});
+      $self->add_info('power supply %s status is %s, inp.line status is %s',
+          \'name', \'cpqRackPowerSupplyStatus',
+          \'cpqRackPowerSupplySupplyInputLineStatus');
     } 
     if ($self->{runtime}->{options}->{perfdata} != 2) {
       $self->{runtime}->{plugin}->add_perfdata(

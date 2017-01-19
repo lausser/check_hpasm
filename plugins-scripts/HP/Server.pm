@@ -63,8 +63,8 @@ sub new {
         $self->trace(3, 'using HP::Storage');
       } else {
         $self->add_message(CRITICAL,
-            sprintf('unknown device%s', $self->{productname} eq 'unknown' ?
-                '' : '('.$self->{productname}.')'));
+            'unknown device' .
+            ( $self->{productname} eq 'unknown' ? '' : '('.$self->{productname}.')'));
       }
       $self->{method} = 'snmp';
     }
@@ -85,8 +85,8 @@ sub check_snmp_and_model {
     my $response = {};
     if (! -f $self->{runtime}->{plugin}->opts->snmpwalk) {
       $self->{runtime}->{plugin}->add_message(CRITICAL, 
-          sprintf 'file %s not found',
-          $self->{runtime}->{plugin}->opts->snmpwalk);
+          'file %s not found',
+          $self->{runtime}{plugin}->opts->snmpwalk);
     } elsif (-x $self->{runtime}->{plugin}->opts->snmpwalk) {
       my $cmd = sprintf "%s -On -v%s -c%s %s:%s 1.3.6.1.4.1.232 2>&1",
           $self->{runtime}->{plugin}->opts->snmpwalk,
@@ -198,8 +198,7 @@ sub check_snmp_and_model {
             -varbindlist => [$sysUpTime]
         );
         if (!defined($result)) {
-          $self->add_message(CRITICAL,
-              'could not contact snmp agent');
+          $self->add_message(CRITICAL, 'could not contact snmp agent');
           $session->close;
         } else {
           $self->trace(3, 'snmp agent answered');
@@ -207,8 +206,7 @@ sub check_snmp_and_model {
         }
       }
     } else {
-      $self->add_message(CRITICAL,
-          'could not find Net::SNMP module');
+      $self->add_message(CRITICAL, 'could not find Net::SNMP module');
     }
   }
 }
@@ -233,8 +231,7 @@ sub whoami {
       # at least there is a CPQSTSYS-MIB
       $self->{productname} = 'Storage'
     } else {
-      $self->add_message(CRITICAL,
-          'snmpwalk returns no product name (cpqsinfo-mib)');
+      $self->add_message(CRITICAL, 'snmpwalk returns no product name (cpqsinfo-mib)');
     }
   } else {
     my $cpqSiProductName = '1.3.6.1.4.1.232.2.2.4.2.0';
@@ -258,8 +255,7 @@ sub whoami {
     } elsif ($self->valid_response($cpqHoMibStatusArray)) {
       $self->{productname} = 'StorageWorks'
     } else {
-      $self->add_message(CRITICAL,
-          'snmpwalk returns no product name (cpqsinfo-mib)');
+      $self->add_message(CRITICAL, 'snmpwalk returns no product name (cpqsinfo-mib)');
       $self->{session}->close;
     }
     $self->trace(3, 'whoami: '.$self->{productname});
@@ -331,11 +327,17 @@ sub is_blacklisted {
   return $blacklisted;
 }
 
+sub fmt {
+  my $self = shift;
+  my $format = shift;
+  return sprintf $format, map { ref($_) ? $self->{$$_} : $_ } @_;
+}
+
 sub add_message {
   my $self = shift;
   my $level = shift;
-  my $message = shift;
-  $self->{runtime}->{plugin}->add_message($level, $message) 
+  my $message = $self->fmt(@_);
+  $self->{runtime}{plugin}->add_message($level, $message) 
       unless $self->{blacklisted};
   if (exists $self->{failed}) {
     if ($level == UNKNOWN && $self->{failed} == OK) {
@@ -349,8 +351,7 @@ sub add_message {
 sub remove_message {
   my $self = shift;
   my $level = shift;
-  my $message = shift;
-  $self->{runtime}->{plugin}->remove_message($level) ;
+  $self->{runtime}{plugin}->remove_message($level) ;
 }
 
 sub has_failed {
@@ -360,13 +361,12 @@ sub has_failed {
 
 sub add_info {
   my $self = shift;
-  my $info = shift;
-  $info = $self->{blacklisted} ? $info.' (blacklisted)' : $info;
+  my $info = $self->fmt(@_);
+  $info .= ' (blacklisted)' if $self->{blacklisted};
   $self->{info} = $info;
-  if (! exists $self->{runtime}->{plugin}->{info}) {
-    $self->{runtime}->{plugin}->{info} = [];
-  }
-  push(@{$self->{runtime}->{plugin}->{info}}, $info);
+  exists $self->{runtime}{plugin}{info}
+      or $self->{runtime}{plugin}{info} = [];
+  push @{$self->{runtime}{plugin}{info}}, $info;
 }
 
 sub annotate_info {
@@ -378,14 +378,13 @@ sub annotate_info {
 }
 
 sub add_extendedinfo {
-  my $self = shift;
-  my $info = shift;
-  $self->{extendedinfo} = $info;
-  return if ! $self->{runtime}->{options}->{extendedinfo};
-  if (! exists $self->{runtime}->{plugin}->{extendedinfo}) {
-    $self->{runtime}->{plugin}->{extendedinfo} = [];
-  }
-  push(@{$self->{runtime}->{plugin}->{extendedinfo}}, $info);
+    my $self = shift;
+    return unless $self->{runtime}{options}{extendedinfo};
+    my $info = $self->fmt(@_);
+    $self->{extendedinfo} = $info;
+    exists $self->{runtime}{plugin}{extendedinfo}
+        or $self->{runtime}{plugin}{extendedinfo} = [];
+    push @{$self->{runtime}->{plugin}->{extendedinfo}}, $info;
 }
 
 sub get_extendedinfo {

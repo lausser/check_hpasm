@@ -140,8 +140,7 @@ sub collect {
     my $cpqRackMibCondition = '1.3.6.1.4.1.232.22.1.3.0';
     $self->trace(3, 'getting cpqRackMibCondition');
     if (! exists $self->{rawdata}->{$cpqRackMibCondition}) {
-        $self->add_message(CRITICAL,
-            'snmpwalk returns no health data (cpqrack-mib)');
+        $self->add_message(CRITICAL, 'snmpwalk returns no health data (cpqrack-mib)');
     }
   } else {
     my $net_snmp_version = Net::SNMP->VERSION(); # 5.002000 or 6.000000
@@ -166,8 +165,7 @@ sub collect {
           $result->{$cpqRackMibCondition} eq 'noSuchInstance' ||
           $result->{$cpqRackMibCondition} eq 'noSuchObject' ||
           $result->{$cpqRackMibCondition} eq 'endOfMibView') {
-        $self->add_message(CRITICAL,
-            'snmpwalk returns no health data (cpqrack-mib)');
+        $self->add_message(CRITICAL, 'snmpwalk returns no health data (cpqrack-mib)');
         $session->close;
       } else {
         $self->trace(3, 'getting cpqRackMibCondition done');

@@ -415,11 +415,10 @@ EOEO
               }
             } else {
               if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
-                $self->add_message(OK,
-                    'hpacucli is not installed. let\'s hope the best...');
+                $self->add_message(OK, 'hpacucli is not installed. let\'s hope the best...');
               } else {
                 $self->add_message(
-                    uc $self->{runtime}->{options}->{noinstlevel},
+                    uc $self->{runtime}{options}{noinstlevel},
                     'hpacucli is not installed.');
               }
             }
@@ -428,8 +427,7 @@ EOEO
       }
     } else {
       if ($self->{runtime}->{options}->{noinstlevel} eq 'ok') {
-        $self->add_message(OK,
-            'hpasm is not installed, i can only guess');
+        $self->add_message(OK, 'hpasm is not installed, i can only guess');
         $self->{noinst_hint} = 1;
       } else {
         $self->add_message(
@@ -491,20 +489,17 @@ sub check_hpasm_client {
     if (grep /Could not communicate with hpasmd/, @output) {
       $self->add_message(CRITICAL, 'hpasmd needs to be restarted');
     } elsif (grep /(asswor[dt]:)|(You must be root)/, @output) {
-      $self->add_message(UNKNOWN,
-          sprintf "insufficient rights to call %s", $hpasmcli);
+      $self->add_message(UNKNOWN, "insufficient rights to call $hpasmcli");
     } elsif (grep /must have a tty/, @output) {
       $self->add_message(CRITICAL,
           'sudo must be configured with requiretty=no (man sudo)');
     } elsif (grep /ERROR: hpasmcli only runs on HPE Proliant Servers/, @output) {
       $self->add_message(UNKNOWN, "hpasmcli detected incompatible hardware");
     } elsif (! grep /CLEAR/, @output) {
-      $self->add_message(UNKNOWN,
-          sprintf "insufficient rights to call %s", $hpasmcli);
+      $self->add_message(UNKNOWN, "insufficient rights to call $hpasmcli");
     }
   } else {
-    $self->add_message(UNKNOWN,
-        sprintf "insufficient rights to call %s", $hpasmcli);
+    $self->add_message(UNKNOWN, "insufficient rights to call $hpasmcli");
   }
 }
 
@@ -517,18 +512,14 @@ sub check_hpacu_client {
     if (grep /Another instance of hpacucli is running/, @output) {
       $self->add_message(UNKNOWN, 'another hpacucli is running');
     } elsif (grep /You need to have administrator rights/, @output) {
-      $self->add_message(UNKNOWN,
-          sprintf "insufficient rights to call %s", $hpacucli);
+      $self->add_message(UNKNOWN, "insufficient rights to call $hpacucli");
     } elsif (grep /(asswor[dt]:)|(You must be root)/, @output) {
-      $self->add_message(UNKNOWN,
-          sprintf "insufficient rights to call %s", $hpacucli);
+      $self->add_message(UNKNOWN, "insufficient rights to call $hpacucli");
     } elsif (! grep /(CLI Syntax)|(ACU CLI)/, @output) {
-      $self->add_message(UNKNOWN,
-          sprintf "insufficient rights to call %s", $hpacucli);
+      $self->add_message(UNKNOWN, "insufficient rights to call $hpacucli");
     }
   } else {
-    $self->add_message(UNKNOWN,
-        sprintf "insufficient rights to call %s", $hpacucli);
+    $self->add_message(UNKNOWN, "insufficient rights to call $hpacucli");
   }
 }
 
@@ -600,8 +591,7 @@ sub collect {
     }
     if (! exists $self->{rawdata}->{$cpqHeMibCondition} &&
         ! exists $self->{rawdata}->{$cpqSeMibCondition}) { # vlt. geht doch was
-        $self->add_message(CRITICAL,
-            'snmpwalk returns no health data (cpqhlth-mib)');
+        $self->add_message(CRITICAL, 'snmpwalk returns no health data (cpqhlth-mib)');
     }
     $self->{fullrawdata} = {};
     %{$self->{fullrawdata}} = %{$self->{rawdata}};
@@ -651,8 +641,7 @@ sub collect {
           $result->{$cpqHeMibCondition} eq 'noSuchInstance' ||
           $result->{$cpqHeMibCondition} eq 'noSuchObject' ||
           $result->{$cpqHeMibCondition} eq 'endOfMibView') {
-        $self->add_message(CRITICAL,
-            'snmpwalk returns no health data (cpqhlth-mib)');
+        $self->add_message(CRITICAL, 'snmpwalk returns no health data (cpqhlth-mib)');
         $session->close;
       } else {
         # this is not reliable. many agents return 4=failed

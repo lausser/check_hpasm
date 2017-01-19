@@ -122,22 +122,22 @@ sub check {
   my $self = shift;
   $self->blacklist('t', $self->{cpqHeTemperatureIndex});
   if ($self->{cpqHeTemperature} > $self->{cpqHeTemperatureThreshold}) {
-    $self->add_info(sprintf "%d %s temperature too high (%d%s, %d max)",
-        $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale},
-        $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits},
-        $self->{cpqHeTemperatureThreshold});
+    $self->add_info("%d %s temperature too high (%d%s, %d max)",
+        \'cpqHeTemperatureIndex', \'cpqHeTemperatureLocale',
+        \'cpqHeTemperature', \'cpqHeTemperatureUnits',
+        \'cpqHeTemperatureThreshold');
     $self->add_message(CRITICAL, $self->{info});
   } elsif ($self->{cpqHeTemperature} < 0) {
     # #21 SCSI_BACKPLANE_ZONE -1C/31F 60C/140F OK - can't be true
-    $self->add_info(sprintf "%d %s temperature too low (%d%s)",
-        $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale},
-        $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits});
+    $self->add_info("%d %s temperature too low (%d%s)",
+        \'cpqHeTemperatureIndex', \'cpqHeTemperatureLocale',
+        \'cpqHeTemperature', \'cpqHeTemperatureUnits');
     $self->add_message(CRITICAL, $self->{info});
   } else {
-    $self->add_info(sprintf "%d %s temperature is %d%s (%d max)",
-        $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale}, 
-        $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits},
-        $self->{cpqHeTemperatureThreshold});
+    $self->add_info("%d %s temperature is %d%s (%d max)",
+        \'cpqHeTemperatureIndex', \'cpqHeTemperatureLocale', 
+        \'cpqHeTemperature', \'cpqHeTemperatureUnits',
+        \'cpqHeTemperatureThreshold');
   }
   if ($self->{runtime}->{options}->{perfdata} == 2) {
     $self->{runtime}->{plugin}->add_perfdata(
@@ -155,9 +155,7 @@ sub check {
         critical => $self->{cpqHeTemperatureThreshold}
     );
   } 
-  $self->add_extendedinfo(sprintf "temp_%s=%d",
-      $self->{cpqHeTemperatureIndex},
-      $self->{cpqHeTemperature});
+  $self->add_extendedinfo("temp_%s=%d", \'cpqHeTemperatureIndex', \'cpqHeTemperature');
 }
 
 sub dump { 
@@ -181,9 +179,9 @@ use constant { OK => 0, WARNING => 1, CRITICAL => 2, UNKNOWN => 3 };
 sub check {
   my $self = shift;
   $self->blacklist('t', $self->{cpqHeTemperatureIndex});
-  $self->add_info(sprintf "%d %s temperature is %d%s (no thresh.)",
-      $self->{cpqHeTemperatureIndex}, $self->{cpqHeTemperatureLocale}, 
-      $self->{cpqHeTemperature}, $self->{cpqHeTemperatureUnits});
+  $self->add_info("%d %s temperature is %d%s (no thresh.)",
+      \'cpqHeTemperatureIndex', \'cpqHeTemperatureLocale', 
+      \'cpqHeTemperature', \'cpqHeTemperatureUnits');
   if ($self->{runtime}->{options}->{perfdata} == 2) {
     $self->{runtime}->{plugin}->add_perfdata(
         label => sprintf('temp_%s', $self->{cpqHeTemperatureIndex}),
@@ -196,9 +194,7 @@ sub check {
         value => $self->{cpqHeTemperature},
     );
   } 
-  $self->add_extendedinfo(sprintf "temp_%s=%d",
-      $self->{cpqHeTemperatureIndex},
-      $self->{cpqHeTemperature});
+  $self->add_extendedinfo("temp_%s=%d", \'cpqHeTemperatureIndex', \'cpqHeTemperature');
 }
 
 1;

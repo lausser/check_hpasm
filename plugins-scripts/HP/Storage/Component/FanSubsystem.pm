@@ -98,46 +98,38 @@ sub new {
 
 sub check { 
   my $self = shift;
-  $self->add_info(sprintf "fan #%d is %s, speed is %s, pctmax is %s%%, ".
+  $self->add_info("fan #%d is %s, speed is %s, pctmax is %s%%, ".
       "location is %s, redundance is %s, partner is %s",
-      $self->{name}, $self->{present}, $self->{speed}, $self->{pctmax},
-      $self->{location}, $self->{redundant}, $self->{partner});
-  $self->add_extendedinfo(sprintf "fan_%s=%d%%",
-      $self->{name}, $self->{pctmax});
+      \'name', \'present', \'speed', \'pctmax',
+      \'location', \'redundant', \'partner');
+  $self->add_extendedinfo("fan_%s=%d%%", \'name', \'pctmax');
   if ($self->{present} eq "present") {
     if ($self->{speed} eq "high") { 
-      $self->add_info(sprintf "fan #%d (%s) runs at high speed",
-          $self->{name}, $self->{location});
+      $self->add_info("fan #%d (%s) runs at high speed", \'name', \'location');
       $self->add_message(CRITICAL, $self->{info});
     } elsif ($self->{speed} ne "normal") {
-      $self->add_info(sprintf "fan #%d (%s) needs attention",
-          $self->{name}, $self->{location});
+      $self->add_info("fan #%d (%s) needs attention", \'name', \'location');
       $self->add_message(CRITICAL, $self->{info});
     }
     if ($self->{condition} eq "failed") {
-      $self->add_info(sprintf "fan #%d (%s) failed",
-          $self->{name}, $self->{location});
+      $self->add_info("fan #%d (%s) failed", \'name', \'location');
       $self->add_message(CRITICAL, $self->{info});
     } elsif ($self->{condition} eq "degraded") {
-      $self->add_info(sprintf "fan #%d (%s) degraded",
-          $self->{name}, $self->{location});
+      $self->add_info("fan #%d (%s) degraded", \'name', \'location');
       $self->add_message(WARNING, $self->{info});
     } elsif ($self->{condition} ne "ok") {
-      $self->add_info(sprintf "fan #%d (%s) is not ok",
-          $self->{name}, $self->{location});
+      $self->add_info("fan #%d (%s) is not ok", \'name', \'location');
       $self->add_message(WARNING, $self->{info});
     }
     if ($self->{redundant} eq "redundant") {
       if ((! defined $self->{partner}) || ($self->{partner} eq "n/a")){
-        $self->add_info(sprintf "fan #%d (%s) is not redundant",
-            $self->{name}, $self->{location});
+        $self->add_info("fan #%d (%s) is not redundant", \'name', \'location');
         $self->add_message(WARNING, $self->{info});
       }
     } elsif ($self->{redundant} eq "notredundant") {
       if (! $self->{runtime}->{options}->{ignore_fan_redundancy}) {
         if (defined $self->{partner} && $self->{partner} ne "n/a") {
-          $self->add_info(sprintf "fan #%d (%s) is not redundant",
-              $self->{name}, $self->{location});
+          $self->add_info("fan #%d (%s) is not redundant", \'name', \'location');
           $self->add_message(WARNING, $self->{info});
         }
       }
@@ -146,12 +138,10 @@ sub check {
       # maybe redundancy is not supported at all
     }
   } elsif ($self->{present} eq "failed") { # from cli
-    $self->add_info(sprintf "fan #%d (%s) failed",
-        $self->{name}, $self->{location});
+    $self->add_info("fan #%d (%s) failed", \'name', \'location');
     $self->add_message(CRITICAL, $self->{info});
   } elsif ($self->{present} eq "absent") {
-    $self->add_info(sprintf "fan #%d (%s) needs attention (is absent)",
-        $self->{name}, $self->{location});
+    $self->add_info("fan #%d (%s) needs attention (is absent)", \'name', \'location');
     # weiss nicht, ob absent auch kaputt bedeuten kann
     # wenn nicht, dann wuerde man sich hier dumm und daemlich blacklisten
     #$self->add_message(CRITICAL, $self->{info});

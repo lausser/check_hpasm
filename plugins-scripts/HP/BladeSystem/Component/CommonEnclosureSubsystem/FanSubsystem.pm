@@ -107,11 +107,11 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('f', $self->{name});
-  $self->add_info(sprintf 'fan %s is %s, location is %s, redundance is %s, condition is %s',
-      $self->{name}, $self->{cpqRackCommonEnclosureFanPresent},
-      $self->{cpqRackCommonEnclosureFanLocation},
-      $self->{cpqRackCommonEnclosureFanRedundant},
-      $self->{cpqRackCommonEnclosureFanCondition});
+  $self->add_info('fan %s is %s, location is %s, redundance is %s, condition is %s',
+      \'name', \'cpqRackCommonEnclosureFanPresent',
+      \'cpqRackCommonEnclosureFanLocation',
+      \'cpqRackCommonEnclosureFanRedundant',
+      \'cpqRackCommonEnclosureFanCondition');
   if ($self->{cpqRackCommonEnclosureFanCondition} eq 'degraded') {
     $self->{info} .= sprintf ", (SparePartNum: %s)", $self->{cpqRackCommonEnclosureFanSparePartNumber};
     $self->add_message(WARNING, $self->{info});

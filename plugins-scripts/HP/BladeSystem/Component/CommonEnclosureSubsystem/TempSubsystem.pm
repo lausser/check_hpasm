@@ -126,17 +126,17 @@ sub check {
   my $self = shift;
   $self->blacklist('t', $self->{name});
   if ($self->{cpqRackCommonEnclosureTempCurrent} > $self->{cpqRackCommonEnclosureTempThreshold}) {
-    $self->add_info(sprintf "%s temperature too high (%d%s)",
-        $self->{cpqRackCommonEnclosureTempLocation},
-        $self->{cpqRackCommonEnclosureTempCurrent},
-        $self->{runtime}->{options}->{celsius} ? "C" : "F");
+    $self->add_info("%s temperature too high (%d%s)",
+        \'cpqRackCommonEnclosureTempLocation',
+        \'cpqRackCommonEnclosureTempCurrent',
+        $self->{runtime}{options}{celsius} ? "C" : "F");
     $self->add_message(CRITICAL, $self->{info});
   } else {
-    $self->add_info(sprintf "%s temperature is %d%s (%d max)",
-        $self->{cpqRackCommonEnclosureTempLocation},
-        $self->{cpqRackCommonEnclosureTempCurrent},
+    $self->add_info("%s temperature is %d%s (%d max)",
+        \'cpqRackCommonEnclosureTempLocation',
+        \'cpqRackCommonEnclosureTempCurrent',
         $self->{runtime}->{options}->{celsius} ? "C" : "F",
-        $self->{cpqRackCommonEnclosureTempThreshold});
+        \'cpqRackCommonEnclosureTempThreshold');
   }
   if ($self->{runtime}->{options}->{perfdata} == 2) {
     $self->{runtime}->{plugin}->add_perfdata(
@@ -154,8 +154,7 @@ sub check {
         critical => $self->{cpqRackCommonEnclosureTempThreshold}
     );
   }
-  $self->add_extendedinfo(sprintf "temp_%s=%d", 
-      $self->{name}, $self->{cpqRackCommonEnclosureTempCurrent});
+  $self->add_extendedinfo("temp_%s=%d", \'name', \'cpqRackCommonEnclosureTempCurrent');
 
 }
 

@@ -44,23 +44,18 @@ sub check {
   if ($self->{present} eq "present") {
     if ($self->{condition} ne "ok") {
       if ($self->{condition} eq "n/a") {
-        $self->add_info(sprintf "powersupply #%d is missing", $self->{name});
+        $self->add_info("powersupply #%d is missing", \'name');
       } else {
-        $self->add_info(sprintf "powersupply #%d needs attention (%s)",
-            $self->{name}, $self->{condition});
+        $self->add_info("powersupply #%d needs attention (%s)", \'name', \'condition');
       }
       $self->add_message(CRITICAL, $self->{info});
     } else {
-      $self->add_info(sprintf "powersupply #%d is %s",
-          $self->{name}, $self->{condition});
+      $self->add_info("powersupply #%d is %s", \'name', \'condition');
     }
-    $self->add_extendedinfo(sprintf "ps_%s=%s",
-        $self->{name}, $self->{condition});
+    $self->add_extendedinfo("ps_%s=%s", \'name', \'condition');
   } else {
-    $self->add_info(sprintf "powersupply #%d is %s", 
-        $self->{name}, $self->{present});
-    $self->add_extendedinfo(sprintf "ps_%s=%s",
-        $self->{name}, $self->{present});
+    $self->add_info("powersupply #%d is %s", \'name', \'present');
+    $self->add_extendedinfo("ps_%s=%s", \'name', \'present');
   } 
 }
 

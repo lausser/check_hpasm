@@ -77,18 +77,15 @@ sub check {
   if ($self->{status} ne "ok") {
     if ($self->{runtime}->{options}{scrapiron} &&
         ($self->{status} eq "unknown")) {
-      $self->add_info(sprintf "cpu #%d probably ok (%s)",
-          $self->{name}, $self->{status});
+      $self->add_info("cpu #%d probably ok (%s)", \'name', \'status');
     } else {
-      $self->add_info(sprintf "cpu #%d needs attention (%s)",
-          $self->{name}, $self->{status});
+      $self->add_info("cpu #%d needs attention (%s)", \'name', \'status');
       $self->add_message(CRITICAL, $self->{info});
     }
   } else {
-    $self->add_info(sprintf "cpu #%d is %s", $self->{name}, $self->{status});
+    $self->add_info("cpu #%d is %s", \'name', \'status');
   }
-  $self->add_extendedinfo(sprintf "cpu_%s=%s",
-      $self->{name}, $self->{status});
+  $self->add_extendedinfo("cpu_%s=%s", \'name', \'status');
 }
 
 sub dump {

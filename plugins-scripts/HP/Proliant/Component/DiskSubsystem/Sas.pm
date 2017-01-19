@@ -74,24 +74,20 @@ sub check {
   if ($self->{cpqSasHbaCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
       $self->add_message(CRITICAL,
-          sprintf 'sas controller in slot %s needs attention',
-              $self->{cpqSasHbaSlot});
-      $self->add_info(sprintf 'sas controller in slot %s needs attention',
-          $self->{cpqSasHbaSlot});
+          'sas controller in slot %s needs attention',
+          \'cpqSasHbaSlot');
+      $self->add_info('sas controller in slot %s needs attention', \'cpqSasHbaSlot');
     } else {
-      $self->add_info(sprintf 'sas controller in slot %s is ok and unused',
-          $self->{cpqSasHbaSlot});
+      $self->add_info('sas controller in slot %s is ok and unused', \'cpqSasHbaSlot');
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqSasHbaCondition} ne 'ok') {
     $self->add_message(CRITICAL,
         sprintf 'sas controller in slot %s needs attention',
             $self->{cpqSasHbaSlot});
-    $self->add_info(sprintf 'sas controller in slot %s needs attention',
-        $self->{cpqSasHbaSlot});
+    $self->add_info('sas controller in slot %s needs attention', \'cpqSasHbaSlot');
   } else {
-    $self->add_info(sprintf 'sas controller in slot %s is ok',
-        $self->{cpqSasHbaSlot});
+    $self->add_info('sas controller in slot %s is ok', \'cpqSasHbaSlot');
   }
   foreach (@{$self->{logical_drives}}) {
     $_->check();
@@ -161,17 +157,16 @@ sub check {
     if ($self->{cpqSasLogDrvStatus} =~ 
         /rebuild|recovering|expanding|queued/) {
       $self->add_message(WARNING,
-          sprintf "logical drive %s is %s", 
-              $self->{name}, $self->{cpqSasLogDrvStatus});
+          "logical drive %s is %s", 
+          \'name', \'cpqSasLogDrvStatus');
     } else {
       $self->add_message(CRITICAL,
-          sprintf "logical drive %s is %s",
-              $self->{name}, $self->{cpqSasLogDrvStatus});
+          "logical drive %s is %s",
+          \'name', \'cpqSasLogDrvStatus');
     }
   } 
-  $self->add_info(
-      sprintf "logical drive %s is %s (%s)", $self->{name},
-          $self->{cpqSasLogDrvStatus}, $self->{cpqSasLogDrvRaidLevel});
+  $self->add_info("logical drive %s is %s (%s)",
+      \'name', \'cpqSasLogDrvStatus', \'cpqSasLogDrvRaidLevel');
 }
 
 sub dump {
@@ -216,13 +211,11 @@ sub check {
   my $self = shift;
   $self->blacklist('sapd', $self->{name});
   if ($self->{cpqSasPhyDrvCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqSasPhyDrvCondition});
+    $self->add_message(CRITICAL, "physical drive %s is %s", 
+            \'name', \'cpqSasPhyDrvCondition');
   }
-  $self->add_info(
-      sprintf "physical drive %s is %s", 
-          $self->{name}, $self->{cpqSasPhyDrvCondition});
+  $self->add_info("physical drive %s is %s", 
+      \'name', \'cpqSasPhyDrvCondition');
 }
 
 sub dump {

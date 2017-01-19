@@ -91,13 +91,13 @@ sub check {
   if ($self->{cpqDaCntlrCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
       $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+          'da controller %s in slot %s needs attention', 
+              \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
+      $self->add_info('da controller %s in slot %s needs attention',
+          \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
     } else {
-      $self->add_info(sprintf 'da controller %s in slot %s is ok and unused',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+      $self->add_info('da controller %s in slot %s is ok and unused',
+          \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqDaCntlrCondition} eq 'degraded') {
@@ -108,20 +108,20 @@ sub check {
       # message was already written in the accel code
     } else {
       $self->add_message(CRITICAL,
-          sprintf 'da controller %s in slot %s needs attention', 
-              $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-      $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-          $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+          'da controller %s in slot %s needs attention', 
+              \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
+      $self->add_info('da controller %s in slot %s needs attention',
+          \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
     }
   } elsif ($self->{cpqDaCntlrCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf 'da controller %s in slot %s needs attention', 
-            $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
-    $self->add_info(sprintf 'da controller %s in slot %s needs attention',
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+        'da controller %s in slot %s needs attention', 
+            \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
+    $self->add_info('da controller %s in slot %s needs attention',
+        \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
   } else {
-    $self->add_info(sprintf 'da controller %s in slot %s is ok', 
-        $self->{cpqDaCntlrIndex}, $self->{cpqDaCntlrSlot});
+    $self->add_info('da controller %s in slot %s is ok', 
+        \'cpqDaCntlrIndex', \'cpqDaCntlrSlot');
   }
 } 
 
@@ -178,16 +178,14 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('daac', $self->{cpqDaAccelCntlrIndex});
-  $self->add_info(sprintf 'controller accelerator is %s',
-      $self->{cpqDaAccelCondition});
+  $self->add_info('controller accelerator is %s', \'cpqDaAccelCondition');
   if ($self->{cpqDaAccelCondition} eq "failed" || $self->{cpqDaAccelCondition} eq "degraded") {
-    $self->add_message(CRITICAL, sprintf
+    $self->add_message(CRITICAL,
         "controller accelerator is %s (reason: %s) and needs attention",
-        $self->{cpqDaAccelCondition}, $self->{cpqDaAccelErrCode});
+        \'cpqDaAccelCondition', \'cpqDaAccelErrCode');
   }
   $self->blacklist('daacb', $self->{cpqDaAccelCntlrIndex});
-  $self->add_info(sprintf 'controller accelerator battery is %s',
-      $self->{cpqDaAccelBattery});
+  $self->add_info('controller accelerator battery is %s', \'cpqDaAccelBattery');
   if ($self->{cpqDaAccelBattery} eq "notPresent") {
   } elsif ($self->{cpqDaAccelBattery} eq "recharging") {
     $self->add_message(WARNING, "controller accelerator battery recharging");
@@ -249,13 +247,9 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('dae', $self->{name});
-  $self->add_info(
-      sprintf "disk enclosure %s is %s",
-          $self->{name}, $self->{cpqDaEnclCondition});
+  $self->add_info("disk enclosure %s is %s", \'name', \'cpqDaEnclCondition');
   if ($self->{cpqDaEnclCondition} !~ /^OK/) {
-    $self->add_message(CRITICAL,
-        sprintf "disk enclosure %s is %s",
-            $self->{name}, $self->{cpqDaEnclCondition});
+    $self->add_message(CRITICAL, "disk enclosure %s is %s", \'name', \'cpqDaEnclCondition');
   }
 }
 
@@ -304,19 +298,15 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('dald', $self->{name});
-  $self->add_info(sprintf "logical drive %s is %s (%s)",
-          $self->{name}, $self->{cpqDaLogDrvStatus},
-          $self->{cpqDaLogDrvFaultTol});
+  $self->add_info("logical drive %s is %s (%s)",
+          \'name', \'cpqDaLogDrvStatus',
+          \'cpqDaLogDrvFaultTol');
   if ($self->{cpqDaLogDrvCondition} ne "ok") {
     if ($self->{cpqDaLogDrvStatus} =~ 
         /rebuild|recovering|recovery|expanding|queued/) {
-      $self->add_message(WARNING,
-          sprintf "logical drive %s is %s", 
-              $self->{name}, $self->{cpqDaLogDrvStatus});
+      $self->add_message(WARNING, "logical drive %s is %s", \'name', \'cpqDaLogDrvStatus');
     } else {
-      $self->add_message(CRITICAL,
-          sprintf "logical drive %s is %s",
-              $self->{name}, $self->{cpqDaLogDrvStatus});
+      $self->add_message(CRITICAL, "logical drive %s is %s", \'name', \'cpqDaLogDrvStatus');
     }
   } 
 }
@@ -364,13 +354,10 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('dapd', $self->{name});
-  $self->add_info(
-      sprintf "physical drive %s is %s",
-          $self->{name}, $self->{cpqDaPhyDrvCondition});
+  $self->add_info("physical drive %s is %s",
+          \'name', \'cpqDaPhyDrvCondition');
   if ($self->{cpqDaPhyDrvCondition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqDaPhyDrvCondition});
+    $self->add_message(CRITICAL, "physical drive %s is %s", \'name', \'cpqDaPhyDrvCondition');
   }
 }
 
