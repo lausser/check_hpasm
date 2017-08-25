@@ -147,11 +147,11 @@ sub check {
       }
     } else {
       if ($self->{cpqHeFltTolFanSpeed} eq 'high') { 
-        $self->add_info('fan %d (%s) runs at high speed',
+        $self->add_info(sprintf 'fan %d (%s) runs at high speed',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
         $self->add_message(CRITICAL, $self->{info});
       } elsif ($self->{cpqHeFltTolFanSpeed} ne 'normal') {
-        $self->add_info('fan %d (%s) needs attention',
+        $self->add_info(sprintf 'fan %d (%s) needs attention',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
         $self->add_message(CRITICAL, $self->{info});
       }
