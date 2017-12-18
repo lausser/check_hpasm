@@ -32,7 +32,10 @@ required as well.  Use good judgment.
 How to "compile" the check_hpasm script.
 --------------------------------------------------------
 
-1) Run the configure script to initialize variables and create a Makefile, etc.
+1) If you obtained the source core from version control (not a release archive):
+   Execute 'autoreconf' (-v) which will generate the configure scripts.
+
+2) Run the configure script to initialize variables and create a Makefile, etc.
 
 	./configure --prefix=BASEDIRECTORY --with-nagios-user=SOMEUSER --with-nagios-group=SOMEGROUP --with-perl=PATH_TO_PERL --with-noinst-level=LEVEL --with-degrees=UNIT --with-perfdata --with-hpacucli
 
@@ -62,7 +65,8 @@ How to "compile" the check_hpasm script.
       if you call configure with the --enable-hpacucli option.
       You need the hpacucli rpm.
 
-2) "Compile" the plugin with the following command:
+
+3) "Compile" the plugin with the following command:
 
 	make
 
@@ -72,7 +76,7 @@ How to "compile" the check_hpasm script.
     the make process.
 
 
-3) Install the compiled plugin script with the following command:
+4) Install the compiled plugin script with the following command:
 
 	make install
 
@@ -81,11 +85,11 @@ How to "compile" the check_hpasm script.
    the --prefix argument to the configure script.
 
 
-4) Verify that your configuration files for Nagios contains
+5) Verify that your configuration files for Nagios contains
    the correct paths to the new plugin.
 
 
-5) Add this line to /etc/sudoers:
+6) Add this line to /etc/sudoers:
    nagios      ALL=NOPASSWD: /sbin/hpasmcli
    or ths, if you also installed the hpacu package
    nagios      ALL=NOPASSWD: /sbin/hpasmcli, /usr/sbin/hpacucli
