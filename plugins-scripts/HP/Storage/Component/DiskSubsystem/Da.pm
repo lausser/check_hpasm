@@ -109,21 +109,18 @@ sub check {
   if ($self->{condition} eq 'other') {
     if (scalar(@{$self->{physical_disks}})) {
       $self->add_message(CRITICAL,
-          sprintf 'da controller in slot %s needs attention', $self->{slot});
-      $self->add_info(sprintf 'da controller in slot %s needs attention',
-          $self->{slot});
+          'da controller in slot %s needs attention', \'slot');
+      $self->add_info('da controller in slot %s needs attention', \'slot');
     } else {
-      $self->add_info(sprintf 'da controller in slot %s is ok and unused',
-          $self->{slot});
+      $self->add_info('da controller in slot %s is ok and unused', \'slot');
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{condition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf 'da controller in slot %s needs attention', $self->{slot});
-    $self->add_info(sprintf 'da controller in slot %s needs attention',
-        $self->{slot});
+        'da controller in slot %s needs attention', \'slot');
+    $self->add_info('da controller in slot %s needs attention', \'slot');
   } else {
-    $self->add_info(sprintf 'da controller in slot %s is ok', $self->{slot});
+    $self->add_info('da controller in slot %s is ok', \'slot');
   }
   foreach (@{$self->{accelerators}}) {
     $_->check();
@@ -193,8 +190,8 @@ sub check {
     # (other) failed degraded
     $self->add_message(CRITICAL, "controller battery needs attention");
   } 
-  $self->add_info(sprintf 'controller cache is %s', $self->{condition});
-  $self->add_info(sprintf 'controller battery is %s', $self->{battery});
+  $self->add_info('controller cache is %s', \'condition');
+  $self->add_info('controller battery is %s', \'battery');
 }
 
 sub dump {
@@ -240,15 +237,12 @@ sub check {
   if ($self->{condition} ne "ok") {
     if ($self->{status} =~ 
         /rebuild|recovering|expanding|queued/) {
-      $self->add_message(WARNING,
-          sprintf "logical drive %s is %s", $self->{name}, $self->{status});
+      $self->add_message(WARNING, 'logical drive %s is %s', \'name', \'status');
     } else {
-      $self->add_message(CRITICAL,
-          sprintf "logical drive %s is %s", $self->{name}, $self->{status});
+      $self->add_message(CRITICAL, 'logical drive %s is %s', \'name', \'status');
     }
   } 
-  $self->add_info(
-      sprintf "logical drive %s is %s", $self->{name}, $self->{status});
+  $self->add_info('logical drive %s is %s', \'name', \'status');
 }
 
 sub dump {
@@ -288,12 +282,9 @@ sub new {
 
 sub check {
   my $self = shift;
-  if ($self->{condition} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", $self->{name}, $self->{condition});
-  }
-  $self->add_info(
-      sprintf "physical drive %s is %s", $self->{name}, $self->{condition});
+  my $msg = $self->fmt('physical drive %s is %s', \'name', \'condition');
+  $self->add_message(CRITICAL, $msg) if $self->{condition} ne 'ok';
+  $self->add_info($msg);
 }
 
 sub dump {

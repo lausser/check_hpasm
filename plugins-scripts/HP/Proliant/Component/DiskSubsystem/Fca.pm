@@ -112,14 +112,11 @@ sub new {
 sub check {
   my $self = shift;
   if ($self->{cpqFcaMibCondition} eq 'other') {
-    $self->add_message(OK,
-        sprintf 'fcal overall condition is other, update your drivers, please');
+    $self->add_message(OK, 'fcal overall condition is other, update your drivers, please');
   } elsif ($self->{cpqFcaMibCondition} ne 'ok') {
-    $self->add_message(CRITICAL, 
-        sprintf 'fcal overall condition is %s', $self->{cpqFcaMibCondition});
+    $self->add_message(CRITICAL, 'fcal overall condition is %s', \'cpqFcaMibCondition');
   }
-  $self->{info} = 
-      sprintf 'fcal overall condition is %s', $self->{cpqFcaMibCondition};
+  $self->{info} = "fcal overall condition is $self->{cpqFcaMibCondition}";
 }
 
 sub dump {

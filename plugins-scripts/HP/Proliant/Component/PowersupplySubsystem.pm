@@ -83,22 +83,19 @@ sub check {
   if ($self->{cpqHeFltTolPowerSupplyPresent} eq "present") {
     if ($self->{cpqHeFltTolPowerSupplyCondition} ne "ok") {
       if ($self->{cpqHeFltTolPowerSupplyCondition} eq "other") {
-        $self->add_info(sprintf "powersupply %d is missing",
-            $self->{cpqHeFltTolPowerSupplyBay});
+        $self->add_info("powersupply %d is missing", \'cpqHeFltTolPowerSupplyBay');
       } else {
-        $self->add_info(sprintf "powersupply %d needs attention (%s)",
-            $self->{cpqHeFltTolPowerSupplyBay},
-            $self->{cpqHeFltTolPowerSupplyCondition});
+        $self->add_info("powersupply %d needs attention (%s)",
+            \'cpqHeFltTolPowerSupplyBay',
+            \'cpqHeFltTolPowerSupplyCondition');
       }
       $self->add_message(CRITICAL, $self->{info});
     } else {
-      $self->add_info(sprintf "powersupply %d is %s",
-          $self->{cpqHeFltTolPowerSupplyBay},
-          $self->{cpqHeFltTolPowerSupplyCondition});
+      $self->add_info("powersupply %d is %s",
+          \'cpqHeFltTolPowerSupplyBay',
+          \'cpqHeFltTolPowerSupplyCondition');
     }
-    $self->add_extendedinfo(sprintf "ps_%s=%s",
-        $self->{cpqHeFltTolPowerSupplyBay},
-        $self->{cpqHeFltTolPowerSupplyCondition});
+    $self->add_extendedinfo("ps_%s=%s", \'cpqHeFltTolPowerSupplyBay', \'cpqHeFltTolPowerSupplyCondition');
     if ($self->{cpqHeFltTolPowerSupplyCapacityUsed} &&
         $self->{cpqHeFltTolPowerSupplyCapacityMaximum}) {
       if ($self->{runtime}->{options}->{perfdata}) {
@@ -118,12 +115,10 @@ sub check {
       }
     }
   } else {
-    $self->add_info(sprintf "powersupply %d is %s",
-        $self->{cpqHeFltTolPowerSupplyBay},
-        $self->{cpqHeFltTolPowerSupplyPresent});
-    $self->add_extendedinfo(sprintf "ps_%s=%s",
-        $self->{cpqHeFltTolPowerSupplyBay},
-        $self->{cpqHeFltTolPowerSupplyPresent});
+    $self->add_info("powersupply %d is %s",
+        \'cpqHeFltTolPowerSupplyBay',
+        \'cpqHeFltTolPowerSupplyPresent');
+    $self->add_extendedinfo("ps_%s=%s", \'cpqHeFltTolPowerSupplyBay', \'cpqHeFltTolPowerSupplyPresent');
   }
 }
 
@@ -174,29 +169,24 @@ sub check {
   if ($self->{cpqHePowerConvPresent} eq "present") {
     if ($self->{cpqHePowerConvCondition} ne "ok") {
       if ($self->{cpqHePowerConvCondition} eq "other") {
-        $self->add_info(sprintf "powerconverter %d is missing",
-            $self->{cpqHePowerConvIndex});
+        $self->add_info("powerconverter %d is missing", \'cpqHePowerConvIndex');
       } else {
-        $self->add_info(sprintf "powerconverter %d needs attention (%s)",
-            $self->{cpqHePowerConvIndex},
-            $self->{cpqHePowerConvCondition});
+        $self->add_info("powerconverter %d needs attention (%s)",
+            \'cpqHePowerConvIndex',
+            \'cpqHePowerConvCondition');
       }
       $self->add_message(CRITICAL, $self->{info});
     } else {
-      $self->add_info(sprintf "powerconverter %d is %s",
-          $self->{cpqHePowerConvIndex},
-          $self->{cpqHePowerConvCondition});
+      $self->add_info("powerconverter %d is %s",
+          \'cpqHePowerConvIndex',
+          \'cpqHePowerConvCondition');
     }
-    $self->add_extendedinfo(sprintf "pc_%s=%s",
-        $self->{cpqHePowerConvIndex},
-        $self->{cpqHePowerConvCondition});
+    $self->add_extendedinfo("pc_%s=%s", \'cpqHePowerConvIndex', \'cpqHePowerConvCondition');
   } else {
-    $self->add_info(sprintf "powerconverter %d is %s",
-        $self->{cpqHePowerConvIndex},
-        $self->{cpqHePowerConvPresent});
-    $self->add_extendedinfo(sprintf "pc_%s=%s",
-        $self->{cpqHePowerConvIndex},
-        $self->{cpqHePowerConvPresent});
+    $self->add_info("powerconverter %d is %s",
+        \'cpqHePowerConvIndex',
+        \'cpqHePowerConvPresent');
+    $self->add_extendedinfo("pc_%s=%s", \'cpqHePowerConvIndex', \'cpqHePowerConvPresent');
   }
 }
 

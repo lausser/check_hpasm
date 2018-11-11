@@ -125,36 +125,33 @@ sub new {
 sub check { 
   my $self = shift;
   $self->blacklist('f', $self->{cpqHeFltTolFanIndex});
-  $self->add_info(sprintf 'fan %d is %s, speed is %s, pctmax is %s%%, '.
+  $self->add_info('fan %d is %s, speed is %s, pctmax is %s%%, '.
       'location is %s, redundance is %s, partner is %s',
-      $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanPresent},
-      $self->{cpqHeFltTolFanSpeed}, $self->{cpqHeFltTolFanPctMax},
-      $self->{cpqHeFltTolFanLocale}, $self->{cpqHeFltTolFanRedundant},
-      $self->{cpqHeFltTolFanRedundantPartner});
-  $self->add_extendedinfo(sprintf 'fan_%s=%d%%',
-      $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanPctMax});
+      \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanPresent',
+      \'cpqHeFltTolFanSpeed', \'cpqHeFltTolFanPctMax',
+      \'cpqHeFltTolFanLocale', \'cpqHeFltTolFanRedundant',
+      \'cpqHeFltTolFanRedundantPartner');
+  $self->add_extendedinfo('fan_%s=%d%%', \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanPctMax');
   if ($self->{cpqHeFltTolFanPresent} eq 'present') {
     if ($self->{cpqHeFltTolFanSpeed} eq 'high') { 
-      $self->add_info(sprintf 'fan %d (%s) runs at high speed',
-          $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+      $self->add_info('fan %d (%s) runs at high speed',
+          \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
       $self->add_message(CRITICAL, $self->{info});
     } elsif ($self->{cpqHeFltTolFanSpeed} ne 'normal') {
-      $self->add_info(sprintf 'fan %d (%s) needs attention',
-          $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+      $self->add_info('fan %d (%s) needs attention',
+          \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
       $self->add_message(CRITICAL, $self->{info});
     }
     if ($self->{cpqHeFltTolFanCondition} eq 'failed') {
-      $self->add_info(sprintf 'fan %d (%s) failed',
-          $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+      $self->add_info('fan %d (%s) failed',
+          \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
       $self->add_message(CRITICAL, $self->{info});
     } elsif ($self->{cpqHeFltTolFanCondition} eq 'degraded') {
-      $self->add_info(sprintf 'fan %d (%s) degraded',
-          $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+      $self->add_info('fan %d (%s) degraded', \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
       $self->add_message(WARNING, $self->{info});
     } elsif ($self->{cpqHeFltTolFanCondition} ne 'ok' &&
         $self->{cpqHeFltTolFanCondition} ne 'other') {
-      $self->add_info(sprintf 'fan %d (%s) is not ok',
-          $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+      $self->add_info('fan %d (%s) is not ok', \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
       $self->add_message(WARNING, $self->{info});
     }
     if ($self->{cpqHeFltTolFanRedundant} eq 'notRedundant') {
@@ -172,8 +169,8 @@ sub check {
         if ($self->{overallhealth}) {
           # da ist sogar das system der meinung, dass etwas faul ist
           if (! $self->{runtime}->{options}->{ignore_fan_redundancy}) {
-            $self->add_info(sprintf 'fan %d (%s) is not redundant',
-                $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+            $self->add_info('fan %d (%s) is not redundant',
+              \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
             $self->add_message(WARNING, $self->{info});
           }
         } else {
@@ -187,12 +184,11 @@ sub check {
       # maybe redundancy is not supported at all
     }
   } elsif ($self->{cpqHeFltTolFanPresent} eq 'failed') { # from cli
-    $self->add_info(sprintf 'fan %d (%s) failed',
-        $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+    $self->add_info('fan %d (%s) failed', \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
     $self->add_message(CRITICAL, $self->{info});
   } elsif ($self->{cpqHeFltTolFanPresent} eq 'absent') {
-    $self->add_info(sprintf 'fan %d (%s) needs attention (is absent)',
-        $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
+    $self->add_info('fan %d (%s) needs attention (is absent)',
+      \'cpqHeFltTolFanIndex', \'cpqHeFltTolFanLocale');
     # weiss nicht, ob absent auch kaputt bedeuten kann
     # wenn nicht, dann wuerde man sich hier dumm und daemlich blacklisten
     #$self->add_message(CRITICAL, $self->{info});

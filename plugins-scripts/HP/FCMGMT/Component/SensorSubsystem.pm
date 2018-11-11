@@ -73,19 +73,15 @@ sub check {
   if ($self->{cpqSeSensorStatus} ne "ok") {
     if ($self->{runtime}->{options}{scrapiron} &&
         ($self->{cpqSeSensorStatus} eq "unknown")) {
-      $self->add_info(sprintf "cpu %d probably ok (%s)",
-          $self->{cpqSeSensorUnitIndex}, $self->{cpqSeSensorStatus});
+      $self->add_info("cpu %d probably ok (%s)", \'cpqSeSensorUnitIndex', \'cpqSeSensorStatus');
     } else {
-      $self->add_info(sprintf "cpu %d needs attention (%s)",
-          $self->{cpqSeSensorUnitIndex}, $self->{cpqSeSensorStatus});
+      $self->add_info("cpu %d needs attention (%s)", \'cpqSeSensorUnitIndex', \'cpqSeSensorStatus');
       $self->add_message(CRITICAL, $self->{info});
     }
   } else {
-    $self->add_info(sprintf "cpu %d is %s", 
-        $self->{cpqSeSensorUnitIndex}, $self->{cpqSeSensorStatus});
+    $self->add_info("cpu %d is %s", \'cpqSeSensorUnitIndex', \'cpqSeSensorStatus');
   }
-  $self->add_extendedinfo(sprintf "cpu_%s=%s",
-      $self->{cpqSeSensorUnitIndex}, $self->{cpqSeSensorStatus});
+  $self->add_extendedinfo("cpu_%s=%s", \'cpqSeSensorUnitIndex', \'cpqSeSensorStatus');
 }
 
 sub dump {

@@ -34,7 +34,7 @@ How to "compile" the check_hpasm script.
 
 1) Run the configure script to initialize variables and create a Makefile, etc.
 
-	./configure --prefix=BASEDIRECTORY --with-nagios-user=SOMEUSER --with-nagios-group=SOMEGROUP --with-perl=PATH_TO_PERL --with-noinst-level=LEVEL --with-degrees=UNIT --with-perfdata --with-hpacucli
+	./configure --prefix=BASEDIRECTORY --with-nagios-user=SOMEUSER --with-nagios-group=SOMEGROUP --with-perl=PATH_TO_PERL --with-noinst-level=LEVEL --with-degrees=UNIT --enable-perfdata --enable-hpacucli
 
    a) Replace BASEDIRECTORY with the path of the directory under which Nagios
       is installed (default is '/usr/local/nagios')

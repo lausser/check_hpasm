@@ -195,8 +195,7 @@ sub collect {
     # rindsarsch!
     $self->{rawdata}->{$cpqSeMibCondition} = 0;
     if (! exists $self->{rawdata}->{$cpqSeMibCondition}) {
-        $self->add_message(CRITICAL,
-            'snmpwalk returns no health data (cpqhlth-mib)');
+        $self->add_message(CRITICAL, 'snmpwalk returns no health data (cpqhlth-mib)');
     }
   } else {
     my $net_snmp_version = Net::SNMP->VERSION(); # 5.002000 or 6.000000

@@ -181,12 +181,12 @@ sub check {
   # POST events only if they date maximum from reboot-5min
   # younger than critical? -> critical
   # 
-  $self->add_info(sprintf "Event: %d Added: %s Class: (%s) %s %s",
-      $self->{cpqHeEventLogEntryNumber},
-      $self->{cpqHeEventLogUpdateTime},
-      $self->{cpqHeEventLogEntryClass},
-      $self->{cpqHeEventLogEntrySeverity},
-      $self->{cpqHeEventLogErrorDesc});
+  $self->add_info("Event: %d Added: %s Class: (%s) %s %s",
+      \'cpqHeEventLogEntryNumber',
+      \'cpqHeEventLogUpdateTime',
+      \'cpqHeEventLogEntryClass',
+      \'cpqHeEventLogEntrySeverity',
+      \'cpqHeEventLogErrorDesc');
   if ($self->{cpqHeEventLogEntrySeverity} eq "caution" ||
       $self->{cpqHeEventLogEntrySeverity} eq "critical") {
     # also watch 10 minutes of booting before the operating system starts ticking

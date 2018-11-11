@@ -73,24 +73,24 @@ sub check {
   if ($self->{cpqIdeControllerOverallCondition} eq 'other') {
     if (scalar(@{$self->{physical_drives}})) {
       $self->add_message(CRITICAL,
-          sprintf 'ide controller %s in slot %s needs attention',
-              $self->{cpqIdeControllerIndex}, $self->{cpqIdeControllerSlot});
-      $self->add_info(sprintf 'ide controller %s in slot %s needs attention',
-          $self->{cpqIdeControllerIndex}, $self->{cpqIdeControllerSlot});
+          'ide controller %s in slot %s needs attention',
+          \'cpqIdeControllerIndex', \'cpqIdeControllerSlot');
+      $self->add_info('ide controller %s in slot %s needs attention',
+          \'cpqIdeControllerIndex', \'cpqIdeControllerSlot');
     } else {
-      $self->add_info(sprintf 'ide controller %s in slot %s is ok and unused',
-          $self->{cpqIdeControllerIndex}, $self->{cpqIdeControllerSlot});
+      $self->add_info('ide controller %s in slot %s is ok and unused',
+          \'cpqIdeControllerIndex', \'cpqIdeControllerSlot');
       $self->{blacklisted} = 1;
     }
   } elsif ($self->{cpqIdeControllerOverallCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf 'ide controller %s in slot %s needs attention',
-            $self->{cpqIdeControllerIndex}, $self->{cpqIdeControllerSlot});
-    $self->add_info(sprintf 'ide controller %s in slot %s needs attention',
-        $self->{cpqIdeControllerIndex}, $self->{cpqIdeControllerSlot});
+        'ide controller %s in slot %s needs attention',
+        \'cpqIdeControllerIndex', \'cpqIdeControllerSlot');
+    $self->add_info('ide controller %s in slot %s needs attention',
+        \'cpqIdeControllerIndex', \'cpqIdeControllerSlot');
   } else {
-    $self->add_info(sprintf 'ide controller %s in slot %s is ok',
-        $self->{cpqIdeControllerIndex}, $self->{cpqIdeControllerSlot});
+    $self->add_info('ide controller %s in slot %s is ok',
+        \'cpqIdeControllerIndex', \'cpqIdeControllerSlot');
   }
   foreach (@{$self->{logical_drives}}) {
     $_->check();
@@ -160,17 +160,16 @@ sub check {
     if ($self->{cpqIdeLogicalDriveStatus} =~ 
         /rebuild/) {
       $self->add_message(WARNING,
-          sprintf "logical drive %s is %s", 
-              $self->{name}, $self->{cpqIdeLogicalDriveStatus});
+          "logical drive %s is %s", 
+          \'name', \'cpqIdeLogicalDriveStatus');
     } else {
       $self->add_message(CRITICAL,
-          sprintf "logical drive %s is %s",
-              $self->{name}, $self->{cpqIdeLogicalDriveStatus});
+          "logical drive %s is %s",
+              \'name', \'cpqIdeLogicalDriveStatus');
     }
   } 
-  $self->add_info(
-      sprintf "logical drive %s is %s", $self->{name},
-          $self->{cpqIdeLogicalDriveStatus});
+  $self->add_info("logical drive %s is %s", \'name',
+          \'cpqIdeLogicalDriveStatus');
 }
 
 sub dump {
@@ -221,12 +220,11 @@ sub check {
   $self->blacklist('idepd', $self->{name});
   if ($self->{cpqIdeAtaDiskCondition} ne 'ok') {
     $self->add_message(CRITICAL,
-        sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqIdeAtaDiskCondition});
+        "physical drive %s is %s", 
+            \'name', \'cpqIdeAtaDiskCondition');
   }
-  $self->add_info(
-      sprintf "physical drive %s is %s", 
-          $self->{name}, $self->{cpqIdeAtaDiskCondition});
+  $self->add_info("physical drive %s is %s", 
+          \'name', \'cpqIdeAtaDiskCondition');
 }
 
 sub dump {

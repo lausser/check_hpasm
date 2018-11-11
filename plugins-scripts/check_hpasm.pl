@@ -151,7 +151,7 @@ $plugin->add_arg(
 $plugin->add_arg(
     spec => 'eval-nics',
     help => '--eval-nics
-   Check network interfaces (and groups). Try it and report me whyt you think about it. I need to build up some know how on this subject. If get an error and you think, it is not justified for your configuration, please tell me about it. (alwasy send the output of "snmpwalk -On .... 1.3.6.1.4.1.232" and a description how you setup your nics and why it is correct opposed to the plugins error message',
+   Check network interfaces (and groups). Try it and report me what you think about it. I need to build up some know how on this subject. If get an error and you think, it is not justified for your configuration, please tell me about it. (always send the output of "snmpwalk -On .... 1.3.6.1.4.1.232" and a description how you setup your nics and why it is correct opposed to the plugin\'s error message',
     required => 0,
 );
 

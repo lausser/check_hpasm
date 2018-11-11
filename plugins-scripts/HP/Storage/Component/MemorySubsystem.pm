@@ -47,15 +47,15 @@ sub check {
   } else {
     if ($self->{runtime}->{options}->{ignore_dimms}) {
       $self->add_message(OK,
-          sprintf "ignoring %d dimms with status 'n/a' ",
+          "ignoring %d dimms with status 'n/a' ",
           scalar(grep { ($_->is_present()) } @{$self->{dimms}}));
     } elsif ($self->{runtime}->{options}->{buggy_firmware}) {
       $self->add_message(OK,
-          sprintf "ignoring %d dimms with status 'n/a' because of buggy firmware",
+          "ignoring %d dimms with status 'n/a' because of buggy firmware",
           scalar(grep { ($_->is_present()) } @{$self->{dimms}}));
     } else {
       $self->add_message(WARNING,
-        sprintf "status of all %d dimms is n/a (please upgrade firmware)",
+        "status of all %d dimms is n/a (please upgrade firmware)",
         scalar(grep { $_->is_present() } @{$self->{dimms}}));
         $errorfound++;
     }
@@ -65,8 +65,7 @@ sub check {
   }
   #if (! $errorfound && $self->is_faulty()) {
   if ($self->is_faulty()) {
-    $self->add_message(WARNING,
-        sprintf 'overall memory error %s found', $self->{memstatus});
+    $self->add_message(WARNING, 'overall memory error %s found', \'memstatus');
   }
 }
 
@@ -109,19 +108,18 @@ sub check {
   # die eigentliche bewertung findet eins höher statt
   if (($self->{status} eq 'present') || ($self->{status} eq 'good')) {
     if ($self->{condition} eq 'other') {
-      $self->add_info(sprintf 'dimm module %d @ cartridge %d is n/a',
-          $self->{module}, $self->{cartridge});
+      $self->add_info('dimm module %d @ cartridge %d is n/a',
+          \'module', \'cartridge');
     } elsif ($self->{condition} ne 'ok') {
-      $self->add_info(
-        sprintf "dimm module %d @ cartridge %d needs attention (%s)",
-        $self->{module}, $self->{cartridge}, $self->{condition});
+      $self->add_info('dimm module %d @ cartridge %d needs attention (%s)',
+        \'module', \'cartridge', \'condition');
     } else {
-      $self->add_info(sprintf 'dimm module %d @ cartridge %d is %s',
-          $self->{module}, $self->{cartridge}, $self->{condition});
+      $self->add_info('dimm module %d @ cartridge %d is %s',
+          \'module', \'cartridge', \'condition');
     }
   } else {
-    $self->add_info(sprintf 'dimm module %d @ cartridge %d is not present',
-        $self->{module}, $self->{cartridge});
+    $self->add_info('dimm module %d @ cartridge %d is not present',
+        \'module', \'cartridge');
   }
 }
 

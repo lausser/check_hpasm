@@ -128,19 +128,18 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('sb', $self->{name});
-  my $info = sprintf 'server blade %s \'%s\' is %s, status is %s, powered is %s',
-      $self->{name}, $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladePresent},
-      $self->{cpqRackServerBladeStatus}, $self->{cpqRackServerBladePowered};
-  $self->add_info($info);
+  $self->add_info('server blade %s \'%s\' is %s, status is %s, powered is %s',
+      \'name', \'cpqRackServerBladeName', \'cpqRackServerBladePresent',
+      \'cpqRackServerBladeStatus', \'cpqRackServerBladePowered');
   if ($self->{cpqRackServerBladePowered} eq 'on') {
     if ($self->{cpqRackServerBladeStatus} eq 'degraded') {
-      $self->add_message(WARNING, sprintf 'server blade %s diag is \'%s\', post status is %s',
-          $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladeDiagnosticString},
-          $self->{cpqRackServerBladePOSTStatus});
+      $self->add_message(WARNING, 'server blade %s diag is \'%s\', post status is %s',
+          \'cpqRackServerBladeName', \'cpqRackServerBladeDiagnosticString',
+          \'cpqRackServerBladePOSTStatus');
     } elsif ($self->{cpqRackServerBladeStatus} eq 'failed') {
-      $self->add_message(CRITICAL, sprintf 'server blade %s diag is \'%s\', post status is %s',
-          $self->{cpqRackServerBladeName}, $self->{cpqRackServerBladeDiagnosticString},
-          $self->{cpqRackServerBladePOSTStatus});
+      $self->add_message(CRITICAL, 'server blade %s diag is \'%s\', post status is %s',
+          \'cpqRackServerBladeName', \'cpqRackServerBladeDiagnosticString',
+          \'cpqRackServerBladePOSTStatus');
     } 
   }
 } 

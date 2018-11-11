@@ -232,15 +232,12 @@ sub unite {
 sub overall_check {
   my $self = shift;
   if ($self->{sysstatus} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf 'system fan overall status is %s', $self->{sysstatus});
+    $self->add_message(CRITICAL, 'system fan overall status is %s', \'sysstatus');
   } 
   if ($self->{cpustatus} ne 'ok') {
-    $self->add_message(CRITICAL,
-        sprintf 'cpu fan overall status is %s', $self->{cpustatus});
+    $self->add_message(CRITICAL, 'cpu fan overall status is %s', \'cpustatus');
   } 
-  $self->add_info(sprintf 'overall fan status: fan=%s, cpu=%s',
-      $self->{sysstatus}, $self->{cpustatus});
+  $self->add_info('overall fan status: fan=%s, cpu=%s', \'sysstatus', \'cpustatus');
 }
 
 1;

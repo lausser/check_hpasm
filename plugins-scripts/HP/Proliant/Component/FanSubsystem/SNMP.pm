@@ -202,24 +202,20 @@ sub overall_check {
   if ($self->{sysstatus} && $self->{cpustatus}) {
     if ($self->{sysstatus} eq 'degraded') {
       $result = 1;
-      $self->add_message(WARNING,
-          sprintf 'system fan overall status is %s', $self->{sysstatus});
+      $self->add_message(WARNING, 'system fan overall status is %s', \'sysstatus');
     } elsif ($self->{sysstatus} eq 'failed') {
       $result = 2;
-      $self->add_message(CRITICAL,
-          sprintf 'system fan overall status is %s', $self->{sysstatus});
+      $self->add_message(CRITICAL, 'system fan overall status is %s', \'sysstatus');
     } 
     if ($self->{cpustatus} eq 'degraded') {
       $result = 1;
-      $self->add_message(WARNING,
-          sprintf 'cpu fan overall status is %s', $self->{cpustatus});
+      $self->add_message(WARNING, 'cpu fan overall status is %s', \'cpustatus');
     } elsif ($self->{cpustatus} eq 'failed') {
       $result = 2;
-      $self->add_message(CRITICAL,
-          sprintf 'cpu fan overall status is %s', $self->{cpustatus});
+      $self->add_message(CRITICAL, 'cpu fan overall status is %s', \'cpustatus');
     } 
-    $self->add_info(sprintf 'overall fan status: system=%s, cpu=%s',
-        $self->{sysstatus}, $self->{cpustatus});
+    $self->add_info('overall fan status: system=%s, cpu=%s',
+        \'sysstatus', \'cpustatus');
   } else {
     $result = 0;
     $self->add_info('this system seems to be water-cooled. no fans found');

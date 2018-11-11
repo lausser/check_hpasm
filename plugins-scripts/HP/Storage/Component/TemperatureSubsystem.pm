@@ -92,14 +92,13 @@ sub new {
 sub check {
   my $self = shift;
   if ($self->{degrees} > $self->{threshold}) {
-    $self->add_info(sprintf "%s temperature too high (%d%s)",
-        $self->{location}, $self->{degrees},
-        $self->{runtime}->{options}->{celsius} ? "C" : "F");
+    $self->add_info("%s temperature too high (%d%s)",
+        \'location',\'degrees',
+        $self->{runtime}{options}{celsius} ? "C" : "F");
     $self->add_message(CRITICAL, $self->{info});
   } else {
-    $self->add_info(sprintf "%d %s temperature is %d (%d max)",
-        $self->{name}, $self->{location}, 
-        $self->{degrees}, $self->{threshold});
+    $self->add_info("%d %s temperature is %d (%d max)",
+        \'name', \'location', \'degrees', \'threshold');
   }
   if ($self->{runtime}->{options}->{perfdata} == 2) {
     $self->{runtime}->{plugin}->add_perfdata(
@@ -116,9 +115,7 @@ sub check {
         critical => $self->{threshold}
     );
   } 
-  $self->add_extendedinfo(sprintf "temp_%s=%d",
-      $self->{name},
-      $self->{degrees});
+  $self->add_extendedinfo("temp_%s=%d", \'name', \'degrees');
 }
 
 sub dump { 

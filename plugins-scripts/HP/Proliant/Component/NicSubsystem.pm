@@ -74,8 +74,7 @@ sub dump {
 sub overall_check {
   my $self = shift;
   if ($self->{lognicstatus} ne "ok") {
-    $self->add_info(sprintf 'overall logical nic status is %s',
-        $self->{lognicstatus});
+    $self->add_info('overall logical nic status is %s', \'lognicstatus');
   }
 }
 
@@ -109,22 +108,22 @@ sub check {
     if ($self->{cpqNicIfLogMapCondition} eq "other") {
       # simply ignore this. if there is a physical nic
       # it is usually unknown/other/scheissegal
-      $self->add_info(sprintf "logical nic %d (%s) is %s",
-          $self->{cpqNicIfLogMapIndex}, $self->{cpqNicIfLogMapDescription},
-          $self->{cpqNicIfLogMapCondition});
+      $self->add_info("logical nic %d (%s) is %s",
+          \'cpqNicIfLogMapIndex', \'cpqNicIfLogMapDescription',
+          \'cpqNicIfLogMapCondition');
     } elsif ($self->{cpqNicIfLogMapCondition} ne "ok") {
-      $self->add_info(sprintf "logical nic %d (%s) is %s (%s)",
-          $self->{cpqNicIfLogMapIndex}, $self->{cpqNicIfLogMapDescription},
-          $self->{cpqNicIfLogMapCondition}, $self->{cpqNicIfLogMapStatus});
+      $self->add_info("logical nic %d (%s) is %s (%s)",
+          \'cpqNicIfLogMapIndex', \'cpqNicIfLogMapDescription',
+          \'cpqNicIfLogMapCondition', \'cpqNicIfLogMapStatus');
       $self->add_message(CRITICAL, $self->{info});
     } else {
-      $self->add_info(sprintf "logical nic %d (%s) is %s",
-          $self->{cpqNicIfLogMapIndex}, $self->{cpqNicIfLogMapDescription},
-          $self->{cpqNicIfLogMapCondition});
+      $self->add_info("logical nic %d (%s) is %s",
+          \'cpqNicIfLogMapIndex', \'cpqNicIfLogMapDescription',
+          \'cpqNicIfLogMapCondition');
     }
   } else {
-    $self->add_info(sprintf "logical nic %d (%s) has 0 physical nics",
-        $self->{cpqNicIfLogMapIndex}, $self->{cpqNicIfLogMapDescription});
+    $self->add_info("logical nic %d (%s) has 0 physical nics",
+        \'cpqNicIfLogMapIndex', \'cpqNicIfLogMapDescription');
   }
 }
 
@@ -167,24 +166,24 @@ sub check {
   if ($self->{cpqNicIfPhysAdapterCondition} eq "other") {
     # hp doesnt output a clear status. i am optimistic, unknown/other
     # means "dont care"
-    $self->add_info(sprintf "physical nic %d (%s) is %s",
-        $self->{cpqNicIfPhysAdapterIndex}, $self->{cpqNicIfPhysAdapterRole},
-        $self->{cpqNicIfPhysAdapterCondition});
+    $self->add_info("physical nic %d (%s) is %s",
+        \'cpqNicIfPhysAdapterIndex', \'cpqNicIfPhysAdapterRole',
+        \'cpqNicIfPhysAdapterCondition');
   } elsif ($self->{cpqNicIfPhysAdapterCondition} ne "ok") {
-    $self->add_info(sprintf "physical nic %d (%s) is %s (%s,%s)",
-        $self->{cpqNicIfPhysAdapterIndex}, $self->{cpqNicIfPhysAdapterRole},
-        $self->{cpqNicIfPhysAdapterCondition},
-        $self->{cpqNicIfPhysAdapterState}, $self->{cpqNicIfPhysAdapterStatus});
+    $self->add_info("physical nic %d (%s) is %s (%s,%s)",
+        \'cpqNicIfPhysAdapterIndex', \'cpqNicIfPhysAdapterRole',
+        \'cpqNicIfPhysAdapterCondition',
+        \'cpqNicIfPhysAdapterState', \'cpqNicIfPhysAdapterStatus');
     $self->add_message(CRITICAL, $self->{info});
   } else {
     if ($self->{cpqNicIfPhysAdapterDuplexState} ne "full") {
-      $self->add_info(sprintf "physical nic %d (%s) is %s duplex",
-          $self->{cpqNicIfPhysAdapterIndex}, $self->{cpqNicIfPhysAdapterRole},
-          $self->{cpqNicIfPhysAdapterDuplexState});
+      $self->add_info("physical nic %d (%s) is %s duplex",
+          \'cpqNicIfPhysAdapterIndex', \'cpqNicIfPhysAdapterRole',
+          \'cpqNicIfPhysAdapterDuplexState');
     } else {
-      $self->add_info(sprintf "physical nic %d (%s) is %s",
-          $self->{cpqNicIfPhysAdapterIndex}, $self->{cpqNicIfPhysAdapterRole},
-          $self->{cpqNicIfPhysAdapterCondition});
+      $self->add_info("physical nic %d (%s) is %s",
+          \'cpqNicIfPhysAdapterIndex', \'cpqNicIfPhysAdapterRole',
+          \'cpqNicIfPhysAdapterCondition');
     }
   }
 }

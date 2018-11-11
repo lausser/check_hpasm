@@ -210,7 +210,7 @@ sub overall_check {
       $self->add_info('eventlog system is ok');
     } else {
       $result = 0;
-      $self->add_info(sprintf "eventlog system is %s", $self->{eventstatus});
+      $self->add_info("eventlog system is %s", \'eventstatus');
     }
   } else {
     $result = 0;

@@ -95,9 +95,9 @@ sub new {
 sub check {
   my $self = shift;
   $self->blacklist('fu', $self->{name});
-  $self->add_info(sprintf 'fuse %s is %s, location is %s, condition is %s',
-      $self->{name}, $self->{cpqRackCommonEnclosureFusePresent},
-      $self->{cpqRackCommonEnclosureFuseLocation}, $self->{cpqRackCommonEnclosureFuseCondition});
+  $self->add_info('fuse %s is %s, location is %s, condition is %s',
+      \'name', \'cpqRackCommonEnclosureFusePresent',
+      \'cpqRackCommonEnclosureFuseLocation', \'cpqRackCommonEnclosureFuseCondition');
   if ($self->{cpqRackCommonEnclosureFuseCondition} eq 'failed') {
     $self->add_message(CRITICAL, $self->{info});
   } elsif ($self->{cpqRackCommonEnclosureFuseCondition} ne 'ok') {
