@@ -189,6 +189,8 @@ sub check {
   $self->add_info(sprintf 'controller accelerator battery is %s',
       $self->{cpqDaAccelBattery});
   if ($self->{cpqDaAccelBattery} eq "notPresent") {
+    # permenently disabled battery return as notPresent even when it is disabled because of a faulty battery
+    $self->add_message(WARNING, "controller accelerator battery needs attention");
   } elsif ($self->{cpqDaAccelBattery} eq "recharging") {
     $self->add_message(WARNING, "controller accelerator battery recharging");
   } elsif ($self->{cpqDaAccelBattery} eq "failed" &&
