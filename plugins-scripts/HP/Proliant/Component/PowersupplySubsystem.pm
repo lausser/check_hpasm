@@ -66,6 +66,8 @@ sub new {
     cpqHeFltTolPowerSupplyBay => $params{cpqHeFltTolPowerSupplyBay},
     cpqHeFltTolPowerSupplyPresent => $params{cpqHeFltTolPowerSupplyPresent},
     cpqHeFltTolPowerSupplyCondition => $params{cpqHeFltTolPowerSupplyCondition},
+    cpqHeFltTolPowerSupplyStatus => $params{cpqHeFltTolPowerSupplyStatus},
+    cpqHeFltTolPowerSupplyErrorCondition => $params{cpqHeFltTolPowerSupplyErrorCondition},
     cpqHeFltTolPowerSupplyRedundant => $params{cpqHeFltTolPowerSupplyRedundant},
     cpqHeFltTolPowerSupplyCapacityUsed => $params{cpqHeFltTolPowerSupplyCapacityUsed} || 0,
     cpqHeFltTolPowerSupplyCapacityMaximum => $params{cpqHeFltTolPowerSupplyCapacityMaximum} || 0,
@@ -86,9 +88,11 @@ sub check {
         $self->add_info(sprintf "powersupply %d is missing",
             $self->{cpqHeFltTolPowerSupplyBay});
       } else {
-        $self->add_info(sprintf "powersupply %d needs attention (%s)",
+        $self->add_info(sprintf "powersupply %d needs attention (overall: %s, status: %s, error cond.: %s)",
             $self->{cpqHeFltTolPowerSupplyBay},
-            $self->{cpqHeFltTolPowerSupplyCondition});
+            $self->{cpqHeFltTolPowerSupplyCondition},
+            $self->{cpqHeFltTolPowerSupplyStatus},
+            $self->{cpqHeFltTolPowerSupplyErrorCondition});
       }
       $self->add_message(CRITICAL, $self->{info});
     } else {
@@ -98,7 +102,9 @@ sub check {
     }
     $self->add_extendedinfo(sprintf "ps_%s=%s",
         $self->{cpqHeFltTolPowerSupplyBay},
-        $self->{cpqHeFltTolPowerSupplyCondition});
+        $self->{cpqHeFltTolPowerSupplyCondition},
+        $self->{cpqHeFltTolPowerSupplyStatus},
+        $self->{cpqHeFltTolPowerSupplyErrorCondition});
     if ($self->{cpqHeFltTolPowerSupplyCapacityUsed} &&
         $self->{cpqHeFltTolPowerSupplyCapacityMaximum}) {
       if ($self->{runtime}->{options}->{perfdata}) {
@@ -133,6 +139,7 @@ sub dump {
   printf "[PS_%s]\n", $self->{cpqHeFltTolPowerSupplyBay};
   foreach (qw(cpqHeFltTolPowerSupplyBay cpqHeFltTolPowerSupplyChassis
       cpqHeFltTolPowerSupplyPresent cpqHeFltTolPowerSupplyCondition
+      cpqHeFltTolPowerSupplyStatus cpqHeFltTolPowerSupplyErrorCondition
       cpqHeFltTolPowerSupplyRedundant cpqHeFltTolPowerSupplyCapacityUsed
       cpqHeFltTolPowerSupplyCapacityMaximum)) {
     printf "%s: %s\n", $_, $self->{$_};
