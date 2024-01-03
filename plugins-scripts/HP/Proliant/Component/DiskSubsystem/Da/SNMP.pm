@@ -220,6 +220,11 @@ sub init {
           2 => "ok",
           3 => "failed",
           4 => "predictiveFailure",
+	  5 => "erasing",
+	  6 => "eraseDone",
+	  7 => "eraseQueued",
+	  8 => "ssdWearOut",
+	  9 => "notAuthenticated",
       },
   };
     
