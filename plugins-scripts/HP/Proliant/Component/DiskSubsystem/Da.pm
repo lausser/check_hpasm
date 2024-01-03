@@ -366,11 +366,11 @@ sub check {
   $self->blacklist('dapd', $self->{name});
   $self->add_info(
       sprintf "physical drive %s is %s",
-          $self->{name}, $self->{cpqDaPhyDrvCondition});
-  if ($self->{cpqDaPhyDrvCondition} ne 'ok') {
+          $self->{name}, $self->{cpqDaPhyDrvStatus});
+  if ($self->{cpqDaPhyDrvStatus} ne 'ok') {
     $self->add_message(CRITICAL,
         sprintf "physical drive %s is %s", 
-            $self->{name}, $self->{cpqDaPhyDrvCondition});
+            $self->{name}, $self->{cpqDaPhyDrvStatus});
   }
 }
 
