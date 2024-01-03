@@ -1,0 +1,11 @@
+Makefile
+Makefile.in
+autom4te.cache/
+config.log
+config.status
+configure
+plugins-scripts/Makefile
+plugins-scripts/Makefile.in
+plugins-scripts/check_hpasm
+plugins-scripts/subst
+
