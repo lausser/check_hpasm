@@ -100,11 +100,6 @@ sub check {
           $self->{cpqHeFltTolPowerSupplyBay},
           $self->{cpqHeFltTolPowerSupplyCondition});
     }
-    $self->add_extendedinfo(sprintf "ps_%s=%s",
-        $self->{cpqHeFltTolPowerSupplyBay},
-        $self->{cpqHeFltTolPowerSupplyCondition},
-        $self->{cpqHeFltTolPowerSupplyStatus},
-        $self->{cpqHeFltTolPowerSupplyErrorCondition});
     if ($self->{cpqHeFltTolPowerSupplyCapacityUsed} &&
         $self->{cpqHeFltTolPowerSupplyCapacityMaximum}) {
       if ($self->{runtime}->{options}->{perfdata}) {
