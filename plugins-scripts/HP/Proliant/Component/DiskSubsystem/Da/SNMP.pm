@@ -225,9 +225,10 @@ sub init {
 	  7 => "eraseQueued",
 	  8 => "ssdWearOut",
 	  9 => "notAuthenticated",
+	  10 => "hotspare",
       },
   };
-    
+
   # INDEX { cpqDaPhyDrvCntlrIndex, cpqDaPhyDrvIndex }
   foreach ($self->get_entries($oids, 'cpqDaPhyDrvEntry')) {
     push(@{$self->{physical_drives}},
