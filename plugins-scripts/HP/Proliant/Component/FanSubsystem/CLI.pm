@@ -73,6 +73,8 @@ sub init {
         $tmpfan{cpqHeFltTolFanCondition} = 'failed';
       } elsif($tmpfan{cpqHeFltTolFanSpeed} eq 'n/a') {
         $tmpfan{cpqHeFltTolFanCondition} = 'other';
+      } elsif($tmpfan{cpqHeFltTolFanPresent} eq 'yes' and $tmpfan{cpqHeFltTolFanRedundantPartner} eq 'n/a') {
+        $tmpfan{cpqHeFltTolFanCondition} = 'degraded';
       } else {
         $tmpfan{cpqHeFltTolFanCondition} = 'ok';
       }
