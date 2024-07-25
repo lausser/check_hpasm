@@ -367,7 +367,7 @@ sub check {
   $self->add_info(
       sprintf "physical drive %s is %s",
           $self->{name}, $self->{cpqDaPhyDrvStatus});
-  if ($self->{cpqDaPhyDrvStatus} ne 'ok') {
+  if ($self->{cpqDaPhyDrvStatus} !~ /^( ok | hotspare )$/x) {
     $self->add_message(CRITICAL,
         sprintf "physical drive %s is %s", 
             $self->{name}, $self->{cpqDaPhyDrvStatus});

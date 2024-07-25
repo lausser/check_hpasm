@@ -329,6 +329,7 @@ sub init {
           7 => "eraseQueued",
           8 => "ssdWearOut",
           9 => "notAuthenticated",
+          10 => "hotspare",
       },
       cpqDaPhyDrvSmartStatus => "1.3.6.1.4.1.232.3.2.5.1.1.57",
       cpqDaPhyDrvSmartStatusValue => {
