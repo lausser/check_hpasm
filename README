@@ -1,3 +1,13 @@
+Attention! I will deprecate this plugin. It is more than ten years old and does not use the same folder/code structure like my other plugins, which makes them far mor easier to maintain. Soon i will implement check_hpasm's functions in the existing check_hp_health (which knows HP 3PAR now).
+In order to run before/after-tests, i'd like to ask you for your assistance.
+Please run
+snmpwalk -ObentU .... ip-of-ilo 1.3.6.1.2.1 > /tmp/check_hp_health_ip-of-ilo.snmpwalk
+snmpwalk -ObentU .... ip-of-ilo 1.3.6.1.4.1 >> /tmp/check_hp_health_ip-of-ilo.snmpwalk
+and mail me the resulting file to gerhard.lausser@consol.de
+No matter if the devices are running just fine or currently have a problem (of course ilos showing some faulted components are very useful)
+
+
+
 check_hpasm Nagios Plugin README
 ---------------------
 
