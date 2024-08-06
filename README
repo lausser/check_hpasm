@@ -11,8 +11,8 @@ No matter if the devices are running just fine or currently have a problem (of c
 check_hpasm Nagios Plugin README
 ---------------------
 
-This plugin checks the hardware health of HP Proliant servers with the 
-hpasm software installed. It uses the hpasmcli command to acquire the 
+This plugin checks the hardware health of HP Proliant servers with the
+hpasm software installed. It uses the hpasmcli command to acquire the
 condition of the system's critical components like cpus, power supplies,
 temperatures, fans and memory modules. Newer versions also use SNMP.
 
@@ -32,9 +32,9 @@ temperatures, fans and memory modules. Newer versions also use SNMP.
 You can check for the latest plugin at:
   http://www.consol.de/opensource/nagios/check-hpasm
 
-Send mail to gerhard.lausser@consol.de for assistance.  
+Send mail to gerhard.lausser@consol.de for assistance.
 Please include the OS type and version that you are using.
-Also, run the plugin with the '-v' option and provide the resulting 
+Also, run the plugin with the '-v' option and provide the resulting
 version information.  Of course, there may be additional diagnostic information
 required as well.  Use good judgment.
 
@@ -42,9 +42,13 @@ required as well.  Use good judgment.
 How to "compile" the check_hpasm script.
 --------------------------------------------------------
 
-1) Run the configure script to initialize variables and create a Makefile, etc.
+1) If you obtained the source core from version control (not a release archive):
+   Execute 'autoreconf' (-v) which will generate the configure scripts.
 
-	./configure --prefix=BASEDIRECTORY --with-nagios-user=SOMEUSER --with-nagios-group=SOMEGROUP --with-perl=PATH_TO_PERL --with-noinst-level=LEVEL --with-degrees=UNIT --with-perfdata --with-hpacucli
+
+2) Run the configure script to initialize variables and create a Makefile, etc.
+
+	./configure --prefix=BASEDIRECTORY --with-nagios-user=SOMEUSER --with-nagios-group=SOMEGROUP --with-perl=PATH_TO_PERL --with-noinst-level=LEVEL --with-degrees=UNIT --enable-perfdata --enable-hpacucli
 
    a) Replace BASEDIRECTORY with the path of the directory under which Nagios
       is installed (default is '/usr/local/nagios')
@@ -72,7 +76,8 @@ How to "compile" the check_hpasm script.
       if you call configure with the --enable-hpacucli option.
       You need the hpacucli rpm.
 
-2) "Compile" the plugin with the following command:
+
+3) "Compile" the plugin with the following command:
 
 	make
 
@@ -82,24 +87,24 @@ How to "compile" the check_hpasm script.
     the make process.
 
 
-3) Install the compiled plugin script with the following command:
+4) Install the compiled plugin script with the following command:
 
 	make install
 
-   The installation procedure will attempt to place the plugin in a 
+   The installation procedure will attempt to place the plugin in a
    'libexec/' subdirectory in the base directory you specified with
    the --prefix argument to the configure script.
 
 
-4) Verify that your configuration files for Nagios contains
+5) Verify that your configuration files for Nagios contains
    the correct paths to the new plugin.
 
 
-5) Add this line to /etc/sudoers:
+6) Add this line to /etc/sudoers:
    nagios      ALL=NOPASSWD: /sbin/hpasmcli
    or ths, if you also installed the hpacu package
    nagios      ALL=NOPASSWD: /sbin/hpasmcli, /usr/sbin/hpacucli
-  
+
 
 
 Command line parameters
@@ -172,13 +177,13 @@ iso.3.6.1.4.1.232.2.2.4.5.1.3.0.6 = INTEGER: 0
                             ^-- size
 
 iso.3.6.1.4.1.232.6.2.14.11.1.1.0.6 = INTEGER: 0
- 
+
 I compared 300 systems and found out that with
 1.3.6.1.4.1.232.6.2.14.11.1.<no1>.<no2>.<no3> = <no4>
 no1 is always 1
 no2 is always 0
 no3 is the number of memory slots (including the empty ones).
-no4 is always 0. It is probably the health status of the 
+no4 is always 0. It is probably the health status of the
 overall memory subsystem. I don't know.
 I will implement 0 = ok, not 0 = ask compaq
 
@@ -204,17 +209,17 @@ iso.3.6.1.4.1.232.6.2.14.11.1.2.0.0 = INTEGER: 0
 iso.3.6.1.4.1.232.6.2.14.11.1.3.0.0 = ""
 iso.3.6.1.4.1.232.6.2.14.11.1.4.0.0 = INTEGER: 0
 iso.3.6.1.4.1.232.6.2.14.11.1.5.0.0 = INTEGER: 0
-iso.3.6.1.4.1.232.6.2.14.11.1.6.0.0 = Hex-STRING: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+iso.3.6.1.4.1.232.6.2.14.11.1.6.0.0 = Hex-STRING: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
 
 4. cpqHeResMemModuleEntry and cpqSiMemModuleEntry use different table indexes
 ---------------------------------------------------------------------------
 
-cpqSiMemBoardIndex      1.3.6.1.4.1.232.2.2.4.5.1.1 
-cpqSiMemModuleIndex     1.3.6.1.4.1.232.2.2.4.5.1.2 
+cpqSiMemBoardIndex      1.3.6.1.4.1.232.2.2.4.5.1.1
+cpqSiMemModuleIndex     1.3.6.1.4.1.232.2.2.4.5.1.2
 
-cpqHeResMemBoardIndex   1.3.6.1.4.1.232.6.2.14.11.1.1 
-cpqHeResMemModuleIndex  1.3.6.1.4.1.232.6.2.14.11.1.2 
+cpqHeResMemBoardIndex   1.3.6.1.4.1.232.6.2.14.11.1.1
+cpqHeResMemModuleIndex  1.3.6.1.4.1.232.6.2.14.11.1.2
 
 
 cpqSiMemBoardIndex
@@ -233,7 +238,7 @@ SNMPv2-SMI::enterprises.232.6.2.14.11.1.1.1.4 = INTEGER: 0
 SNMPv2-SMI::enterprises.232.6.2.14.11.1.1.1.5 = INTEGER: 0
 SNMPv2-SMI::enterprises.232.6.2.14.11.1.1.1.6 = INTEGER: 0
 
-It is not possible to use the SNMP-table-indices to identify the 
+It is not possible to use the SNMP-table-indices to identify the
 corresponding he-entry. Matching is done with nested loops.
 
 5. even worse: cpqHeResMemBoardIndex and cpqSiMemBoardIndex don't match
@@ -310,7 +315,7 @@ fan 5 speed is normal, pctmax is 50%, location is ioboard, redundance is no, par
 OK - System: 'proliant ml370 g3', ...
 
 
-A snmp forwarding trick 
+A snmp forwarding trick
 -----------------------
 local - where check_hpasm runs
 remote - where a proliant can be reached
