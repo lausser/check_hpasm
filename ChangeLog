@@ -1,3 +1,5 @@
+* 4.10.1 2025-01-13
+  Fix a bug in HP where spinDetect fans show rpm in FanSpeed
 * 4.10 2024-07-25
   Merge some pull requests (spare da disk, redundant fans)
 * 4.9.0.1 2024-03-26

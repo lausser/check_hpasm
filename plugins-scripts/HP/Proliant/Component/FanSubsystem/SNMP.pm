@@ -154,7 +154,7 @@ sub he_init {
       },
       cpqHeFltTolFanTypeValue => {
           1 => "other",
-          2 => "tachInput",
+          2 => "tachOutput",
           3 => "spinDetect",
       },
       cpqHeFltTolFanConditionValue => {

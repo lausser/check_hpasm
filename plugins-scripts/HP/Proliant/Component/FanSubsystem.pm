@@ -119,6 +119,16 @@ sub new {
     $self->{cpqHeFltTolFanRedundant} = 'notRedundant';
       # cpqHeFltTolFanRedundantPartner=0: partner not avail
   }
+  if ($self->{cpqHeFltTolFanType} and $self->{cpqHeFltTolFanType} ne "tachOutput" and $self->{cpqHeFltTolFanSpeed} =~ /value_(\d+)/) {
+    # type spinDetect and speed value_41 (and later value_31)
+    # this is not possible according to the mib, where spinDetect fans
+    # set cpqHeFltTolFanSpeed to a other/normal/high (0/1/2) value.
+    # But 31, 41 looks like %rpm
+    if ($1 > 2) {
+      $self->{cpqHeFltTolFanSpeed} = $1;
+      $self->{cpqHeFltTolFanType} = "tachOutput";
+    }
+  }
   return $self;
 } 
 
@@ -138,7 +148,10 @@ sub check {
       $self->add_info(sprintf 'fan %d (%s) runs at high speed',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
       $self->add_message(CRITICAL, $self->{info});
-    } elsif ($self->{cpqHeFltTolFanSpeed} ne 'normal') {
+    } elsif ($self->{cpqHeFltTolFanType} and $self->{cpqHeFltTolFanType} ne "tachOutput" and $self->{cpqHeFltTolFanSpeed} ne 'normal') {
+      # cpqHeFltTolFanType = tachOutput means, that cpqHeFltTolFanSpeed means
+      # the actual speed in % of max rpm. For other, dumb fans the Speed
+      # just gets a ok/nok value
       $self->add_info(sprintf 'fan %d (%s) needs attention',
           $self->{cpqHeFltTolFanIndex}, $self->{cpqHeFltTolFanLocale});
       $self->add_message(CRITICAL, $self->{info});
@@ -199,11 +212,19 @@ sub check {
     $self->add_message(WARNING, $self->{info}) if $self->{overallhealth};
   }
   if ($self->{runtime}->{options}->{perfdata}) {
-    $self->{runtime}->{plugin}->add_perfdata(
-        label => sprintf('fan_%s', $self->{cpqHeFltTolFanIndex}),
-        value => $self->{cpqHeFltTolFanPctMax},
-        uom => '%',
-    );
+    if ($self->{cpqHeFltTolFanType} and $self->{cpqHeFltTolFanType} eq "tachOutput" and $self->{cpqHeFltTolFanSpeed} =~ /(\d+)/) {
+      $self->{runtime}->{plugin}->add_perfdata(
+          label => sprintf('fan_%s', $self->{cpqHeFltTolFanIndex}),
+          value => $1,
+          uom => '%',
+      );
+    } else {
+      $self->{runtime}->{plugin}->add_perfdata(
+          label => sprintf('fan_%s', $self->{cpqHeFltTolFanIndex}),
+          value => $self->{cpqHeFltTolFanPctMax},
+          uom => '%',
+      );
+    }
   }
 }
 
